@@ -11,9 +11,11 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "check-deps": "check-dependency-version-consistency"
   },
   "devDependencies": {
+    "check-dependency-version-consistency": "^6.0.0",
     "eslint": "^9.39.2",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
