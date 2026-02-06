@@ -1,0 +1,51 @@
+---
+description: Agent development patterns for Strands SDK and AgentCore
+globs: apps/agent/**/*.ts
+alwaysApply: false
+---
+
+# Agent Development Patterns
+
+## Agents-as-Tools Pattern
+
+Wrap specialist agents as tools for the orchestrator:
+
+```typescript
+import { tool } from '@strands-agents/sdk';
+import { z } from 'zod';
+
+export const researchTool = tool({
+  name: 'research_specialist',
+  description: 'Web research specialist: browse web, call gateway tools',
+  inputSchema: z.object({ question: z.string() }),
+  callback: async ({ question }) => String(await researcher.invoke(question)),
+});
+```
+
+## Streaming Events
+
+Map Strands events to UI-friendly event types:
+
+```typescript
+// Text deltas -> message stream
+if (evt.type === 'modelContentBlockDeltaEvent' && evt.delta?.type === 'textDelta') {
+  yield { type: 'message.delta', text: evt.delta.text };
+}
+
+// Tool lifecycle -> timeline
+if (evt.type === 'beforeToolCallEvent') {
+  yield { type: 'tool.start', toolName: evt.toolName, input: evt.input };
+}
+```
+
+## Memory Integration
+
+- Use `actorId` for user identity, `sessionId` for conversation thread
+- Log events with `CreateEvent`, retrieve with `RetrieveMemoryRecords`
+- Local fallback for development when AgentCore is not deployed
+
+## Server Requirements
+
+- Host: `0.0.0.0`, Port: `8080` (AgentCore Runtime requirement)
+- Support both SSE streaming and JSON responses on `/invocations`
+- Include `/health` endpoint for container health checks

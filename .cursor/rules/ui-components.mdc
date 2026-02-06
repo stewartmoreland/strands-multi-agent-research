@@ -1,0 +1,54 @@
+---
+description: UI component patterns with shadcn/ui
+globs: packages/ui/**/*.tsx
+alwaysApply: false
+---
+
+# UI Component Patterns
+
+## shadcn/ui Components
+
+Components live in `packages/ui/src/components/` and use:
+- Tailwind CSS v4 with CSS variables for theming
+- `class-variance-authority` for variants
+- `cn()` utility for class merging
+
+```typescript
+import { cn } from '../lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md text-sm font-medium",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground",
+        outline: "border border-input bg-background",
+      },
+    },
+    defaultVariants: { variant: "default" },
+  }
+);
+```
+
+## Chat Components
+
+- `ChatMessage` - Individual message with role-based styling
+- `ChatTranscript` - Scrollable message list with auto-scroll
+- `ChatInput` - Input with send button and loading state
+
+## Timeline Components
+
+- `TimelineEvent` - Tool execution entry with status icon
+- `ThinkingTimeline` - Vertical timeline of tool executions
+- `ThinkingPanel` - Collapsible reasoning display
+
+## Export Pattern
+
+Export all components from `src/index.ts`:
+
+```typescript
+export * from './components/button';
+export * from './components/chat-message';
+export { cn } from './lib/utils';
+```

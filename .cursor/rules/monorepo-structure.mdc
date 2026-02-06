@@ -1,0 +1,40 @@
+---
+description: Monorepo structure and conventions for the multi-agent research system
+alwaysApply: true
+---
+
+# Multi-Agent Research Monorepo
+
+This is an example repository demonstrating a multi-agent research system using Strands Agents TypeScript SDK and AWS Bedrock AgentCore.
+
+## Project Structure
+
+```
+apps/
+  agent/       # AgentCore Runtime container (TypeScript)
+  web/         # React frontend (Vite + shadcn/ui)
+packages/
+  infra/       # AWS CDK infrastructure
+  shared/      # Shared types (events, API contracts)
+  ui/          # shadcn/ui component library
+```
+
+## Workspace Commands
+
+- Run from root: `yarn build`, `yarn dev`, `yarn lint`
+- Add dependencies to a workspace: `yarn workspace <name> add <package>`
+- Workspaces use `@repo/` prefix for internal packages
+
+## Cross-Package Imports
+
+```typescript
+// From apps/web or apps/agent
+import { UiEvent } from '@repo/shared/events';
+import { Button } from '@repo/ui';
+```
+
+## Key Patterns
+
+- **Agents-as-Tools**: Specialist agents wrapped as callable tools for orchestrator
+- **SSE Streaming**: Agent runtime streams events to frontend via `/invocations`
+- **Memory Adapter**: Bridges UI sessions to AgentCore Memory (actorId/sessionId)

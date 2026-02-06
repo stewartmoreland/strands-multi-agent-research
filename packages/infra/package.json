@@ -1,0 +1,27 @@
+{
+  "name": "@repo/infra",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy",
+    "destroy": "cdk destroy",
+    "clean": "rm -rf dist cdk.out",
+    "lint": "eslint \"lib/**/*.ts\" \"bin/**/*.ts\""
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.237.1",
+    "constructs": "^10.4.2"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/node": "^22.10.0",
+    "aws-cdk": "^2.170.0",
+    "eslint": "^9.39.2",
+    "typescript": "5.5.4"
+  }
+}

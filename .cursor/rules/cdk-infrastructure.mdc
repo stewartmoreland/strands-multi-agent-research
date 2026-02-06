@@ -1,0 +1,53 @@
+---
+description: CDK infrastructure patterns for Bedrock AgentCore
+globs: packages/infra/**/*.ts
+alwaysApply: false
+---
+
+# CDK Infrastructure Patterns
+
+## AgentCore Resources
+
+When the `@aws-cdk/aws-bedrock-agentcore-alpha` constructs are available:
+
+```typescript
+// Memory with long-term strategies
+const memory = new agentcore.Memory(this, 'Memory', {
+  memoryName: 'research_memory',
+  expirationDuration: cdk.Duration.days(90),
+  memoryStrategies: [
+    agentcore.MemoryStrategy.usingBuiltInSummarization(),
+    agentcore.MemoryStrategy.usingBuiltInSemantic(),
+  ],
+});
+
+// Gateway with MCP protocol
+const gateway = new agentcore.Gateway(this, 'Gateway', {
+  gatewayName: 'research-gateway',
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+  }),
+});
+```
+
+## Resource Naming
+
+- Use descriptive names: `research_memory`, `research-gateway`
+- Lambda targets prefix tool names: `target-name__tool_name`
+
+## Stack Outputs
+
+Always export key values for agent configuration:
+
+```typescript
+new cdk.CfnOutput(this, 'MemoryId', {
+  value: memory.memoryId,
+  exportName: 'ResearchAgentMemoryId',
+});
+```
+
+## Deployment
+
+1. `cdk bootstrap` (once per account/region)
+2. `cdk deploy` from packages/infra
+3. Update `.env` with output values

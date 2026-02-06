@@ -1,0 +1,56 @@
+---
+description: Streaming event patterns for agent-frontend communication
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Streaming Event Patterns
+
+## UI Event Types
+
+Defined in `packages/shared/src/events.ts`:
+
+```typescript
+type UiEvent =
+  | { type: 'meta'; sessionId: string }
+  | { type: 'message.delta'; text: string }
+  | { type: 'thinking.delta'; text: string }
+  | { type: 'tool.start'; toolName: string; input: unknown }
+  | { type: 'tool.end'; toolName: string; output: unknown }
+  | { type: 'message.done' }
+  | { type: 'error'; message: string };
+```
+
+## SSE Format
+
+Server sends events as:
+```
+data: {"type":"message.delta","text":"Hello"}
+
+data: {"type":"tool.start","toolName":"research_specialist","input":{}}
+
+```
+
+## Frontend Consumption
+
+Use POST with `Accept: text/event-stream`:
+
+```typescript
+const response = await fetch('/api/invocations', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'text/event-stream',
+  },
+  body: JSON.stringify({ prompt }),
+});
+
+// Parse SSE stream
+const reader = response.body.getReader();
+```
+
+## Event Processing
+
+- Accumulate `message.delta` events into assistant messages
+- Track `tool.start`/`tool.end` for timeline visualization
+- Display `thinking.delta` in collapsible panel
