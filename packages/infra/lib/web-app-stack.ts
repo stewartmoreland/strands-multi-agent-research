@@ -209,14 +209,14 @@ export class WebAppStack extends cdk.Stack {
       }),
     );
 
+    // Use Resource "*" to avoid IAM "policy failed legacy parsing": dynamic ARNs
+    // (e.g. distribution ID via Ref) in Resource produce Fn::Join that IAM rejects.
     codeBuildRole.addToPolicy(
       new iam.PolicyStatement({
         sid: "CloudFrontInvalidate",
         effect: iam.Effect.ALLOW,
         actions: ["cloudfront:CreateInvalidation", "cloudfront:GetInvalidation"],
-        resources: [
-          `arn:aws:cloudfront:${this.account}:distribution/${distribution.distributionId}`,
-        ],
+        resources: ["*"],
       }),
     );
 

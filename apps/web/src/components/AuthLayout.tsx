@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader } from "@repo/ui";
-import { Sparkles } from "lucide-react";
 import { Waves } from "./Waves";
 
 interface AuthLayoutProps {
@@ -15,11 +14,12 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
       <Card className="relative z-10 w-full max-w-sm shadow-xl">
         <CardHeader className="space-y-6 text-center">
           {/* Logo */}
-          <div className="flex items-center justify-center gap-2">
-            <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
+          <div className="flex flex-col items-center justify-center">
+            <div className="flex items-center justify-center gap-2">
+              <img src="/typescript.svg" alt="TypeScript" className="h-8 w-8" />
+              <span className="text-2xl font-semibold">Strands Agents</span>
             </div>
-            <span className="text-xl font-semibold">AI Assistant</span>
+            <span className="text-sm text-muted-foreground">Multi-Agent Research Demo</span>
           </div>
           <div className="flex flex-col space-y-2">
             <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
