@@ -5,6 +5,7 @@
   "main": "./dist/lambda.js",
   "scripts": {
     "build": "tsc",
+    "esbuild": "esbuild src/lambda.ts --bundle --minify --outfile=dist/lambda.js",
     "dev": "tsx watch --env-file=.env.local --import ./src/instrument.ts src/local.ts",
     "clean": "rm -rf dist",
     "lint": "eslint \"src/**/*.ts\""
