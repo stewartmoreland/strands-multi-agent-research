@@ -469,7 +469,7 @@ exports.handler = async (event, context) => {
     // ==========================================================================
     this.userPool = new cognito.UserPool(this, "ResearchUserPool", {
       userPoolName: "research-agent-users",
-      selfSignUpEnabled: true,
+      selfSignUpEnabled: false, // No self-service sign-up
       signInAliases: {
         email: true,
       },

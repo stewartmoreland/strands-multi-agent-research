@@ -8,6 +8,7 @@ import * as apigatewayv2integrations from "aws-cdk-lib/aws-apigatewayv2-integrat
 import * as cdk from "aws-cdk-lib";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as lambdaNodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import * as logs from "aws-cdk-lib/aws-logs";
 import type { Construct } from "constructs";
 import * as path from "node:path";
@@ -31,15 +32,14 @@ export class ApiStack extends cdk.Stack {
 
     const { agentMemoryId } = props;
 
-    // Lambda function for API
-    const apiLambda = new lambda.Function(this, "ApiHandler", {
+    // Lambda function for API (bundled with esbuild so dependencies are included)
+    const apiLambda = new lambdaNodejs.NodejsFunction(this, "ApiHandler", {
+      entry: path.join(__dirname, "..", "..", "..", "apps", "api", "src", "lambda.ts"),
+      handler: "handler",
       runtime: lambda.Runtime.NODEJS_22_X,
-      handler: "lambda.handler",
       timeout: cdk.Duration.seconds(60),
       memorySize: 256,
-      code: lambda.Code.fromAsset(path.join(__dirname, "..", "..", "..", "apps", "api", "dist"), {
-        exclude: ["*.ts", "*.tsconfig.json"],
-      }),
+      depsLockFilePath: path.join(__dirname, "..", "..", "..", "yarn.lock"),
       environment: {
         AGENTCORE_MEMORY_ID: agentMemoryId,
       },
