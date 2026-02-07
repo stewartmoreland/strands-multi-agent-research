@@ -248,7 +248,6 @@ export class WebAppStack extends cdk.Stack {
           build: {
             commands: [
               "echo Building web app with env vars...",
-              "cd apps/web",
               "yarn build",
             ],
           },
