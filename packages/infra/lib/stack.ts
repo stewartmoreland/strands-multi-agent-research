@@ -30,13 +30,18 @@ const __dirname = path.dirname(__filename);
  * can be added using CfnMemory, CfnGateway, etc. when needed.
  * L2 constructs may become available in @aws-cdk/aws-bedrock-agentcore-alpha.
  */
+export interface ResearchAgentStackProps extends cdk.StackProps {
+  /** Custom domain for the web app. When provided, adds https URLs to Cognito callback/logout URLs. */
+  readonly domainName?: string;
+}
+
 export class ResearchAgentStack extends cdk.Stack {
   public readonly ecrRepository: ecr.Repository;
   public readonly agentRole: iam.Role;
   public readonly userPool: cognito.UserPool;
   public readonly userPoolClient: cognito.UserPoolClient;
 
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: ResearchAgentStackProps) {
     super(scope, id, props);
 
     // ==========================================================================
@@ -532,8 +537,17 @@ exports.handler = async (event, context) => {
           callbackUrls: [
             "http://localhost:5173/",
             "http://localhost:5173/auth/callback",
+            ...(props?.domainName
+              ? [
+                  `https://${props.domainName}/`,
+                  `https://${props.domainName}/auth/callback`,
+                ]
+              : []),
           ],
-          logoutUrls: ["http://localhost:5173/"],
+          logoutUrls: [
+            "http://localhost:5173/",
+            ...(props?.domainName ? [`https://${props.domainName}/`] : []),
+          ],
         },
         preventUserExistenceErrors: true,
         enableTokenRevocation: true,
@@ -594,6 +608,35 @@ exports.handler = async (event, context) => {
     });
 
     // ==========================================================================
+    // AgentCore Memory (L1 Construct)
+    //
+    // Persistent memory for agent conversations (long-term context, summarization, semantic retrieval).
+    // ==========================================================================
+    const agentMemory = new bedrockagentcore.CfnMemory(this, "AgentMemory", {
+      name: "research_memory",
+      description: "Memory for research agent conversations",
+      eventExpiryDuration: 90,
+    });
+
+    // ==========================================================================
+    // AgentCore Gateway (L1 Construct)
+    //
+    // MCP Gateway for external tool integration (agents call Lambda as MCP tools).
+    // ==========================================================================
+    const agentGateway = new bedrockagentcore.CfnGateway(this, "AgentGateway", {
+      name: "research-gateway",
+      protocolConfiguration: {
+        mcp: {
+          instructions: "Tools for the research agent",
+          supportedVersions: ["2025-11-25"],
+        },
+      },
+      authorizerType: "NONE",
+      protocolType: "MCP",
+      roleArn: this.agentRole.roleArn,
+    });
+
+    // ==========================================================================
     // AgentCore Runtime (L1 Construct)
     //
     // The CfnRuntime L1 construct creates the AgentCore Runtime that hosts
@@ -601,6 +644,9 @@ exports.handler = async (event, context) => {
     // - Listen on 0.0.0.0:8080
     // - Expose /ping (health) and /invocations (agent) endpoints
     // - Be built for ARM64 architecture
+    //
+    // Environment variables match apps/agent process.env usage so the container
+    // receives AGENTCORE_MEMORY_ID, AGENTCORE_GATEWAY_URL, and enablement flags.
     // ==========================================================================
     const agentRuntime = new bedrockagentcore.CfnRuntime(this, "AgentRuntime", {
       agentRuntimeName: "research_agent",
@@ -625,43 +671,21 @@ exports.handler = async (event, context) => {
         OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: `https://xray.${this.region}.amazonaws.com/v1/traces`,
         OTEL_EXPORTER_OTLP_TRACES_PROTOCOL: "http/protobuf",
         OTEL_RESOURCE_ATTRIBUTES: "service.name=research_agent",
+        // AgentCore enablement (apps/agent process.env)
+        AGENTCORE_MEMORY_ID: agentMemory.attrMemoryId,
+        AGENTCORE_MEMORY_NAMESPACE: "{actorId}",
+        AGENTCORE_GATEWAY_URL: agentGateway.attrGatewayUrl,
+        AGENTCORE_TOOLS_ENABLED: "true",
+        AGENTCORE_BROWSER_ENABLED: "true",
+        AGENTCORE_CODE_INTERPRETER_ENABLED: "true",
       },
     });
 
-    // Ensure the runtime is created after the ECR repository and image build
+    // Ensure the runtime is created after ECR/image build and AgentCore Memory/Gateway
     agentRuntime.node.addDependency(this.ecrRepository);
     agentRuntime.node.addDependency(triggerBuild);
-
-    // ==========================================================================
-    // AgentCore Memory (L1 Construct) - Optional
-    //
-    // Uncomment to add persistent memory for agent conversations.
-    // Memory enables long-term context, summarization, and semantic retrieval.
-    // ==========================================================================
-    const agentMemory = new bedrockagentcore.CfnMemory(this, "AgentMemory", {
-      name: "research_memory",
-      description: "Memory for research agent conversations",
-      eventExpiryDuration: 90,
-    });
-
-    // ==========================================================================
-    // AgentCore Gateway (L1 Construct) - Optional
-    //
-    // Uncomment to add MCP Gateway for external tool integration.
-    // Gateway enables agents to call Lambda functions as MCP tools.
-    // ==========================================================================
-    const agentGateway = new bedrockagentcore.CfnGateway(this, "AgentGateway", {
-      name: "research-gateway",
-      protocolConfiguration: {
-        mcp: {
-          instructions: "Tools for the research agent",
-          supportedVersions: ["2025-11-25"],
-        },
-      },
-      authorizerType: "NONE",
-      protocolType: "MCP",
-      roleArn: this.agentRole.roleArn,
-    });
+    agentRuntime.node.addDependency(agentMemory);
+    agentRuntime.node.addDependency(agentGateway);
 
     // ==========================================================================
     // AgentCore Evaluations: execution role and log group

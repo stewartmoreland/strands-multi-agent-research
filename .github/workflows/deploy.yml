@@ -1,0 +1,69 @@
+# Build and deploy CDK stacks (ResearchAgentStack, WebAppStack, optional WebAppCertStack).
+# Uses OIDC for AWS; set repo secret AWS_ROLE_ARN to the IAM role ARN.
+
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      domainName:
+        description: "Custom domain (e.g. app.example.com). Optional; requires hostedZoneId and hostedZoneName."
+        required: false
+      hostedZoneId:
+        description: "Route53 hosted zone ID (required if domainName is set)"
+        required: false
+      hostedZoneName:
+        description: "Route53 hosted zone name (e.g. example.com). Required if domainName is set."
+        required: false
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: "22"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build
+        run: yarn build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: CDK Bootstrap
+        run: npx cdk bootstrap
+        working-directory: packages/infra
+
+      - name: CDK Deploy
+        run: |
+          CDK_CONTEXT=""
+          if [ -n "${{ inputs.domainName }}" ] && [ -n "${{ inputs.hostedZoneId }}" ] && [ -n "${{ inputs.hostedZoneName }}" ]; then
+            CDK_CONTEXT="-c domainName=${{ inputs.domainName }} -c hostedZoneId=${{ inputs.hostedZoneId }} -c hostedZoneName=${{ inputs.hostedZoneName }}"
+          fi
+          npx cdk deploy --all --require-approval never $CDK_CONTEXT
+        working-directory: packages/infra
