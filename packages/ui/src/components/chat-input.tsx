@@ -2,7 +2,7 @@ import { Loader2, Send } from "lucide-react";
 import * as React from "react";
 import { cn } from "../lib/utils";
 import { Button } from "./button";
-import { Input } from "./input";
+import { Textarea } from "./textarea";
 
 export interface ChatInputProps extends Omit<
   React.HTMLAttributes<HTMLFormElement>,
@@ -56,17 +56,17 @@ const ChatInput = React.forwardRef<HTMLFormElement, ChatInputProps>(
         {...props}
       >
         <div className="relative flex-1">
-          <Input
-            ref={inputRef}
+          <Textarea
+            ref={inputRef as React.Ref<HTMLTextAreaElement>}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={isLoading}
             className={cn(
-              "h-12 pr-12 rounded-xl bg-muted/50 border-muted-foreground/20",
-              "placeholder:text-muted-foreground/60",
-              "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring/50",
+              "min-h-12 pr-12 rounded-xl bg-muted/50 border-muted-foreground/20",
+              "placeholder:text-muted-foreground/60 resize-none",
+              "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring/50 dark:bg-input/30",
               "transition-all duration-200",
             )}
           />
