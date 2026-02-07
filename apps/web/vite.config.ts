@@ -5,6 +5,22 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  test: {
+    environment: "jsdom",
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "lcov", "html"],
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: [
+        "src/**/*.test.{ts,tsx}",
+        "src/**/*.spec.{ts,tsx}",
+        "src/test/**",
+        "src/main.tsx",
+      ],
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

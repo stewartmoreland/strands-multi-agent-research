@@ -21,10 +21,10 @@
     "lint": {
       "outputs": []
     },
-    "test": {
-      "dependsOn": ["build"],
-      "outputs": []
-    },
+  "test": {
+    "outputs": [],
+    "inputs": ["$TURBO_DEFAULT$", "src/**", "lib/**", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
+  },
     "dev": {
       "cache": false,
       "persistent": true

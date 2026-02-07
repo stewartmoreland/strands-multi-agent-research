@@ -5,10 +5,13 @@
   "main": "./dist/lambda.js",
   "scripts": {
     "build": "tsc",
-    "esbuild": "esbuild src/lambda.ts --bundle --minify --outfile=dist/lambda.js",
+    "bundle": "esbuild src/lambda.ts --bundle --minify --outfile=dist/lambda.js",
     "dev": "tsx watch --env-file=.env.local --import ./src/instrument.ts src/local.ts",
     "clean": "rm -rf dist",
-    "lint": "eslint \"src/**/*.ts\""
+    "lint": "eslint \"src/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock": "^3.984.0",
@@ -22,8 +25,12 @@
     "@repo/typescript-config": "*",
     "@types/express": "^5.0.6",
     "@types/node": "^22.10.0",
+    "@types/supertest": "^6.0.2",
+    "@vitest/coverage-v8": "^2.1.8",
     "eslint": "^9.39.2",
+    "supertest": "^7.0.0",
     "tsx": "^4.19.0",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "vitest": "^2.1.8"
   }
 }

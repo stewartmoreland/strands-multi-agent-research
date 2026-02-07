@@ -33,8 +33,9 @@ export class ApiStack extends cdk.Stack {
     const { agentMemoryId } = props;
 
     // Lambda function for API (bundled with esbuild so dependencies are included)
+    const apiRoot = path.join(__dirname, "..", "..", "..", "apps", "api");
     const apiLambda = new lambdaNodejs.NodejsFunction(this, "ApiHandler", {
-      entry: path.join(__dirname, "..", "..", "..", "apps", "api", "src", "lambda.ts"),
+      entry: path.join(apiRoot, "src", "lambda.ts"),
       handler: "handler",
       runtime: lambda.Runtime.NODEJS_22_X,
       timeout: cdk.Duration.seconds(60),

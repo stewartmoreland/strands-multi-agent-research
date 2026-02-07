@@ -1,63 +1,17 @@
 import type { InvocationRequest } from "@repo/shared";
-import type { UiEvent } from "@repo/shared/events";
 import { context, propagation } from "@opentelemetry/api";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { listFoundationModels } from "./listModels";
 import { memoryAdapter } from "./memoryAdapter";
 import { orchestrator } from "./orchestrator";
+import {
+  getActorIdFromAuth,
+  parseBody,
+  sendEvent,
+} from "./serverHelpers";
 
 const PORT = parseInt(process.env.PORT || "8080", 10);
 const HOST = process.env.HOST || "0.0.0.0";
-
-/**
- * Resolve actorId (user sub) from Authorization Bearer JWT.
- * Decodes the JWT payload without signature verification.
- * For production with Cognito, use aws-jwt-verify to verify the token when COGNITO_USER_POOL_ID is set.
- */
-function getActorIdFromAuth(req: IncomingMessage): string | null {
-  const auth = req.headers.authorization;
-  if (!auth?.startsWith("Bearer ")) return null;
-  const token = auth.slice(7).trim();
-  if (!token) return null;
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) return null;
-    const payload = parts[1];
-    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const json = Buffer.from(base64, "base64").toString("utf-8");
-    const decoded = JSON.parse(json) as { sub?: string };
-    return typeof decoded.sub === "string" ? decoded.sub : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Parse JSON body from request
- */
-async function parseBody<T>(req: IncomingMessage): Promise<T> {
-  return new Promise((resolve, reject) => {
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
-    req.on("end", () => {
-      try {
-        resolve(JSON.parse(body) as T);
-      } catch (error) {
-        reject(new Error("Invalid JSON body"));
-      }
-    });
-    req.on("error", reject);
-  });
-}
-
-/**
- * Send SSE event to response
- */
-function sendEvent(res: ServerResponse, event: UiEvent): void {
-  res.write(`data: ${JSON.stringify(event)}\n\n`);
-}
 
 /**
  * Handle /invocations endpoint
