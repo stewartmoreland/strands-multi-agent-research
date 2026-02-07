@@ -40,6 +40,8 @@ export class ResearchAgentStack extends cdk.Stack {
   public readonly agentRole: iam.Role;
   public readonly userPool: cognito.UserPool;
   public readonly userPoolClient: cognito.UserPoolClient;
+  public readonly agentRuntimeId: string;
+  public readonly agentMemoryId: string;
 
   constructor(scope: Construct, id: string, props?: ResearchAgentStackProps) {
     super(scope, id, props);
@@ -687,6 +689,9 @@ exports.handler = async (event, context) => {
     agentRuntime.node.addDependency(agentMemory);
     agentRuntime.node.addDependency(agentGateway);
 
+    this.agentRuntimeId = agentRuntime.attrAgentRuntimeId;
+    this.agentMemoryId = agentMemory.attrMemoryId;
+
     // ==========================================================================
     // AgentCore Evaluations: execution role and log group
     //
@@ -811,8 +816,8 @@ exports.handler = async (event, context) => {
     });
 
     new cdk.CfnOutput(this, "AgentInvocationsUrl", {
-      value: `https://bedrock-agentcore.${this.region}.amazonaws.com/runtimes/${agentRuntime.attrAgentRuntimeId}/invocations`,
-      description: "URL for invoking the AgentCore Runtime",
+      value: `https://bedrock-agentcore.${this.region}.amazonaws.com/runtimes/${agentRuntime.attrAgentRuntimeId}/invocations?accountId=${this.account}`,
+      description: "Direct URL for invoking the AgentCore Runtime (SSE streaming)",
       exportName: "ResearchAgentInvocationsUrl",
     });
 

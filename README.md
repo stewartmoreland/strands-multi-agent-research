@@ -105,6 +105,16 @@ yarn workspace agent dev
 yarn workspace web dev
 ```
 
+### Local development
+
+For full local development, run **`yarn dev`** from the repo root. That starts the API (port 3001), web app, and agent in parallel so the frontend can reach `/api/models` and `/api/sessions` via the Vite proxy.
+
+If you only start the web app (e.g. `yarn workspace web dev`), start the API in a second terminal so the proxy can reach it:
+
+```bash
+yarn workspace api dev
+```
+
 ### Deployment
 
 #### Deploy Infrastructure

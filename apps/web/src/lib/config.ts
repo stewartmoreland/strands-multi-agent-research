@@ -8,26 +8,26 @@ export const config = {
     region: import.meta.env.VITE_COGNITO_REGION || "us-east-1",
   },
   agent: {
+    /** URL for POST /invocations (SSE). Direct AgentCore in prod, local agent in dev. */
     invocationsUrl:
-      import.meta.env.VITE_AGENT_INVOCATIONS_URL || "/api/invocations",
-    /** Base URL for agent API (invocations and sessions). Derived from invocationsUrl. */
+      import.meta.env.VITE_AGENT_INVOCATIONS_URL || "http://localhost:8080/agent/invocations",
+    /** Base URL for API (models, sessions). No invocations. */
+    apiUrl: import.meta.env.VITE_AGENT_API_URL || "/api",
+    /** GET /sessions - list chat sessions */
     get sessionsUrl() {
-      const url =
-        import.meta.env.VITE_AGENT_INVOCATIONS_URL || "/api/invocations";
-      return url.replace(/\/invocations\/?$/, "") + "/sessions";
+      const base = import.meta.env.VITE_AGENT_API_URL || "/api";
+      return base.replace(/\/$/, "") + "/sessions";
     },
-    /** URL for a session's events: GET /sessions/:sessionId/events */
+    /** GET /sessions/:sessionId/events */
     sessionEventsUrl(sessionId: string) {
-      const base =
-        import.meta.env.VITE_AGENT_INVOCATIONS_URL || "/api/invocations";
-      const root = base.replace(/\/invocations\/?$/, "");
+      const base = import.meta.env.VITE_AGENT_API_URL || "/api";
+      const root = base.replace(/\/$/, "");
       return `${root}/sessions/${encodeURIComponent(sessionId)}/events`;
     },
-    /** URL for listing Bedrock foundation models: GET /models */
+    /** GET /models - list Bedrock foundation models */
     get modelsUrl() {
-      const base =
-        import.meta.env.VITE_AGENT_INVOCATIONS_URL || "/api/invocations";
-      return base.replace(/\/invocations\/?$/, "") + "/models";
+      const base = import.meta.env.VITE_AGENT_API_URL || "/api";
+      return base.replace(/\/$/, "") + "/models";
     },
   },
 } as const;

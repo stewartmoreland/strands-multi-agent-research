@@ -281,6 +281,10 @@ export class WebAppStack extends cdk.Stack {
           value: cdk.Fn.importValue("ResearchAgentInvocationsUrl"),
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
+        VITE_AGENT_API_URL: {
+          value: cdk.Fn.importValue("ResearchAgentApiUrl"),
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        },
       },
       timeout: cdk.Duration.minutes(20),
     });

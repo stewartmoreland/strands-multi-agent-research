@@ -14,12 +14,14 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
       <Card className="relative z-10 w-full max-w-sm shadow-xl">
         <CardHeader className="space-y-6 text-center">
           {/* Logo */}
-          <div className="flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center gap-2">
-              <img src="/typescript.svg" alt="TypeScript" className="h-8 w-8" />
+          <div className="flex items-center justify-center gap-2">
+            <img src="/typescript.svg" alt="TypeScript" className="h-14 w-14" />
+            <div className="flex flex-col items-start align-bottom">
               <span className="text-2xl font-semibold">Strands Agents</span>
+              <span className="text-sm text-muted-foreground">
+                Multi-Agent Research Demo
+              </span>
             </div>
-            <span className="text-sm text-muted-foreground">Multi-Agent Research Demo</span>
           </div>
           <div className="flex flex-col space-y-2">
             <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>

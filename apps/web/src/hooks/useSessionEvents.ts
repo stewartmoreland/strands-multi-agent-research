@@ -68,7 +68,12 @@ export function useSessionEvents(
         }));
       setMessages(list);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
+      const message =
+        err instanceof TypeError && err.message === "Failed to fetch"
+          ? "Could not reach the Research API. Is the API server running? (Start with `yarn workspace api dev` or `yarn dev` from the repo root.)"
+          : err instanceof Error
+            ? err.message
+            : "Unknown error";
       setError(message);
       setMessages([]);
     } finally {

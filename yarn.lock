@@ -1608,6 +1608,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@codegenie/serverless-express@npm:^4.17.1":
+  version: 4.17.1
+  resolution: "@codegenie/serverless-express@npm:4.17.1"
+  checksum: 10c0/772c5e293e2b6a5407f39b665dec93811dc1460a07adb15baff2b6db21e23904ceceefe807b6dfc4659695f8f5a00c6033d43a8617333c21efc25bff2dc819d4
+  languageName: node
+  linkType: hard
+
 "@date-fns/tz@npm:^1.4.1":
   version: 1.4.1
   resolution: "@date-fns/tz@npm:1.4.1"
@@ -5495,6 +5502,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/body-parser@npm:*":
+  version: 1.19.6
+  resolution: "@types/body-parser@npm:1.19.6"
+  dependencies:
+    "@types/connect": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10c0/542da05c924dce58ee23f50a8b981fee36921850c82222e384931fda3e106f750f7880c47be665217d72dbe445129049db6eb1f44e7a06b09d62af8f3cca8ea7
+  languageName: node
+  linkType: hard
+
+"@types/connect@npm:*":
+  version: 3.4.38
+  resolution: "@types/connect@npm:3.4.38"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/2e1cdba2c410f25649e77856505cd60223250fa12dff7a503e492208dbfdd25f62859918f28aba95315251fd1f5e1ffbfca1e25e73037189ab85dd3f8d0a148c
+  languageName: node
+  linkType: hard
+
 "@types/d3-array@npm:*, @types/d3-array@npm:^3.0.3":
   version: 3.2.2
   resolution: "@types/d3-array@npm:3.2.2"
@@ -5792,6 +5818,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/express-serve-static-core@npm:^5.0.0":
+  version: 5.1.1
+  resolution: "@types/express-serve-static-core@npm:5.1.1"
+  dependencies:
+    "@types/node": "npm:*"
+    "@types/qs": "npm:*"
+    "@types/range-parser": "npm:*"
+    "@types/send": "npm:*"
+  checksum: 10c0/ee88216e114368ef06bcafeceb74a7e8671b90900fb0ab1d49ff41542c3a344231ef0d922bf63daa79f0585f3eebe2ce5ec7f83facc581eff8bcdb136a225ef3
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:^5.0.6":
+  version: 5.0.6
+  resolution: "@types/express@npm:5.0.6"
+  dependencies:
+    "@types/body-parser": "npm:*"
+    "@types/express-serve-static-core": "npm:^5.0.0"
+    "@types/serve-static": "npm:^2"
+  checksum: 10c0/f1071e3389a955d4f9a38aae38634121c7cd9b3171ba4201ec9b56bd534aba07866839d278adc0dda05b942b05a901a02fd174201c3b1f70ce22b10b6c68f24b
+  languageName: node
+  linkType: hard
+
 "@types/geojson@npm:*":
   version: 7946.0.16
   resolution: "@types/geojson@npm:7946.0.16"
@@ -5814,6 +5863,13 @@ __metadata:
   dependencies:
     "@types/unist": "npm:*"
   checksum: 10c0/3249781a511b38f1d330fd1e3344eed3c4e7ea8eff82e835d35da78e637480d36fad37a78be5a7aed8465d237ad0446abc1150859d0fde395354ea634decf9f7
+  languageName: node
+  linkType: hard
+
+"@types/http-errors@npm:*":
+  version: 2.0.5
+  resolution: "@types/http-errors@npm:2.0.5"
+  checksum: 10c0/00f8140fbc504f47356512bd88e1910c2f07e04233d99c88c854b3600ce0523c8cd0ba7d1897667243282eb44c59abb9245959e2428b9de004f93937f52f7c15
   languageName: node
   linkType: hard
 
@@ -5879,6 +5935,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/qs@npm:*":
+  version: 6.14.0
+  resolution: "@types/qs@npm:6.14.0"
+  checksum: 10c0/5b3036df6e507483869cdb3858201b2e0b64b4793dc4974f188caa5b5732f2333ab9db45c08157975054d3b070788b35088b4bc60257ae263885016ee2131310
+  languageName: node
+  linkType: hard
+
+"@types/range-parser@npm:*":
+  version: 1.2.7
+  resolution: "@types/range-parser@npm:1.2.7"
+  checksum: 10c0/361bb3e964ec5133fa40644a0b942279ed5df1949f21321d77de79f48b728d39253e5ce0408c9c17e4e0fd95ca7899da36841686393b9f7a1e209916e9381a3c
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:^19.0.2":
   version: 19.2.3
   resolution: "@types/react-dom@npm:19.2.3"
@@ -5894,6 +5964,25 @@ __metadata:
   dependencies:
     csstype: "npm:^3.2.2"
   checksum: 10c0/a02aa87853fa6ef82353dd58803f18744e367e05760845be9a35f9771031fb81077ef05fb5ef3e9d7bbd91d3f8394b47106a18a833ddfed81e6fbf0be55a3544
+  languageName: node
+  linkType: hard
+
+"@types/send@npm:*":
+  version: 1.2.1
+  resolution: "@types/send@npm:1.2.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/7673747f8c2d8e67f3b1b3b57e9d4d681801a4f7b526ecf09987bb9a84a61cf94aa411c736183884dc762c1c402a61681eb1ef200d8d45d7e5ec0ab67ea5f6c1
+  languageName: node
+  linkType: hard
+
+"@types/serve-static@npm:^2":
+  version: 2.2.0
+  resolution: "@types/serve-static@npm:2.2.0"
+  dependencies:
+    "@types/http-errors": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10c0/a3c6126bdbf9685e6c7dc03ad34639666eff32754e912adeed9643bf3dd3aa0ff043002a7f69039306e310d233eb8e160c59308f95b0a619f32366bbc48ee094
   languageName: node
   linkType: hard
 
@@ -6160,7 +6249,7 @@ __metadata:
     "@strands-agents/sdk": "npm:^0.2.1"
     "@types/node": "npm:^22.10.0"
     aws-jwt-verify: "npm:^5.1.1"
-    bedrock-agentcore: "npm:^0.2.0"
+    bedrock-agentcore: "patch:bedrock-agentcore@npm%3A0.2.0#~/.yarn/patches/bedrock-agentcore-npm-0.2.0-0669d82be0.patch"
     eslint: "npm:^9.39.2"
     tsx: "npm:^4.19.0"
     typescript: "npm:5.5.4"
@@ -6248,6 +6337,25 @@ __metadata:
   checksum: 10c0/cd6a7a681ecd36e72e0d79c1e34f1f3bcb1b15bcbb6f0f8969b4228062d3bfebbef468e09771b00d93b2294370b34f707599d4a113542a876de26823b795b5d2
   languageName: node
   linkType: hard
+
+"api@workspace:apps/api":
+  version: 0.0.0-use.local
+  resolution: "api@workspace:apps/api"
+  dependencies:
+    "@aws-sdk/client-bedrock": "npm:^3.984.0"
+    "@aws-sdk/client-bedrock-agentcore": "npm:^3.984.0"
+    "@codegenie/serverless-express": "npm:^4.17.1"
+    "@repo/eslint-config": "npm:*"
+    "@repo/shared": "npm:*"
+    "@repo/typescript-config": "npm:*"
+    "@types/express": "npm:^5.0.6"
+    "@types/node": "npm:^22.10.0"
+    eslint: "npm:^9.39.2"
+    express: "npm:^5.2.1"
+    tsx: "npm:^4.19.0"
+    typescript: "npm:5.5.4"
+  languageName: unknown
+  linkType: soft
 
 "argparse@npm:^2.0.1":
   version: 2.0.1
@@ -6389,7 +6497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bedrock-agentcore@npm:^0.2.0":
+"bedrock-agentcore@npm:0.2.0":
   version: 0.2.0
   resolution: "bedrock-agentcore@npm:0.2.0"
   dependencies:
@@ -6420,6 +6528,40 @@ __metadata:
     playwright:
       optional: true
   checksum: 10c0/a9a8a2bf4745e99fd2ce3957891027cdd0e81fa005237ae2a578b3bafb8da3e525212638de22fa6dd3267483e8a9c7e39c6bf764e372fc1498916523399a4e3a
+  languageName: node
+  linkType: hard
+
+"bedrock-agentcore@patch:bedrock-agentcore@npm%3A0.2.0#~/.yarn/patches/bedrock-agentcore-npm-0.2.0-0669d82be0.patch":
+  version: 0.2.0
+  resolution: "bedrock-agentcore@patch:bedrock-agentcore@npm%3A0.2.0#~/.yarn/patches/bedrock-agentcore-npm-0.2.0-0669d82be0.patch::version=0.2.0&hash=e73dfc"
+  dependencies:
+    "@aws-crypto/sha256-js": "npm:^5.2.0"
+    "@aws-sdk/client-bedrock-agentcore": "npm:^3.948.0"
+    "@aws-sdk/client-bedrock-agentcore-control": "npm:^3.948.0"
+    "@aws-sdk/credential-providers": "npm:^3.939.0"
+    "@aws-sdk/protocol-http": "npm:^3.370.0"
+    "@aws-sdk/signature-v4": "npm:^3.370.0"
+    "@fastify/sse": "npm:^0.4.0"
+    "@fastify/websocket": "npm:^11.0.1"
+    "@smithy/protocol-http": "npm:^5.3.5"
+    "@smithy/signature-v4": "npm:^5.3.5"
+    "@smithy/util-utf8": "npm:^4.2.0"
+    "@types/ws": "npm:^8.18.1"
+    fastify: "npm:^5.7.1"
+    ws: "npm:^8.18.3"
+    zod: "npm:^4.1.13"
+  peerDependencies:
+    "@strands-agents/sdk": ">=0.1.0"
+    ai: ">=6.0.0-beta"
+    playwright: ">=1.56.0"
+  peerDependenciesMeta:
+    "@strands-agents/sdk":
+      optional: true
+    ai:
+      optional: true
+    playwright:
+      optional: true
+  checksum: 10c0/74f7c833ccb43b6ae3defa37a0a4bf747532e3d802128831a0a1353c410b8ac7b61e0e6a45b62cf730189bb2773f4ab8272221f24d603550c0858c281bdf2ff9
   languageName: node
   linkType: hard
 

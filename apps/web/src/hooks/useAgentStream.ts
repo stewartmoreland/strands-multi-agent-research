@@ -7,10 +7,10 @@ import { useCallback, useRef, useState } from "react";
  * - For production: Full AgentCore Runtime URL (e.g., https://bedrock-agentcore.{region}.amazonaws.com/runtimes/{runtimeId}/invocations)
  */
 const DEFAULT_ENDPOINT =
-  import.meta.env.VITE_AGENT_INVOCATIONS_URL || "/api/invocations";
+  import.meta.env.VITE_AGENT_INVOCATIONS_URL || "/agent/invocations";
 
 interface UseAgentStreamOptions {
-  /** Custom endpoint URL (defaults to VITE_AGENT_INVOCATIONS_URL or '/api/invocations') */
+  /** Custom endpoint URL (defaults to VITE_AGENT_INVOCATIONS_URL or '/agent/invocations') */
   endpoint?: string;
   /** Function to get auth token for production AgentCore calls */
   getAuthToken?: () => Promise<string | null>;

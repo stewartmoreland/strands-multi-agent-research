@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from "aws-cdk-lib";
+import { ApiStack } from "../lib/api-stack";
 import { CertificateStack } from "../lib/certificate-stack";
 import { ResearchAgentStack } from "../lib/stack";
 import { WebAppStack } from "../lib/web-app-stack";
@@ -35,6 +36,18 @@ const researchAgentStack = new ResearchAgentStack(app, "ResearchAgentStack", {
   },
 });
 
+const apiStack = new ApiStack(app, "ApiStack", {
+  env,
+  description: "Research Agent API (models, sessions, invocations proxy)",
+  agentRuntimeId: researchAgentStack.agentRuntimeId,
+  agentMemoryId: researchAgentStack.agentMemoryId,
+  tags: {
+    Project: "multi-agent-research",
+    ManagedBy: "CDK",
+  },
+});
+apiStack.addDependency(researchAgentStack);
+
 // When using custom domain outside us-east-1, create certificate in us-east-1 first
 let certificateArn: string | undefined;
 let certStack: CertificateStack | undefined;
@@ -68,6 +81,7 @@ const webAppStack = new WebAppStack(app, "WebAppStack", {
 });
 
 webAppStack.addDependency(researchAgentStack);
+webAppStack.addDependency(apiStack);
 if (certStack) {
   webAppStack.addDependency(certStack);
 }

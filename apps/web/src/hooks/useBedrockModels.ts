@@ -42,7 +42,12 @@ export function useBedrockModels(): UseBedrockModelsReturn {
       const list = data.models ?? [];
       setModels(list.map(toModelOption));
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load models";
+      const message =
+        err instanceof TypeError && err.message === "Failed to fetch"
+          ? "Could not reach the Research API. Is the API server running? (Start with `yarn workspace api dev` or `yarn dev` from the repo root.)"
+          : err instanceof Error
+            ? err.message
+            : "Failed to load models";
       setError(message);
       setModels([]);
     } finally {

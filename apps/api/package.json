@@ -1,0 +1,28 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/lambda.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch --env-file=.env.local --import ./src/instrument.ts src/local.ts",
+    "clean": "rm -rf dist",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock": "^3.984.0",
+    "@aws-sdk/client-bedrock-agentcore": "^3.984.0",
+    "@codegenie/serverless-express": "^4.17.1",
+    "@repo/shared": "*",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.39.2",
+    "tsx": "^4.19.0",
+    "typescript": "5.5.4"
+  }
+}
