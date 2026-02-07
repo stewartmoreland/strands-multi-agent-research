@@ -6249,7 +6249,7 @@ __metadata:
     "@strands-agents/sdk": "npm:^0.2.1"
     "@types/node": "npm:^22.10.0"
     aws-jwt-verify: "npm:^5.1.1"
-    bedrock-agentcore: "patch:bedrock-agentcore@npm%3A0.2.0#~/.yarn/patches/bedrock-agentcore-npm-0.2.0-0669d82be0.patch"
+    bedrock-agentcore: "npm:^0.2.0"
     eslint: "npm:^9.39.2"
     tsx: "npm:^4.19.0"
     typescript: "npm:5.5.4"
@@ -6497,7 +6497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bedrock-agentcore@npm:0.2.0":
+"bedrock-agentcore@npm:^0.2.0":
   version: 0.2.0
   resolution: "bedrock-agentcore@npm:0.2.0"
   dependencies:
@@ -6528,40 +6528,6 @@ __metadata:
     playwright:
       optional: true
   checksum: 10c0/a9a8a2bf4745e99fd2ce3957891027cdd0e81fa005237ae2a578b3bafb8da3e525212638de22fa6dd3267483e8a9c7e39c6bf764e372fc1498916523399a4e3a
-  languageName: node
-  linkType: hard
-
-"bedrock-agentcore@patch:bedrock-agentcore@npm%3A0.2.0#~/.yarn/patches/bedrock-agentcore-npm-0.2.0-0669d82be0.patch":
-  version: 0.2.0
-  resolution: "bedrock-agentcore@patch:bedrock-agentcore@npm%3A0.2.0#~/.yarn/patches/bedrock-agentcore-npm-0.2.0-0669d82be0.patch::version=0.2.0&hash=e73dfc"
-  dependencies:
-    "@aws-crypto/sha256-js": "npm:^5.2.0"
-    "@aws-sdk/client-bedrock-agentcore": "npm:^3.948.0"
-    "@aws-sdk/client-bedrock-agentcore-control": "npm:^3.948.0"
-    "@aws-sdk/credential-providers": "npm:^3.939.0"
-    "@aws-sdk/protocol-http": "npm:^3.370.0"
-    "@aws-sdk/signature-v4": "npm:^3.370.0"
-    "@fastify/sse": "npm:^0.4.0"
-    "@fastify/websocket": "npm:^11.0.1"
-    "@smithy/protocol-http": "npm:^5.3.5"
-    "@smithy/signature-v4": "npm:^5.3.5"
-    "@smithy/util-utf8": "npm:^4.2.0"
-    "@types/ws": "npm:^8.18.1"
-    fastify: "npm:^5.7.1"
-    ws: "npm:^8.18.3"
-    zod: "npm:^4.1.13"
-  peerDependencies:
-    "@strands-agents/sdk": ">=0.1.0"
-    ai: ">=6.0.0-beta"
-    playwright: ">=1.56.0"
-  peerDependenciesMeta:
-    "@strands-agents/sdk":
-      optional: true
-    ai:
-      optional: true
-    playwright:
-      optional: true
-  checksum: 10c0/74f7c833ccb43b6ae3defa37a0a4bf747532e3d802128831a0a1353c410b8ac7b61e0e6a45b62cf730189bb2773f4ab8272221f24d603550c0858c281bdf2ff9
   languageName: node
   linkType: hard
 
