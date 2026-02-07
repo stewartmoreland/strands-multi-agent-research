@@ -2,6 +2,7 @@ import { Bot, User } from "lucide-react";
 import * as React from "react";
 import { cn } from "../lib/utils";
 import { Avatar, AvatarFallback } from "./avatar";
+import { MarkdownContent } from "./markdown-content";
 
 export interface ChatMessageProps {
   role: "user" | "assistant";
@@ -54,25 +55,47 @@ const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
                 : "bg-muted/80 text-foreground rounded-bl-md border border-border/50",
             )}
           >
-            <div className="whitespace-pre-wrap wrap-break-word">
-              {content}
-              {isStreaming && (
-                <span className="inline-flex items-center ml-1.5 gap-0.5">
-                  <span
-                    className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
-                    style={{ animationDelay: "0ms" }}
-                  />
-                  <span
-                    className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
-                    style={{ animationDelay: "150ms" }}
-                  />
-                  <span
-                    className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
-                    style={{ animationDelay: "300ms" }}
-                  />
-                </span>
-              )}
-            </div>
+            {isUser ? (
+              <div className="whitespace-pre-wrap wrap-break-word">
+                {content}
+                {isStreaming && (
+                  <span className="inline-flex items-center ml-1.5 gap-0.5">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                      style={{ animationDelay: "0ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                      style={{ animationDelay: "150ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                      style={{ animationDelay: "300ms" }}
+                    />
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div className="wrap-break-word inline-block">
+                <MarkdownContent>{content}</MarkdownContent>
+                {isStreaming && (
+                  <span className="inline-flex items-center ml-1.5 gap-0.5 align-middle">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                      style={{ animationDelay: "0ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                      style={{ animationDelay: "150ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                      style={{ animationDelay: "300ms" }}
+                    />
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           {timestamp && (

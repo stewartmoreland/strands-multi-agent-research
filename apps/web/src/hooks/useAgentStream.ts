@@ -16,6 +16,8 @@ interface UseAgentStreamOptions {
   getAuthToken?: () => Promise<string | null>;
   /** User ID for memory/personalization */
   userId?: string;
+  /** Bedrock model ID for this session (sent with each invocation) */
+  modelId?: string;
 }
 
 interface UseAgentStreamReturn {
@@ -47,7 +49,7 @@ interface UseAgentStreamReturn {
 export function useAgentStream(
   options: UseAgentStreamOptions = {},
 ): UseAgentStreamReturn {
-  const { endpoint = DEFAULT_ENDPOINT, getAuthToken, userId } = options;
+  const { endpoint = DEFAULT_ENDPOINT, getAuthToken, userId, modelId } = options;
 
   const [events, setEvents] = useState<UiEvent[]>([]);
   const [isStreaming, setStreaming] = useState(false);
@@ -180,7 +182,7 @@ export function useAgentStream(
         abortControllerRef.current = null;
       }
     },
-    [endpoint, sessionId, getAuthToken, userId],
+    [endpoint, sessionId, getAuthToken, userId, modelId],
   );
 
   return {

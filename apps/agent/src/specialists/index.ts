@@ -12,10 +12,10 @@
  * for type-safe input validation.
  */
 
-// Export specialist tools
-export { analysisTool } from "./analysis";
-export { researchTool } from "./research";
-export { writingTool } from "./writing";
+// Export specialist tools (default: use env BEDROCK_MODEL_ID)
+export { analysisTool, createAnalysisTool } from "./analysis";
+export { researchTool, createResearchTool } from "./research";
+export { writingTool, createWritingTool } from "./writing";
 
 // Export types for consumers who need them
 export type {
@@ -27,4 +27,4 @@ export type {
   WritingInput,
 } from "./types";
 
-export { getSpecialistConfig } from "./types";
+export { getDefaultModelId, getSpecialistConfig } from "./types";

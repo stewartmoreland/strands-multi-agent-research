@@ -63,18 +63,27 @@ export interface WritingInput {
  */
 export type OutputFormat = "summary" | "report" | "bullet_points";
 
+const DEFAULT_MODEL_ID =
+  process.env.BEDROCK_MODEL_ID || "us.anthropic.claude-sonnet-4-20250514-v1:0";
+
 /**
- * Get default specialist configuration from environment
+ * Get specialist configuration from environment with optional overrides.
+ * Used when creating per-request agents with a user-selected model.
  */
-export function getSpecialistConfig(): SpecialistConfig {
+export function getSpecialistConfig(overrides?: {
+  modelId?: string;
+}): SpecialistConfig {
   const toolsEnabled = process.env.AGENTCORE_TOOLS_ENABLED;
   const isProduction = process.env.NODE_ENV === "production";
 
   return {
     region: process.env.AWS_REGION || "us-east-1",
-    modelId:
-      process.env.BEDROCK_MODEL_ID ||
-      "us.anthropic.claude-sonnet-4-20250514-v1:0",
+    modelId: overrides?.modelId ?? DEFAULT_MODEL_ID,
     useAgentCore: toolsEnabled === "true" || isProduction,
   };
+}
+
+/** Default model ID for orchestrator/specialists when no modelId is provided. */
+export function getDefaultModelId(): string {
+  return DEFAULT_MODEL_ID;
 }

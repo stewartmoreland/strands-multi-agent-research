@@ -37,15 +37,20 @@ Writing guidelines:
 Format requirements:
 - Summary: 2-3 paragraphs focusing on key findings
 - Report: Structured document with introduction, findings, and conclusions
-- Bullet points: Concise list of key takeaways`;
+- Bullet points: Concise list of key takeaways
+
+Markdown and formatting (responses are rendered as Markdown in the chat UI):
+- Use GitHub Flavored Markdown: headings, lists, tables, task lists, strikethrough, and fenced code blocks with a language tag for syntax highlighting
+- Use mermaid code blocks (e.g. \`\`\`mermaid) for flowcharts, sequence diagrams, or other diagrams when they would clarify the answer
+- Use fenced code blocks with the appropriate language (e.g. \`\`\`javascript, \`\`\`python) for code; syntax highlighting is applied automatically
+- You may use LaTeX in $...$ (inline) or $$...$$ (block) for math when relevant
+- Use raw HTML only sparingly when markdown is insufficient`;
 
 /**
- * Create the writing agent
+ * Create the writing agent.
+ * @param config - Specialist config (use getSpecialistConfig({ modelId }) for per-request model).
  */
-function createWritingAgent(): Agent {
-  // Read config lazily to ensure env vars are loaded
-  const config = getSpecialistConfig();
-
+function createWritingAgent(config: ReturnType<typeof getSpecialistConfig>): Agent {
   const agent = new Agent({
     model: new BedrockModel({
       modelId: config.modelId,
@@ -59,17 +64,21 @@ function createWritingAgent(): Agent {
   return agent;
 }
 
-// Lazy-loaded agent instance
-let writingAgent: Agent | undefined;
+// Cache by modelId so we reuse agents when the same model is selected
+const writingAgentCache = new Map<string, Agent>();
 
 /**
- * Get or create the writing agent
+ * Get or create the writing agent for the given model (or default config).
  */
-function getWritingAgent(): Agent {
-  if (!writingAgent) {
-    writingAgent = createWritingAgent();
+function getWritingAgent(modelId?: string): Agent {
+  const config = getSpecialistConfig(modelId != null ? { modelId } : undefined);
+  const key = config.modelId;
+  let agent = writingAgentCache.get(key);
+  if (!agent) {
+    agent = createWritingAgent(config);
+    writingAgentCache.set(key, agent);
   }
-  return writingAgent;
+  return agent;
 }
 
 /**
@@ -119,10 +128,13 @@ function getFallbackWriting(task: string, previousNotes?: string): string {
  * Perform writing/synthesis using the agent.
  * Wraps agent.invoke in a timeout so the orchestrator always gets a result.
  */
-async function performWriting(input: WritingInput): Promise<string> {
+async function performWriting(
+  input: WritingInput,
+  modelId?: string,
+): Promise<string> {
   const { task, previousNotes, format } = input;
 
-  const agent = getWritingAgent();
+  const agent = getWritingAgent(modelId);
 
   const notesSection = previousNotes
     ? `\n\nResearch and analysis notes to synthesize:\n${previousNotes}`
@@ -185,9 +197,32 @@ export const writingTool = tool({
   }),
   callback: async ({ task, previousNotes, format }) => {
     console.log(`[Writing Specialist] Processing: ${task}`);
-
-    const result = await performWriting({ task, previousNotes, format });
-
-    return result;
+    return performWriting({ task, previousNotes, format });
   },
 });
+
+/**
+ * Create a writing tool that uses the given model ID (for per-request model selection).
+ */
+export function createWritingTool(modelId: string) {
+  return tool({
+    name: "writing_specialist",
+    description:
+      "Synthesis specialist: produce final narrative answer from research and analysis notes. Use this tool to synthesize findings into a coherent, well-structured response.",
+    inputSchema: z.object({
+      task: z.string().describe("The original task or question to address"),
+      previousNotes: z
+        .string()
+        .optional()
+        .describe("Notes and findings from research and analysis to synthesize"),
+      format: z
+        .enum(["summary", "report", "bullet_points"])
+        .optional()
+        .describe("Desired output format: summary, report, or bullet_points"),
+    }),
+    callback: async ({ task, previousNotes, format }) => {
+      console.log(`[Writing Specialist] Processing: ${task}`);
+      return performWriting({ task, previousNotes, format }, modelId);
+    },
+  });
+}

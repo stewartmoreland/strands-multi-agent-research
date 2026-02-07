@@ -32,12 +32,10 @@ When conducting research:
 Always provide citations in the format: [Source: URL or description]`;
 
 /**
- * Create the research agent with browser tools when available
+ * Create the research agent with browser tools when available.
+ * @param config - Specialist config (use getSpecialistConfig({ modelId }) for per-request model).
  */
-async function createResearchAgent(): Promise<Agent | null> {
-  // Read config lazily to ensure env vars are loaded
-  const config = getSpecialistConfig();
-
+async function createResearchAgent(config: ReturnType<typeof getSpecialistConfig>): Promise<Agent | null> {
   if (!config.useAgentCore) {
     console.log(
       "[Research Specialist] AgentCore disabled, using local fallback",
@@ -74,17 +72,21 @@ async function createResearchAgent(): Promise<Agent | null> {
   }
 }
 
-// Lazy-loaded agent instance
-let researchAgent: Agent | null | undefined;
+// Cache by modelId so we reuse agents when the same model is selected
+const researchAgentCache = new Map<string, Agent | null>();
 
 /**
- * Get or create the research agent
+ * Get or create the research agent for the given model (or default config).
  */
-async function getResearchAgent(): Promise<Agent | null> {
-  if (researchAgent === undefined) {
-    researchAgent = await createResearchAgent();
+async function getResearchAgent(modelId?: string): Promise<Agent | null> {
+  const config = getSpecialistConfig(modelId != null ? { modelId } : undefined);
+  const key = config.modelId;
+  let agent = researchAgentCache.get(key);
+  if (agent === undefined) {
+    agent = await createResearchAgent(config);
+    researchAgentCache.set(key, agent ?? null);
   }
-  return researchAgent;
+  return agent;
 }
 
 /** Invocation timeout in ms (90s) so the orchestrator does not hang if Bedrock/Browser stalls */
@@ -120,10 +122,13 @@ function getFallbackResearch(
  * Perform research using the agent or fallback.
  * Wraps agent.invoke in a timeout so the orchestrator always gets a result.
  */
-async function performResearch(input: ResearchInput): Promise<string> {
+async function performResearch(
+  input: ResearchInput,
+  modelId?: string,
+): Promise<string> {
   const { task, urls, context } = input;
 
-  const agent = await getResearchAgent();
+  const agent = await getResearchAgent(modelId);
 
   if (agent) {
     const urlList = urls?.length
@@ -188,9 +193,33 @@ export const researchTool = tool({
   }),
   callback: async ({ task, urls, context }) => {
     console.log(`[Research Specialist] Processing: ${task}`);
-
     const result = await performResearch({ task, urls, context });
-
     return result;
   },
 });
+
+/**
+ * Create a research tool that uses the given model ID (for per-request model selection).
+ */
+export function createResearchTool(modelId: string) {
+  return tool({
+    name: "research_specialist",
+    description:
+      "Web research specialist: browse web, extract information, return sourced notes. Use this tool when you need to gather information from the web about a topic.",
+    inputSchema: z.object({
+      task: z.string().describe("The research task or question to investigate"),
+      urls: z
+        .array(z.string().url())
+        .optional()
+        .describe("Specific URLs to browse and extract information from"),
+      context: z
+        .string()
+        .optional()
+        .describe("Additional context or constraints for the research"),
+    }),
+    callback: async ({ task, urls, context }) => {
+      console.log(`[Research Specialist] Processing: ${task}`);
+      return performResearch({ task, urls, context }, modelId);
+    },
+  });
+}

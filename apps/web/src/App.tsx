@@ -1,7 +1,6 @@
 import type { UiEvent } from "@repo/shared/events";
 import { isRunStartEvent } from "@repo/shared/events";
 import {
-  Badge,
   Button,
   ChatInput,
   ChatTranscript,
@@ -11,41 +10,20 @@ import {
   SidebarProvider,
   SidebarTrigger,
   type Message,
-  type ModelOption,
   type ToolExecution,
 } from "@repo/ui";
-import { Bot, MoreHorizontal, Sparkles, Zap } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { MoreHorizontal } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AppSidebar } from "./components/AppSidebar";
 import { useAuth } from "./contexts/AuthContext";
 import { useAgentStream } from "./hooks/useAgentStream";
+import { useBedrockModels } from "./hooks/useBedrockModels";
 import { useSessionEvents } from "./hooks/useSessionEvents";
 import { useSessions } from "./hooks/useSessions";
 
-// Available AI models
-const AVAILABLE_MODELS: ModelOption[] = [
-  {
-    id: "claude-opus",
-    name: "Claude Opus",
-    description: "Most capable model for complex tasks",
-    icon: <Sparkles className="h-4 w-4 text-purple-500" />,
-  },
-  {
-    id: "claude-sonnet",
-    name: "Claude Sonnet",
-    description: "Balanced performance and speed",
-    icon: <Zap className="h-4 w-4 text-blue-500" />,
-  },
-  {
-    id: "claude-haiku",
-    name: "Claude Haiku",
-    description: "Fast responses for simple tasks",
-    icon: <Bot className="h-4 w-4 text-green-500" />,
-  },
-];
-
 function App() {
   const { user, getIdToken } = useAuth();
+  const { models: availableModels, isLoading: modelsLoading } = useBedrockModels();
 
   const {
     sessions: sessionsFromApi,
@@ -56,15 +34,54 @@ function App() {
     enabled: !!user,
   });
 
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const stored = localStorage.getItem("theme");
+    if (stored === "light") return false;
+    if (stored === "dark") return true;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [currentChatTitle, setCurrentChatTitle] = useState("New Chat");
-  const [selectedModel, setSelectedModel] = useState("claude-opus");
+
+  const SELECTED_MODEL_STORAGE_KEY = "bedrock-selected-model-id";
+  const [selectedModel, setSelectedModelState] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem(SELECTED_MODEL_STORAGE_KEY) ?? "";
+  });
+  const setSelectedModel = useCallback((modelId: string) => {
+    setSelectedModelState(modelId);
+    try {
+      localStorage.setItem(SELECTED_MODEL_STORAGE_KEY, modelId);
+    } catch {
+      // ignore quota / private mode
+    }
+  }, []);
+
+  // When models load, ensure selection is valid; fallback to first model and persist
+  useEffect(() => {
+    if (availableModels.length === 0) return;
+    const isValid = availableModels.some((m) => m.id === selectedModel);
+    if (!isValid) {
+      const firstId = availableModels[0].id;
+      setSelectedModelState(firstId);
+      try {
+        localStorage.setItem(SELECTED_MODEL_STORAGE_KEY, firstId);
+      } catch {
+        // ignore
+      }
+    }
+  }, [availableModels, selectedModel]);
 
   const { events, isStreaming, error, run, reset, setSessionId } =
     useAgentStream({
       getAuthToken: getIdToken,
       userId: user?.sub,
+      modelId: selectedModel || undefined,
     });
 
   const { messages: sessionHistory } = useSessionEvents(
@@ -235,9 +252,11 @@ function App() {
   );
 
   const toggleTheme = useCallback(() => {
-    setIsDarkMode((prev) => !prev);
-    // In a real app, you'd update the document class here
-    document.documentElement.classList.toggle("dark");
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      localStorage.setItem("theme", next ? "dark" : "light");
+      return next;
+    });
   }, []);
 
   // Calculate current chat metadata
@@ -273,10 +292,10 @@ function App() {
             <SidebarTrigger />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <ModelSelector
-              models={AVAILABLE_MODELS}
+              models={availableModels}
               selectedModel={selectedModel}
               onModelChange={setSelectedModel}
-              disabled={isStreaming}
+              disabled={isStreaming || modelsLoading}
             />
           </div>
           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -296,32 +315,6 @@ function App() {
               Updated {chatUpdatedTime} · {allMessages.length} message
               {allMessages.length === 1 ? "" : "s"}
             </p>
-            <div className="flex flex-wrap gap-2 mt-3">
-              <Badge
-                variant="secondary"
-                className="transition-colors hover:bg-secondary/80"
-              >
-                Certified
-              </Badge>
-              <Badge
-                variant="secondary"
-                className="transition-colors hover:bg-secondary/80"
-              >
-                Personalized
-              </Badge>
-              <Badge
-                variant="secondary"
-                className="transition-colors hover:bg-secondary/80"
-              >
-                Experienced
-              </Badge>
-              <Badge
-                variant="secondary"
-                className="transition-colors hover:bg-secondary/80"
-              >
-                Helpful
-              </Badge>
-            </div>
           </div>
 
           {/* Error banner */}

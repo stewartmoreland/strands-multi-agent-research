@@ -9,6 +9,22 @@ export interface InvocationRequest {
   prompt: string;
   sessionId?: string;
   userId?: string;
+  /** Bedrock foundation model ID (e.g. us.anthropic.claude-sonnet-4-20250514-v1:0). Overrides BEDROCK_MODEL_ID when set. */
+  modelId?: string;
+}
+
+/**
+ * Summary of a Bedrock foundation model (from ListFoundationModels).
+ * Used by the web app to populate the model selector.
+ */
+export interface FoundationModelSummary {
+  modelId: string;
+  modelName?: string;
+  providerName?: string;
+  modelLifecycle?: { status?: string };
+  outputModalities?: string[];
+  responseStreamingSupported?: boolean;
+  inferenceTypesSupported?: string[];
 }
 
 /**

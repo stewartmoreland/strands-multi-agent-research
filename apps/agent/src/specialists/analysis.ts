@@ -33,12 +33,10 @@ When performing analysis:
 Always show your work and explain your reasoning.`;
 
 /**
- * Create the analysis agent with code interpreter tools when available
+ * Create the analysis agent with code interpreter tools when available.
+ * @param config - Specialist config (use getSpecialistConfig({ modelId }) for per-request model).
  */
-async function createAnalysisAgent(): Promise<Agent | null> {
-  // Read config lazily to ensure env vars are loaded
-  const config = getSpecialistConfig();
-
+async function createAnalysisAgent(config: ReturnType<typeof getSpecialistConfig>): Promise<Agent | null> {
   if (!config.useAgentCore) {
     console.log(
       "[Analysis Specialist] AgentCore disabled, using local fallback",
@@ -77,17 +75,21 @@ async function createAnalysisAgent(): Promise<Agent | null> {
   }
 }
 
-// Lazy-loaded agent instance
-let analysisAgent: Agent | null | undefined;
+// Cache by modelId so we reuse agents when the same model is selected
+const analysisAgentCache = new Map<string, Agent | null>();
 
 /**
- * Get or create the analysis agent
+ * Get or create the analysis agent for the given model (or default config).
  */
-async function getAnalysisAgent(): Promise<Agent | null> {
-  if (analysisAgent === undefined) {
-    analysisAgent = await createAnalysisAgent();
+async function getAnalysisAgent(modelId?: string): Promise<Agent | null> {
+  const config = getSpecialistConfig(modelId != null ? { modelId } : undefined);
+  const key = config.modelId;
+  let agent = analysisAgentCache.get(key);
+  if (agent === undefined) {
+    agent = await createAnalysisAgent(config);
+    analysisAgentCache.set(key, agent ?? null);
   }
-  return analysisAgent;
+  return agent;
 }
 
 /** Invocation timeout in ms (90s) so the orchestrator does not hang if Bedrock/Code Interpreter stalls */
@@ -125,10 +127,13 @@ function getFallbackAnalysis(
  * Perform analysis using the agent or fallback.
  * Wraps agent.invoke in a timeout so the orchestrator always gets a result.
  */
-async function performAnalysis(input: AnalysisInput): Promise<string> {
+async function performAnalysis(
+  input: AnalysisInput,
+  modelId?: string,
+): Promise<string> {
   const { task, data, previousNotes, language } = input;
 
-  const agent = await getAnalysisAgent();
+  const agent = await getAnalysisAgent(modelId);
 
   if (agent) {
     const dataSection = data
@@ -202,14 +207,41 @@ export const analysisTool = tool({
   }),
   callback: async ({ task, data, previousNotes, language }) => {
     console.log(`[Analysis Specialist] Processing: ${task}`);
-
-    const result = await performAnalysis({
-      task,
-      data,
-      previousNotes,
-      language,
-    });
-
-    return result;
+    return performAnalysis(
+      { task, data, previousNotes, language },
+    );
   },
 });
+
+/**
+ * Create an analysis tool that uses the given model ID (for per-request model selection).
+ */
+export function createAnalysisTool(modelId: string) {
+  return tool({
+    name: "analysis_specialist",
+    description:
+      "Data analysis specialist: uses code interpreter for computations, data transforms, and analysis. Use this tool for calculations, statistical analysis, or data processing.",
+    inputSchema: z.object({
+      task: z.string().describe("The analysis task or computation to perform"),
+      data: z
+        .string()
+        .optional()
+        .describe("Data to analyze (JSON, CSV, or other structured format)"),
+      previousNotes: z
+        .string()
+        .optional()
+        .describe("Notes from previous tools to build upon"),
+      language: z
+        .enum(["python", "javascript", "typescript"])
+        .optional()
+        .describe("Preferred programming language for code execution"),
+    }),
+    callback: async ({ task, data, previousNotes, language }) => {
+      console.log(`[Analysis Specialist] Processing: ${task}`);
+      return performAnalysis(
+        { task, data, previousNotes, language },
+        modelId,
+      );
+    },
+  });
+}

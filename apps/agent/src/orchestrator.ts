@@ -6,23 +6,21 @@
 import type { UiEvent } from "@repo/shared/events";
 import { Agent, BedrockModel } from "@strands-agents/sdk";
 import { memoryAdapter } from "./memoryAdapter";
-import { analysisTool, researchTool, writingTool } from "./specialists/index";
+import {
+  createAnalysisTool,
+  createResearchTool,
+  createWritingTool,
+  getDefaultModelId,
+} from "./specialists/index";
 
 interface OrchestratorContext {
   sessionId?: string;
   userId?: string;
+  /** Bedrock model ID for this invocation (overrides BEDROCK_MODEL_ID when set). */
+  modelId?: string;
 }
 
-/**
- * Create the Bedrock model instance
- * Uses environment variables for configuration, with sensible defaults
- */
-const model = new BedrockModel({
-  modelId:
-    process.env.BEDROCK_MODEL_ID ||
-    "us.anthropic.claude-sonnet-4-20250514-v1:0",
-  region: process.env.AWS_REGION || "us-east-1",
-});
+const region = process.env.AWS_REGION || "us-east-1";
 
 /**
  * System prompt for the orchestrator agent
@@ -32,7 +30,7 @@ You can use these tools to help answer questions:
 
 1. research_specialist - For gathering information from various sources
 2. analysis_specialist - For data analysis and computations
-3. writing_specialist - For synthesizing findings into coherent responses
+3. writing_specialist - For synthesizing findings into coherent responses (produces Markdown suitable for rich display: GFM, code blocks with syntax highlighting, mermaid diagrams, and optionally math)
 
 When answering questions:
 - Use the appropriate tools when they would be helpful
@@ -42,16 +40,29 @@ When answering questions:
 
 If you don't need to use tools, respond directly to the user's question.`;
 
+const agentCache = new Map<string, Agent>();
+
 /**
- * Create the Strands Agent instance with specialist tools
+ * Get or create the orchestrator Agent for the given model ID.
+ * Orchestrator and specialist tools all use this model.
  */
-const agent = new Agent({
-  model,
-  tools: [researchTool, analysisTool, writingTool],
-  systemPrompt: SYSTEM_PROMPT,
-  // Disable console output since we handle streaming ourselves
-  printer: false,
-});
+function getOrchestratorAgent(modelId: string): Agent {
+  let agent = agentCache.get(modelId);
+  if (!agent) {
+    agent = new Agent({
+      model: new BedrockModel({ modelId, region }),
+      tools: [
+        createResearchTool(modelId),
+        createAnalysisTool(modelId),
+        createWritingTool(modelId),
+      ],
+      systemPrompt: SYSTEM_PROMPT,
+      printer: false,
+    });
+    agentCache.set(modelId, agent);
+  }
+  return agent;
+}
 
 /**
  * Orchestrator that coordinates specialist agents
@@ -64,7 +75,9 @@ export const orchestrator = {
     prompt: string,
     context: OrchestratorContext,
   ): AsyncGenerator<UiEvent> {
-    const { sessionId, userId } = context;
+    const { sessionId, userId, modelId } = context;
+    const effectiveModelId = modelId ?? getDefaultModelId();
+    const agent = getOrchestratorAgent(effectiveModelId);
 
     // Log user message to memory if we have context
     if (sessionId && userId) {
@@ -103,7 +116,6 @@ export const orchestrator = {
     let fullResponse = "";
 
     try {
-      // Stream events from the Strands agent
       for await (const event of agent.stream(fullPrompt)) {
         // Map Strands events to UI events
         const uiEvent = mapStrandsEventToUiEvent(event);

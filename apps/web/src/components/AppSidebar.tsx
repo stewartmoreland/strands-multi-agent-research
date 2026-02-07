@@ -18,7 +18,6 @@ import {
   SidebarHeader,
   SidebarInput,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@repo/ui";
 import {
@@ -27,7 +26,6 @@ import {
   Moon,
   Plus,
   Search,
-  Settings,
   Sparkles,
   Star,
   Sun,
@@ -166,25 +164,6 @@ export function AppSidebar(props: Readonly<AppSidebarProps>) {
 
       <SidebarFooter>
         <Separator className="mb-2" />
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Settings className="h-4 w-4" />
-              <span>Settings</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={onToggleTheme}>
-              {isDarkMode ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-              <span>{isDarkMode ? "Light" : "Dark"}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -217,6 +196,17 @@ export function AppSidebar(props: Readonly<AppSidebarProps>) {
             >
               <User className="h-4 w-4" />
               Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={onToggleTheme}
+              className="cursor-pointer"
+            >
+              {isDarkMode ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+              <span>{isDarkMode ? "Light" : "Dark"}</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={() => signOut()}

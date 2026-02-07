@@ -12,9 +12,10 @@
     "lint": "eslint \"src/**/*.ts\""
   },
   "dependencies": {
-    "@aws-sdk/client-bedrock-agent-runtime": "^3.700.0",
+    "@aws-sdk/client-bedrock": "^3.984.0",
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.984.0",
     "@aws-sdk/client-bedrock-agentcore": "^3.984.0",
-    "@aws-sdk/client-bedrock-runtime": "^3.700.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.984.0",
     "@modelcontextprotocol/sdk": "^1.26.0",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.211.0",

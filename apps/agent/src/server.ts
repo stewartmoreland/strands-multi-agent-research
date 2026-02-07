@@ -2,6 +2,7 @@ import type { InvocationRequest } from "@repo/shared";
 import type { UiEvent } from "@repo/shared/events";
 import { context, propagation } from "@opentelemetry/api";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
+import { listFoundationModels } from "./listModels";
 import { memoryAdapter } from "./memoryAdapter";
 import { orchestrator } from "./orchestrator";
 
@@ -67,7 +68,7 @@ async function handleInvocations(
 ): Promise<void> {
   // Parse request body
   const body = await parseBody<InvocationRequest>(req);
-  const { prompt, sessionId, userId } = body;
+  const { prompt, sessionId, userId, modelId } = body;
 
   if (!prompt) {
     res.writeHead(400, { "Content-Type": "application/json" });
@@ -132,7 +133,11 @@ async function handleInvocations(
         sessionBaggage,
       );
       const result = await context.with(sessionContext, () =>
-        orchestrator.invoke(prompt, { sessionId: currentSessionId, userId }),
+        orchestrator.invoke(prompt, {
+          sessionId: currentSessionId,
+          userId,
+          modelId,
+        }),
       );
       res.writeHead(200, {
         "Content-Type": "application/json",
@@ -148,6 +153,31 @@ async function handleInvocations(
       });
       res.end(JSON.stringify({ error: errorMessage }));
     }
+  }
+}
+
+/**
+ * Handle GET /models – list Bedrock foundation models (TEXT modality, non-legacy).
+ * Used by the web app to populate the model selector.
+ */
+async function handleModels(
+  _req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  try {
+    const models = await listFoundationModels();
+    res.writeHead(200, {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    });
+    res.end(JSON.stringify({ models }));
+  } catch (error) {
+    console.error("List models error:", error);
+    res.writeHead(500, {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    });
+    res.end(JSON.stringify({ error: "Failed to list models" }));
   }
 }
 
@@ -301,6 +331,8 @@ async function requestHandler(
   try {
     if (pathname === "/invocations" && method === "POST") {
       await handleInvocations(req, res);
+    } else if (pathname === "/models" && method === "GET") {
+      await handleModels(req, res);
     } else if (pathname === "/sessions" && method === "GET") {
       await handleSessions(req, res);
     } else if (
@@ -337,6 +369,7 @@ server.listen(PORT, HOST, () => {
   console.log(
     `  POST /invocations - Agent invocation (supports SSE streaming)`,
   );
+  console.log(`  GET  /models            - List Bedrock foundation models`);
   console.log(
     `  GET  /sessions         - List chat sessions (requires Authorization)`,
   );

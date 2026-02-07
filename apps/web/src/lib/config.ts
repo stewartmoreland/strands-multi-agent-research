@@ -23,6 +23,12 @@ export const config = {
       const root = base.replace(/\/invocations\/?$/, "");
       return `${root}/sessions/${encodeURIComponent(sessionId)}/events`;
     },
+    /** URL for listing Bedrock foundation models: GET /models */
+    get modelsUrl() {
+      const base =
+        import.meta.env.VITE_AGENT_INVOCATIONS_URL || "/api/invocations";
+      return base.replace(/\/invocations\/?$/, "") + "/models";
+    },
   },
 } as const;
 
