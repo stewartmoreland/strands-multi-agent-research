@@ -27,6 +27,16 @@ export interface WebAppStackProps extends cdk.StackProps {
   readonly hostedZoneName?: string;
   /** Pre-created ACM certificate ARN (us-east-1). Use when stack is not in us-east-1; otherwise cert is created in this stack. */
   readonly certificateArn?: string;
+  /** Cognito user pool ID. Required when using Cognito for authentication. */
+  readonly userPoolId?: string;
+  /** Cognito user pool client ID. Required when using Cognito for authentication. */
+  readonly userPoolClientId?: string;
+  /** Cognito region. Required when using Cognito for authentication. */
+  readonly cognitoRegion?: string;
+  /** Agent API URL. Required when using Agent API for authentication. */
+  readonly agentApiUrl?: string;
+  /** Agent invocations URL. Required when using Agent invocations for authentication. */
+  readonly agentInvocationsUrl?: string;
 }
 
 /**
@@ -40,7 +50,7 @@ export class WebAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: WebAppStackProps) {
     super(scope, id, props);
 
-    const { domainName, hostedZoneId, hostedZoneName, certificateArn } =
+    const { domainName, hostedZoneId, hostedZoneName, certificateArn, userPoolId, userPoolClientId, cognitoRegion, agentApiUrl, agentInvocationsUrl } =
       props;
 
     const hasCustomDomain =
@@ -266,23 +276,23 @@ export class WebAppStack extends cdk.Stack {
         S3_BUCKET: { value: websiteBucket.bucketName },
         CLOUDFRONT_DISTRIBUTION_ID: { value: distribution.distributionId },
         VITE_COGNITO_USER_POOL_ID: {
-          value: cdk.Fn.importValue("ResearchAgentUserPoolId"),
+          value: userPoolId,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         VITE_COGNITO_CLIENT_ID: {
-          value: cdk.Fn.importValue("ResearchAgentUserPoolClientId"),
+          value: userPoolClientId,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         VITE_COGNITO_REGION: {
-          value: cdk.Fn.importValue("ResearchAgentCognitoRegion"),
+          value: cognitoRegion,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         VITE_AGENT_INVOCATIONS_URL: {
-          value: cdk.Fn.importValue("ResearchAgentInvocationsUrl"),
+          value: agentInvocationsUrl,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         VITE_AGENT_API_URL: {
-          value: cdk.Fn.importValue("ResearchAgentApiUrl"),
+          value: agentApiUrl,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
       },

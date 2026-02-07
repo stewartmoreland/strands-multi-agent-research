@@ -36,7 +36,7 @@ const researchAgentStack = new ResearchAgentStack(app, "ResearchAgentStack", {
   },
 });
 
-const apiStack = new ApiStack(app, "ApiStack", {
+const apiStack = new ApiStack(app, "ResearchAgentApiStack", {
   env,
   description: "Research Agent API (models, sessions, invocations proxy)",
   agentRuntimeId: researchAgentStack.agentRuntimeId,
@@ -52,7 +52,7 @@ apiStack.addDependency(researchAgentStack);
 let certificateArn: string | undefined;
 let certStack: CertificateStack | undefined;
 if (hasCustomDomain && env.region !== "us-east-1") {
-  certStack = new CertificateStack(app, "WebAppCertStack", {
+  certStack = new CertificateStack(app, "ResearchAgentWebAppCertStack", {
     env: { account: env.account, region: "us-east-1" },
     domainName,
     hostedZoneId,
@@ -66,7 +66,7 @@ if (hasCustomDomain && env.region !== "us-east-1") {
   certificateArn = certStack.certificate.certificateArn;
 }
 
-const webAppStack = new WebAppStack(app, "WebAppStack", {
+const webAppStack = new WebAppStack(app, "ResearchAgentWebAppStack", {
   env,
   description: "Web app (S3 + CloudFront) for multi-agent research",
   domainName,
@@ -74,6 +74,11 @@ const webAppStack = new WebAppStack(app, "WebAppStack", {
   hostedZoneName,
   certificateArn,
   crossRegionReferences: !!certStack,
+  userPoolId: researchAgentStack.userPool.userPoolId,
+  userPoolClientId: researchAgentStack.userPoolClient.userPoolClientId,
+  cognitoRegion: researchAgentStack.region,
+  agentApiUrl: apiStack.apiUrl,
+  agentInvocationsUrl: `https://bedrock-agentcore.${researchAgentStack.region}.amazonaws.com/runtimes/${researchAgentStack.agentRuntimeId}/invocations?accountId=${researchAgentStack.account}`,  
   tags: {
     Project: "multi-agent-research",
     ManagedBy: "CDK",
