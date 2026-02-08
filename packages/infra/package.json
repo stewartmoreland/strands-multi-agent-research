@@ -21,7 +21,7 @@
     "@repo/typescript-config": "*",
     "@types/node": "^22.10.0",
     "@vitest/coverage-v8": "^2.1.8",
-    "aws-cdk": "^2.170.0",
+    "aws-cdk": "^2.1105.0",
     "esbuild": "^0.27.3",
     "eslint": "^9.39.2",
     "typescript": "5.5.4",

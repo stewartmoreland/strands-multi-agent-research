@@ -661,6 +661,12 @@ exports.handler = async (event, context) => {
         networkMode: "PUBLIC",
       },
       protocolConfiguration: "HTTP",
+      authorizerConfiguration: {
+        customJwtAuthorizer: {
+          discoveryUrl: `https://cognito-idp.${this.region}.amazonaws.com/${this.userPool.userPoolId}`,
+          allowedClients: [this.userPoolClient.userPoolClientId],
+        },
+      },
       roleArn: this.agentRole.roleArn,
       description: "Multi-agent research system runtime",
       environmentVariables: {
