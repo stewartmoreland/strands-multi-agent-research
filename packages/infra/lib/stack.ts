@@ -778,15 +778,11 @@ exports.handler = async (event, context) => {
       }),
     );
 
-    const evaluationLogGroup = new logs.LogGroup(
-      this,
-      "EvaluationLogGroup",
-      {
-        logGroupName: "/aws/bedrock-agentcore/evaluations/research-agent",
-        retention: logs.RetentionDays.ONE_MONTH,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-      },
-    );
+    const evaluationLogGroup = new logs.LogGroup(this, "EvaluationLogGroup", {
+      logGroupName: "/aws/bedrock-agentcore/evaluations/research-agent",
+      retention: logs.RetentionDays.ONE_MONTH,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
 
     // ==========================================================================
     // Stack Outputs
@@ -817,7 +813,8 @@ exports.handler = async (event, context) => {
 
     new cdk.CfnOutput(this, "AgentInvocationsUrl", {
       value: `https://bedrock-agentcore.${this.region}.amazonaws.com/runtimes/${agentRuntime.attrAgentRuntimeId}/invocations?accountId=${this.account}`,
-      description: "Direct URL for invoking the AgentCore Runtime (SSE streaming)",
+      description:
+        "Direct URL for invoking the AgentCore Runtime (SSE streaming)",
       exportName: "ResearchAgentInvocationsUrl",
     });
 

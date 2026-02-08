@@ -1,13 +1,13 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { Button } from "./button";
 import {
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
+  TooltipTrigger,
 } from "./tooltip";
-import { Button } from "./button";
 
 describe("Tooltip", () => {
   // Setup default delay duration for all tests
@@ -20,7 +20,7 @@ describe("Tooltip", () => {
           </TooltipTrigger>
           <TooltipContent>Tooltip content</TooltipContent>
         </Tooltip>
-      </TooltipProvider>
+      </TooltipProvider>,
     );
   };
 
@@ -106,7 +106,7 @@ describe("Tooltip", () => {
           </TooltipTrigger>
           <TooltipContent>Tooltip content</TooltipContent>
         </Tooltip>
-      </TooltipProvider>
+      </TooltipProvider>,
     );
 
     const trigger = screen.getByRole("button", { name: "Hover me" });
@@ -117,7 +117,7 @@ describe("Tooltip", () => {
       () => {
         expect(onOpenChange).toHaveBeenCalledWith(true);
       },
-      { timeout: 1000 }
+      { timeout: 1000 },
     );
   });
 

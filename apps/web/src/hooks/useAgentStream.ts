@@ -49,7 +49,12 @@ interface UseAgentStreamReturn {
 export function useAgentStream(
   options: UseAgentStreamOptions = {},
 ): UseAgentStreamReturn {
-  const { endpoint = DEFAULT_ENDPOINT, getAuthToken, userId, modelId } = options;
+  const {
+    endpoint = DEFAULT_ENDPOINT,
+    getAuthToken,
+    userId,
+    modelId,
+  } = options;
 
   const [events, setEvents] = useState<UiEvent[]>([]);
   const [isStreaming, setStreaming] = useState(false);

@@ -1,10 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { getGravatarUrl } from "./gravatar";
 
 describe("getGravatarUrl", () => {
   it("returns URL with hash and default size", () => {
     const url = getGravatarUrl("test@example.com");
-    expect(url).toMatch(/^https:\/\/www\.gravatar\.com\/avatar\/[a-f0-9]{32}\?d=identicon&s=80$/);
+    expect(url).toMatch(
+      /^https:\/\/www\.gravatar\.com\/avatar\/[a-f0-9]{32}\?d=identicon&s=80$/,
+    );
   });
 
   it("uses custom size", () => {

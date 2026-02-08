@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { ProtectedRoute } from "./ProtectedRoute";
+import { describe, expect, it, vi } from "vitest";
 import type { AuthContextValue, User } from "../contexts/AuthContext";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 import { useAuth } from "../contexts/AuthContext";
 

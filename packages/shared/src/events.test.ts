@@ -1,13 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  isMetaEvent,
-  isMessageDeltaEvent,
-  isThinkingDeltaEvent,
-  isToolStartEvent,
-  isToolEndEvent,
-  isMessageDoneEvent,
   isErrorEvent,
+  isMessageDeltaEvent,
+  isMessageDoneEvent,
+  isMetaEvent,
   isRunStartEvent,
+  isThinkingDeltaEvent,
+  isToolEndEvent,
+  isToolStartEvent,
   type UiEvent,
 } from "./events";
 
@@ -55,7 +55,9 @@ describe("events type guards", () => {
       expect(isToolStartEvent(event)).toBe(true);
     });
     it("returns false for other event types", () => {
-      expect(isToolStartEvent({ type: "tool.end", toolName: "x", output: {} })).toBe(false);
+      expect(
+        isToolStartEvent({ type: "tool.end", toolName: "x", output: {} }),
+      ).toBe(false);
     });
   });
 
@@ -69,7 +71,9 @@ describe("events type guards", () => {
       expect(isToolEndEvent(event)).toBe(true);
     });
     it("returns false for other event types", () => {
-      expect(isToolEndEvent({ type: "tool.start", toolName: "x", input: {} })).toBe(false);
+      expect(
+        isToolEndEvent({ type: "tool.start", toolName: "x", input: {} }),
+      ).toBe(false);
     });
   });
 

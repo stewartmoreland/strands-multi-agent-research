@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 
 describe("RadioGroup", () => {
@@ -8,7 +8,7 @@ describe("RadioGroup", () => {
       <RadioGroup>
         <RadioGroupItem value="option1" />
         <RadioGroupItem value="option2" />
-      </RadioGroup>
+      </RadioGroup>,
     );
 
     const radioButtons = screen.getAllByRole("radio");
@@ -23,7 +23,7 @@ describe("RadioGroup", () => {
       <RadioGroup onValueChange={onValueChange}>
         <RadioGroupItem value="option1" />
         <RadioGroupItem value="option2" />
-      </RadioGroup>
+      </RadioGroup>,
     );
 
     const radioButtons = screen.getAllByRole("radio");
@@ -36,7 +36,7 @@ describe("RadioGroup", () => {
       <RadioGroup disabled>
         <RadioGroupItem value="option1" />
         <RadioGroupItem value="option2" />
-      </RadioGroup>
+      </RadioGroup>,
     );
 
     const radioButtons = screen.getAllByRole("radio");
@@ -49,7 +49,7 @@ describe("RadioGroup", () => {
     render(
       <RadioGroup className="custom-group-class">
         <RadioGroupItem value="option1" className="custom-item-class" />
-      </RadioGroup>
+      </RadioGroup>,
     );
 
     const group = screen.getByRole("radiogroup");
@@ -62,7 +62,7 @@ describe("RadioGroup", () => {
     render(
       <RadioGroup aria-label="Custom radio group">
         <RadioGroupItem value="option1" aria-label="Option 1" />
-      </RadioGroup>
+      </RadioGroup>,
     );
 
     const group = screen.getByLabelText("Custom radio group");
@@ -76,7 +76,7 @@ describe("RadioGroup", () => {
       <RadioGroup defaultValue="option1">
         <RadioGroupItem value="option1" />
         <RadioGroupItem value="option2" />
-      </RadioGroup>
+      </RadioGroup>,
     );
 
     const radioButtons = screen.getAllByRole("radio");

@@ -50,7 +50,9 @@ Markdown and formatting (responses are rendered as Markdown in the chat UI):
  * Create the writing agent.
  * @param config - Specialist config (use getSpecialistConfig({ modelId }) for per-request model).
  */
-function createWritingAgent(config: ReturnType<typeof getSpecialistConfig>): Agent {
+function createWritingAgent(
+  config: ReturnType<typeof getSpecialistConfig>,
+): Agent {
   const agent = new Agent({
     model: new BedrockModel({
       modelId: config.modelId,
@@ -214,7 +216,9 @@ export function createWritingTool(modelId: string) {
       previousNotes: z
         .string()
         .optional()
-        .describe("Notes and findings from research and analysis to synthesize"),
+        .describe(
+          "Notes and findings from research and analysis to synthesize",
+        ),
       format: z
         .enum(["summary", "report", "bullet_points"])
         .optional()

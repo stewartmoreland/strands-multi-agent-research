@@ -23,7 +23,8 @@ import { useSessions } from "./hooks/useSessions";
 
 function App() {
   const { user, getIdToken } = useAuth();
-  const { models: availableModels, isLoading: modelsLoading } = useBedrockModels();
+  const { models: availableModels, isLoading: modelsLoading } =
+    useBedrockModels();
 
   const {
     sessions: sessionsFromApi,

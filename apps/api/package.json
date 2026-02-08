@@ -14,8 +14,8 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@aws-sdk/client-bedrock": "^3.984.0",
-    "@aws-sdk/client-bedrock-agentcore": "^3.984.0",
+    "@aws-sdk/client-bedrock": "^3.985.0",
+    "@aws-sdk/client-bedrock-agentcore": "^3.985.0",
     "@codegenie/serverless-express": "^4.17.1",
     "@repo/shared": "*",
     "@repo/util": "*",

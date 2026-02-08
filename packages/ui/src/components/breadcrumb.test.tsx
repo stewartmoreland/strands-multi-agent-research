@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,7 +22,7 @@ describe("Breadcrumb", () => {
             <BreadcrumbPage>Current</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     );
 
     expect(screen.getByText("Home")).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe("Breadcrumb", () => {
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     );
 
     expect(screen.getByRole("navigation")).toHaveClass("custom-breadcrumb");
@@ -120,7 +120,7 @@ describe("Breadcrumb", () => {
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     );
 
     const list = screen.getByRole("list");
@@ -136,7 +136,7 @@ describe("Breadcrumb", () => {
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     );
 
     expect(screen.getByRole("listitem")).toHaveClass("inline-flex");
@@ -150,7 +150,7 @@ describe("Breadcrumb", () => {
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     );
 
     const link = screen.getByRole("link");
@@ -166,7 +166,7 @@ describe("Breadcrumb", () => {
             <BreadcrumbPage>Current</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     );
 
     const page = screen.getByRole("link");

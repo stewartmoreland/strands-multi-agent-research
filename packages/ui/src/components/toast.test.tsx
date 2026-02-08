@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { toast } from "sonner";
+import { describe, expect, it, vi } from "vitest";
 import { Toaster } from "./sonner";
 
 // Mock matchMedia
@@ -25,14 +25,14 @@ describe("Toast", () => {
       <>
         <Toaster />
         <button onClick={() => toast("Test Toast")}>Show Toast</button>
-      </>
+      </>,
     );
   };
 
   it("renders toaster component", () => {
     renderToast();
     expect(
-      screen.getByRole("button", { name: "Show Toast" })
+      screen.getByRole("button", { name: "Show Toast" }),
     ).toBeInTheDocument();
   });
 
@@ -60,7 +60,7 @@ describe("Toast", () => {
         <button onClick={() => toast.warning("Warning Toast")}>
           Show Warning
         </button>
-      </>
+      </>,
     );
 
     const successButton = screen.getByRole("button", { name: "Show Success" });
@@ -91,7 +91,7 @@ describe("Toast", () => {
         <button onClick={() => toast("Custom Duration", { duration: 5000 })}>
           Show Custom Duration
         </button>
-      </>
+      </>,
     );
 
     const trigger = screen.getByRole("button", {
@@ -110,7 +110,7 @@ describe("Toast", () => {
       <>
         <Toaster position="top-left" />
         <button onClick={() => toast("Top Left Toast")}>Show Top Left</button>
-      </>
+      </>,
     );
 
     const trigger = screen.getByRole("button", { name: "Show Top Left" });
@@ -129,7 +129,7 @@ describe("Toast", () => {
         <button onClick={() => toast("Custom Class Toast")}>
           Show Custom Class
         </button>
-      </>
+      </>,
     );
 
     const trigger = screen.getByRole("button", { name: "Show Custom Class" });
@@ -148,7 +148,7 @@ describe("Toast", () => {
         <button onClick={() => toast("Dark Theme Toast")}>
           Show Dark Theme
         </button>
-      </>
+      </>,
     );
 
     const trigger = screen.getByRole("button", { name: "Show Dark Theme" });

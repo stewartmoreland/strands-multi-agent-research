@@ -35,7 +35,9 @@ Always provide citations in the format: [Source: URL or description]`;
  * Create the research agent with browser tools when available.
  * @param config - Specialist config (use getSpecialistConfig({ modelId }) for per-request model).
  */
-async function createResearchAgent(config: ReturnType<typeof getSpecialistConfig>): Promise<Agent | null> {
+async function createResearchAgent(
+  config: ReturnType<typeof getSpecialistConfig>,
+): Promise<Agent | null> {
   if (!config.useAgentCore) {
     console.log(
       "[Research Specialist] AgentCore disabled, using local fallback",

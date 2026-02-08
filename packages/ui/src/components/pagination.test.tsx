@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import {
   Pagination,
   PaginationContent,
@@ -24,7 +24,7 @@ describe("Pagination", () => {
             <PaginationNext href="#" />
           </PaginationItem>
         </PaginationContent>
-      </Pagination>
+      </Pagination>,
     );
 
     expect(screen.getByText("Previous")).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe("Pagination", () => {
             <PaginationLink href="#">1</PaginationLink>
           </PaginationItem>
         </PaginationContent>
-      </Pagination>
+      </Pagination>,
     );
 
     expect(screen.getByRole("navigation")).toHaveClass("custom-pagination");
@@ -66,7 +66,7 @@ describe("Pagination", () => {
             <PaginationNext href="#" />
           </PaginationItem>
         </PaginationContent>
-      </Pagination>
+      </Pagination>,
     );
 
     expect(screen.getByText("1")).toBeInTheDocument();
@@ -102,7 +102,7 @@ describe("Pagination", () => {
             <PaginationLink href="#">1</PaginationLink>
           </PaginationItem>
         </PaginationContent>
-      </Pagination>
+      </Pagination>,
     );
 
     expect(screen.getByRole("list")).toHaveClass("flex");
@@ -130,7 +130,7 @@ describe("Pagination", () => {
             <PaginationLink href="#">1</PaginationLink>
           </PaginationItem>
         </PaginationContent>
-      </Pagination>
+      </Pagination>,
     );
 
     const link = screen.getByRole("link");
@@ -148,7 +148,7 @@ describe("Pagination", () => {
             <PaginationNext href="#" />
           </PaginationItem>
         </PaginationContent>
-      </Pagination>
+      </Pagination>,
     );
 
     const prevButton = screen.getByText("Previous").closest("a");

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { Input } from "./input";
 
 describe("Input", () => {
@@ -27,14 +27,14 @@ describe("Input", () => {
     const input = screen.getByRole("textbox");
     expect(input).toBeDisabled();
     expect(input).toHaveClass(
-      "disabled:cursor-not-allowed disabled:opacity-50"
+      "disabled:cursor-not-allowed disabled:opacity-50",
     );
   });
 
   it("applies error state correctly", () => {
     render(<Input aria-invalid="true" />);
     expect(screen.getByRole("textbox")).toHaveClass(
-      "aria-invalid:border-destructive"
+      "aria-invalid:border-destructive",
     );
   });
 

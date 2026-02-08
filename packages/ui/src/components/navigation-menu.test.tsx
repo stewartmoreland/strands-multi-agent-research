@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -30,7 +30,7 @@ describe("NavigationMenu", () => {
             </NavigationMenuContent>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
+      </NavigationMenu>,
     );
 
     expect(screen.getByText("Item 1")).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe("NavigationMenu", () => {
             <NavigationMenuTrigger>Item 1</NavigationMenuTrigger>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
+      </NavigationMenu>,
     );
 
     expect(screen.getByRole("navigation")).toHaveClass("custom-menu");
@@ -61,7 +61,7 @@ describe("NavigationMenu", () => {
             </NavigationMenuTrigger>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
+      </NavigationMenu>,
     );
 
     fireEvent.click(screen.getByText("Item 1"));
@@ -79,7 +79,7 @@ describe("NavigationMenu", () => {
             <NavigationMenuTrigger>Item 2</NavigationMenuTrigger>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
+      </NavigationMenu>,
     );
 
     expect(screen.getByText("Item 1")).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe("NavigationMenu", () => {
             </NavigationMenuContent>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
+      </NavigationMenu>,
     );
 
     fireEvent.click(screen.getByText("Item 1"));
@@ -115,7 +115,7 @@ describe("NavigationMenu", () => {
             <NavigationMenuTrigger>Item 1</NavigationMenuTrigger>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
+      </NavigationMenu>,
     );
 
     expect(screen.getByRole("list")).toHaveClass("flex");
@@ -129,7 +129,7 @@ describe("NavigationMenu", () => {
             <NavigationMenuTrigger>Item 1</NavigationMenuTrigger>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
+      </NavigationMenu>,
     );
 
     expect(screen.getByText("Item 1").parentElement).toHaveClass("relative");
@@ -143,7 +143,7 @@ describe("NavigationMenu", () => {
             <NavigationMenuTrigger>Item 1</NavigationMenuTrigger>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
+      </NavigationMenu>,
     );
 
     expect(screen.getByText("Item 1")).toHaveClass("group");

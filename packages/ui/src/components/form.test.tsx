@@ -1,17 +1,16 @@
-import * as React from "react";
-import { describe, it, expect } from "vitest";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
+import { describe, expect, it } from "vitest";
 import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from "./form";
 import { Input } from "./input";
@@ -110,7 +109,7 @@ describe("Form", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Username must be at least 2 characters.")
+        screen.getByText("Username must be at least 2 characters."),
       ).toBeInTheDocument();
     });
   });

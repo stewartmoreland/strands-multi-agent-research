@@ -36,7 +36,9 @@ Always show your work and explain your reasoning.`;
  * Create the analysis agent with code interpreter tools when available.
  * @param config - Specialist config (use getSpecialistConfig({ modelId }) for per-request model).
  */
-async function createAnalysisAgent(config: ReturnType<typeof getSpecialistConfig>): Promise<Agent | null> {
+async function createAnalysisAgent(
+  config: ReturnType<typeof getSpecialistConfig>,
+): Promise<Agent | null> {
   if (!config.useAgentCore) {
     console.log(
       "[Analysis Specialist] AgentCore disabled, using local fallback",
@@ -207,9 +209,7 @@ export const analysisTool = tool({
   }),
   callback: async ({ task, data, previousNotes, language }) => {
     console.log(`[Analysis Specialist] Processing: ${task}`);
-    return performAnalysis(
-      { task, data, previousNotes, language },
-    );
+    return performAnalysis({ task, data, previousNotes, language });
   },
 });
 
@@ -238,10 +238,7 @@ export function createAnalysisTool(modelId: string) {
     }),
     callback: async ({ task, data, previousNotes, language }) => {
       console.log(`[Analysis Specialist] Processing: ${task}`);
-      return performAnalysis(
-        { task, data, previousNotes, language },
-        modelId,
-      );
+      return performAnalysis({ task, data, previousNotes, language }, modelId);
     },
   });
 }

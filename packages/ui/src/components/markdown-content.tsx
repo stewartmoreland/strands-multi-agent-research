@@ -1,4 +1,3 @@
-import type { PluggableList } from "unified";
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -6,13 +5,18 @@ import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import type { PluggableList } from "unified";
 import { cn } from "../lib/utils";
 
 import "katex/dist/katex.min.css";
 
 const remarkPlugins: PluggableList = [remarkGfm, remarkMath];
 // Type assertion: rehype-katex's Plugin signature is stricter than unified's Pluggable at use site
-const rehypePlugins = [rehypeHighlight, rehypeKatex, rehypeRaw] as PluggableList;
+const rehypePlugins = [
+  rehypeHighlight,
+  rehypeKatex,
+  rehypeRaw,
+] as PluggableList;
 
 interface MermaidBlockProps {
   readonly code: string;
@@ -43,7 +47,9 @@ function MermaidBlock({ code, id }: Readonly<MermaidBlockProps>) {
             suppressErrors: true,
           })
           .catch((err: unknown) => {
-            setError(err instanceof Error ? err.message : "Failed to render diagram");
+            setError(
+              err instanceof Error ? err.message : "Failed to render diagram",
+            );
           });
       })
       .catch(() => {
@@ -53,7 +59,11 @@ function MermaidBlock({ code, id }: Readonly<MermaidBlockProps>) {
 
   if (error) {
     return (
-      <pre className={cn("rounded-md border border-destructive/30 bg-muted/50 p-3 text-sm")}>
+      <pre
+        className={cn(
+          "rounded-md border border-destructive/30 bg-muted/50 p-3 text-sm",
+        )}
+      >
         <code>{code}</code>
         <div className="mt-2 text-destructive text-xs">{error}</div>
       </pre>
@@ -61,7 +71,11 @@ function MermaidBlock({ code, id }: Readonly<MermaidBlockProps>) {
   }
 
   return (
-    <div ref={containerRef} className="[&>.mermaid]:min-h-[80px]" data-mermaid="true" />
+    <div
+      ref={containerRef}
+      className="[&>.mermaid]:min-h-[80px]"
+      data-mermaid="true"
+    />
   );
 }
 
@@ -77,7 +91,11 @@ interface CodeBlockProps extends React.HTMLAttributes<HTMLElement> {
   node?: unknown;
 }
 
-function CodeBlock({ className, children, ...props }: Readonly<CodeBlockProps>) {
+function CodeBlock({
+  className,
+  children,
+  ...props
+}: Readonly<CodeBlockProps>) {
   const id = useId("mermaid");
   const isMermaid = className?.includes("language-mermaid") ?? false;
   const code = String(children ?? "").trim();
@@ -114,7 +132,14 @@ function PreBlock({
 const MarkdownContent = React.forwardRef<HTMLDivElement, MarkdownContentProps>(
   ({ children, className, ...props }, ref) => {
     return (
-      <div ref={ref} className={cn("markdown-content prose prose-sm dark:prose-invert max-w-none", className)} {...props}>
+      <div
+        ref={ref}
+        className={cn(
+          "markdown-content prose prose-sm dark:prose-invert max-w-none",
+          className,
+        )}
+        {...props}
+      >
         <ReactMarkdown
           remarkPlugins={[...remarkPlugins]}
           rehypePlugins={[...rehypePlugins]}

@@ -1,11 +1,6 @@
-import * as React from "react";
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "./input-otp";
+import { describe, expect, it } from "vitest";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "./input-otp";
 
 // Global setup is applied via vitest.config.ts setupFiles
 
@@ -57,7 +52,7 @@ describe("InputOTP", () => {
           <InputOTPSlot index={2} />
           <InputOTPSlot index={3} />
         </InputOTPGroup>
-      </InputOTP>
+      </InputOTP>,
     );
 
     const group = container.querySelector('[data-slot="input-otp-group"]');
@@ -74,7 +69,7 @@ describe("InputOTP", () => {
           <InputOTPSlot index={2} />
           <InputOTPSlot index={3} />
         </InputOTPGroup>
-      </InputOTP>
+      </InputOTP>,
     );
 
     const input = screen.getByRole("textbox");
@@ -90,7 +85,7 @@ describe("InputOTP", () => {
           <InputOTPSlot index={2} />
           <InputOTPSlot index={3} />
         </InputOTPGroup>
-      </InputOTP>
+      </InputOTP>,
     );
 
     const slots = container.querySelectorAll('[data-slot="input-otp-slot"]');
@@ -130,7 +125,7 @@ describe("InputOTP", () => {
           <InputOTPSlot index={2} />
           <InputOTPSlot index={3} />
         </InputOTPGroup>
-      </InputOTP>
+      </InputOTP>,
     );
 
     const group = container.querySelector('[data-slot="input-otp-group"]');

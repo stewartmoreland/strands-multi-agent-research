@@ -15,9 +15,9 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@aws-sdk/client-bedrock": "^3.984.0",
+    "@aws-sdk/client-bedrock": "^3.985.0",
     "@aws-sdk/client-bedrock-agent-runtime": "^3.984.0",
-    "@aws-sdk/client-bedrock-agentcore": "^3.984.0",
+    "@aws-sdk/client-bedrock-agentcore": "^3.985.0",
     "@aws-sdk/client-bedrock-runtime": "^3.984.0",
     "@modelcontextprotocol/sdk": "^1.26.0",
     "@opentelemetry/api": "^1.9.0",

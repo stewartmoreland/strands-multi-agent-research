@@ -1,7 +1,7 @@
+import { config } from "@/lib/config";
 import type { FoundationModelSummary } from "@repo/shared";
 import type { ModelOption } from "@repo/ui";
 import { useCallback, useEffect, useState } from "react";
-import { config } from "@/lib/config";
 
 function toModelOption(summary: FoundationModelSummary): ModelOption {
   return {
@@ -36,7 +36,9 @@ export function useBedrockModels(): UseBedrockModelsReturn {
     try {
       const res = await fetch(config.agent.modelsUrl);
       if (!res.ok) {
-        throw new Error(res.status === 401 ? "Authentication required" : `HTTP ${res.status}`);
+        throw new Error(
+          res.status === 401 ? "Authentication required" : `HTTP ${res.status}`,
+        );
       }
       const data = (await res.json()) as { models?: FoundationModelSummary[] };
       const list = data.models ?? [];

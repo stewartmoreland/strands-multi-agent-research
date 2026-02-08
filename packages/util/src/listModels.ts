@@ -24,7 +24,9 @@ function toSummary(s: AwsSummary): FoundationModelSummary {
   };
 }
 
-export async function listFoundationModels(): Promise<FoundationModelSummary[]> {
+export async function listFoundationModels(): Promise<
+  FoundationModelSummary[]
+> {
   const client = new BedrockClient({ region });
   const response = await client.send(
     new ListFoundationModelsCommand({

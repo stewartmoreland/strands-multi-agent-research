@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "check-dependency-version-consistency": "^6.0.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.27.3",
     "eslint": "^9.39.2",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",

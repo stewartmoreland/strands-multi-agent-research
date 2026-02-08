@@ -3,8 +3,8 @@
  * Extracted for testability.
  */
 
-import type { IncomingMessage, ServerResponse } from "node:http";
 import type { UiEvent } from "@repo/shared/events";
+import type { IncomingMessage, ServerResponse } from "node:http";
 
 /**
  * Resolve actorId (user sub) from Authorization Bearer JWT.

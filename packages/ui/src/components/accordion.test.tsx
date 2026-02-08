@@ -1,11 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import {
   Accordion,
+  AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  AccordionContent,
 } from "./accordion";
 
 describe("Accordion", () => {
@@ -20,7 +20,7 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 2</AccordionTrigger>
           <AccordionContent>Content 2</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     );
   };
 
@@ -113,7 +113,7 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 1</AccordionTrigger>
           <AccordionContent>Content 1</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     );
 
     const trigger = screen.getByText("Section 1");
@@ -136,7 +136,7 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 2</AccordionTrigger>
           <AccordionContent>Content 2</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     );
 
     const trigger1 = screen.getByText("Section 1");

@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { Alert, AlertTitle, AlertDescription } from "./alert";
+import { describe, expect, it } from "vitest";
+import { Alert, AlertDescription, AlertTitle } from "./alert";
 
 describe("Alert", () => {
   const renderAlert = (props = {}) => {
@@ -8,7 +8,7 @@ describe("Alert", () => {
       <Alert {...props}>
         <AlertTitle>Alert Title</AlertTitle>
         <AlertDescription>Alert Description</AlertDescription>
-      </Alert>
+      </Alert>,
     );
   };
 
@@ -40,7 +40,7 @@ describe("Alert", () => {
     render(
       <Alert>
         <AlertDescription>Alert Description</AlertDescription>
-      </Alert>
+      </Alert>,
     );
     expect(screen.queryByText("Alert Title")).not.toBeInTheDocument();
     expect(screen.getByText("Alert Description")).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe("Alert", () => {
     render(
       <Alert>
         <AlertTitle>Alert Title</AlertTitle>
-      </Alert>
+      </Alert>,
     );
     expect(screen.getByText("Alert Title")).toBeInTheDocument();
     expect(screen.queryByText("Alert Description")).not.toBeInTheDocument();

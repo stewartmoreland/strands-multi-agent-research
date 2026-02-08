@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import request from "supertest";
 import { listFoundationModels, memoryAdapter } from "@repo/util";
+import request from "supertest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import app from "./app";
 
 vi.mock("@repo/util", () => ({

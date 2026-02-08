@@ -1,15 +1,15 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import {
   Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
   DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "./dialog";
 
 describe("Dialog", () => {
@@ -27,7 +27,7 @@ describe("Dialog", () => {
             <DialogClose>Close</DialogClose>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     );
   };
 
@@ -113,7 +113,7 @@ describe("Dialog", () => {
             <DialogClose className="custom-close">Close</DialogClose>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     );
 
     const trigger = screen.getByRole("button", { name: "Open Dialog" });
@@ -130,7 +130,7 @@ describe("Dialog", () => {
             <DialogTitle>Dialog Title</DialogTitle>
           </DialogHeader>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     );
 
     const trigger = screen.getByRole("button", { name: "Open Dialog" });

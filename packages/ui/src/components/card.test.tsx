@@ -1,13 +1,13 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import {
   Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-  CardAction,
 } from "./card";
 
 describe("Card", () => {
@@ -33,7 +33,7 @@ describe("Card", () => {
         </CardHeader>
         <CardContent>Card Content</CardContent>
         <CardFooter>Card Footer</CardFooter>
-      </Card>
+      </Card>,
     );
 
     expect(screen.getByText("Card Title")).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe("Card", () => {
     render(
       <CardHeader>
         <CardTitle>Title</CardTitle>
-      </CardHeader>
+      </CardHeader>,
     );
     const header = screen.getByText("Title").parentElement;
     expect(header).toHaveClass("px-6");
@@ -61,7 +61,7 @@ describe("Card", () => {
   it("applies correct styles to CardDescription", () => {
     render(<CardDescription>Description</CardDescription>);
     expect(screen.getByText("Description")).toHaveClass(
-      "text-muted-foreground"
+      "text-muted-foreground",
     );
   });
 
@@ -79,7 +79,7 @@ describe("Card", () => {
     render(
       <CardHeader>
         <CardAction>Action</CardAction>
-      </CardHeader>
+      </CardHeader>,
     );
     expect(screen.getByText("Action")).toHaveClass("justify-self-end");
   });
@@ -90,7 +90,7 @@ describe("Card", () => {
         <CardHeader className="border-b">Header</CardHeader>
         <CardContent>Content</CardContent>
         <CardFooter className="border-t">Footer</CardFooter>
-      </Card>
+      </Card>,
     );
 
     const header = screen.getByText("Header");

@@ -1,13 +1,9 @@
-import type { InvocationRequest } from "@repo/shared";
 import { context, propagation } from "@opentelemetry/api";
-import { createServer, IncomingMessage, ServerResponse } from "node:http";
+import type { InvocationRequest } from "@repo/shared";
 import { listFoundationModels, memoryAdapter } from "@repo/util";
+import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { orchestrator } from "./orchestrator";
-import {
-  getActorIdFromAuth,
-  parseBody,
-  sendEvent,
-} from "./serverHelpers";
+import { getActorIdFromAuth, parseBody, sendEvent } from "./serverHelpers";
 
 const PORT = parseInt(process.env.PORT || "8080", 10);
 const HOST = process.env.HOST || "0.0.0.0";

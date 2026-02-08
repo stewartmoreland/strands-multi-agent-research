@@ -3,9 +3,9 @@
  * Invocations are called directly against AgentCore by the frontend (SSE).
  */
 
+import * as cdk from "aws-cdk-lib";
 import * as apigatewayv2 from "aws-cdk-lib/aws-apigatewayv2";
 import * as apigatewayv2integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
-import * as cdk from "aws-cdk-lib";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as lambdaNodejs from "aws-cdk-lib/aws-lambda-nodejs";
@@ -107,6 +107,5 @@ export class ApiStack extends cdk.Stack {
       description: "Research Agent API base URL",
       exportName: "ResearchAgentApiUrl",
     });
-
   }
 }

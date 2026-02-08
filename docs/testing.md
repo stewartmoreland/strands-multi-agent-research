@@ -17,14 +17,14 @@ Per workspace (e.g. `yarn workspace @repo/shared test`):
 
 ## Workspaces and frameworks
 
-| Workspace        | Framework | Notes                                      |
-|-----------------|-----------|--------------------------------------------|
-| packages/shared | Vitest    | Node; type guards and pure logic           |
-| packages/ui     | Vitest    | jsdom + React Testing Library              |
-| packages/infra  | Vitest    | Node; CDK stack assertions (Template)      |
-| apps/agent      | Vitest    | Node; server helpers, listModels, memory   |
-| apps/api        | Vitest    | Node; supertest for routes, jwt            |
-| apps/web        | Vitest    | jsdom + React Testing Library              |
+| Workspace       | Framework | Notes                                    |
+| --------------- | --------- | ---------------------------------------- |
+| packages/shared | Vitest    | Node; type guards and pure logic         |
+| packages/ui     | Vitest    | jsdom + React Testing Library            |
+| packages/infra  | Vitest    | Node; CDK stack assertions (Template)    |
+| apps/agent      | Vitest    | Node; server helpers, listModels, memory |
+| apps/api        | Vitest    | Node; supertest for routes, jwt          |
+| apps/web        | Vitest    | jsdom + React Testing Library            |
 
 ## CI
 

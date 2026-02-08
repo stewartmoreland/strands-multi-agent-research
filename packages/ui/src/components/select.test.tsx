@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import {
   Select,
   SelectContent,
@@ -24,7 +24,7 @@ describe("Select", () => {
             <SelectItem value="option2">Option 2</SelectItem>
           </SelectGroup>
         </SelectContent>
-      </Select>
+      </Select>,
     );
 
     const trigger = screen.getByRole("combobox");
@@ -46,7 +46,7 @@ describe("Select", () => {
             <SelectItem value="option2">Option 2</SelectItem>
           </SelectGroup>
         </SelectContent>
-      </Select>
+      </Select>,
     );
 
     const trigger = screen.getByRole("combobox");
@@ -70,7 +70,7 @@ describe("Select", () => {
             <SelectItem value="option1">Option 1</SelectItem>
           </SelectGroup>
         </SelectContent>
-      </Select>
+      </Select>,
     );
 
     const trigger = screen.getByRole("combobox");
@@ -89,7 +89,7 @@ describe("Select", () => {
             <SelectItem value="option1">Option 1</SelectItem>
           </SelectGroup>
         </SelectContent>
-      </Select>
+      </Select>,
     );
 
     const trigger = screen.getByRole("combobox");
@@ -108,7 +108,7 @@ describe("Select", () => {
             <SelectItem value="option1">Option 1</SelectItem>
           </SelectGroup>
         </SelectContent>
-      </Select>
+      </Select>,
     );
 
     const trigger = screen.getByRole("combobox");

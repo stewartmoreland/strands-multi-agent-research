@@ -34,7 +34,9 @@ export interface ModelSelectorProps extends React.HTMLAttributes<HTMLDivElement>
 }
 
 /** Group models by provider (description); unknown provider key for missing description */
-function groupModelsByProvider(models: ModelOption[]): Map<string, ModelOption[]> {
+function groupModelsByProvider(
+  models: ModelOption[],
+): Map<string, ModelOption[]> {
   const map = new Map<string, ModelOption[]>();
   for (const m of models) {
     const key = m.description?.trim() || "Other";
@@ -116,49 +118,52 @@ const ModelSelector = React.forwardRef<HTMLDivElement, ModelSelectorProps>(
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="min-w-[20rem] max-w-[28rem]">
-            {hasSubmenus ? (
-              providerNames.map((provider) => (
-                <DropdownMenuSub key={provider}>
-                  <DropdownMenuSubTrigger>{provider}</DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="min-w-[18rem] max-w-[26rem]">
-                    {(byProvider.get(provider) ?? []).map((model) => (
-                      <DropdownMenuItem
-                        key={model.id}
-                        onClick={() => onModelChange(model.id)}
-                        className={cn(
-                          "flex flex-col items-start gap-0.5 py-2",
-                          model.id === selectedModel && "bg-accent",
-                        )}
-                      >
-                        <div className="flex items-center gap-2">
-                          {model.icon || <Sparkles className="h-4 w-4 shrink-0" />}
-                          <span className="font-medium">{model.name}</span>
-                        </div>
-                        <ModelBadges model={model} />
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-              ))
-            ) : (
-              models.map((model) => (
-                <DropdownMenuItem
-                  key={model.id}
-                  onClick={() => onModelChange(model.id)}
-                  className={cn(
-                    "flex flex-col items-start gap-0.5 py-2",
-                    model.id === selectedModel && "bg-accent",
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    {model.icon || <Sparkles className="h-4 w-4 shrink-0" />}
-                    <span className="font-medium">{model.name}</span>
-                  </div>
-                  <ModelBadges model={model} />
-                </DropdownMenuItem>
-              ))
-            )}
+          <DropdownMenuContent
+            align="start"
+            className="min-w-[20rem] max-w-[28rem]"
+          >
+            {hasSubmenus
+              ? providerNames.map((provider) => (
+                  <DropdownMenuSub key={provider}>
+                    <DropdownMenuSubTrigger>{provider}</DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="min-w-[18rem] max-w-[26rem]">
+                      {(byProvider.get(provider) ?? []).map((model) => (
+                        <DropdownMenuItem
+                          key={model.id}
+                          onClick={() => onModelChange(model.id)}
+                          className={cn(
+                            "flex flex-col items-start gap-0.5 py-2",
+                            model.id === selectedModel && "bg-accent",
+                          )}
+                        >
+                          <div className="flex items-center gap-2">
+                            {model.icon || (
+                              <Sparkles className="h-4 w-4 shrink-0" />
+                            )}
+                            <span className="font-medium">{model.name}</span>
+                          </div>
+                          <ModelBadges model={model} />
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                ))
+              : models.map((model) => (
+                  <DropdownMenuItem
+                    key={model.id}
+                    onClick={() => onModelChange(model.id)}
+                    className={cn(
+                      "flex flex-col items-start gap-0.5 py-2",
+                      model.id === selectedModel && "bg-accent",
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      {model.icon || <Sparkles className="h-4 w-4 shrink-0" />}
+                      <span className="font-medium">{model.name}</span>
+                    </div>
+                    <ModelBadges model={model} />
+                  </DropdownMenuItem>
+                ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

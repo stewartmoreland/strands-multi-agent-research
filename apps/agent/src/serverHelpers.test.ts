@@ -1,15 +1,13 @@
-import { describe, it, expect } from "vitest";
 import { IncomingMessage } from "node:http";
-import {
-  getActorIdFromAuth,
-  parseBody,
-  sendEvent,
-} from "./serverHelpers";
+import { describe, expect, it } from "vitest";
+import { getActorIdFromAuth, parseBody, sendEvent } from "./serverHelpers";
 
-function createMockRequest(overrides: Partial<{
-  headers: Record<string, string>;
-  body: string;
-}> = {}): IncomingMessage {
+function createMockRequest(
+  overrides: Partial<{
+    headers: Record<string, string>;
+    body: string;
+  }> = {},
+): IncomingMessage {
   const { headers = {}, body = "" } = overrides;
   const chunks = body ? [Buffer.from(body)] : [];
   const req = {

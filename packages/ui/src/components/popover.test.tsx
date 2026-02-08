@@ -1,11 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import {
   Popover,
-  PopoverTrigger,
-  PopoverContent,
   PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
 } from "./popover";
 
 describe("Popover", () => {
@@ -14,7 +14,7 @@ describe("Popover", () => {
       <Popover {...props}>
         <PopoverTrigger>Open Popover</PopoverTrigger>
         <PopoverContent>Popover Content</PopoverContent>
-      </Popover>
+      </Popover>,
     );
   };
 
@@ -139,7 +139,7 @@ describe("Popover", () => {
       <Popover open={false} onOpenChange={onOpenChange}>
         <PopoverTrigger>Open Popover</PopoverTrigger>
         <PopoverContent>Popover Content</PopoverContent>
-      </Popover>
+      </Popover>,
     );
 
     const trigger = screen.getByText("Open Popover");
@@ -159,7 +159,7 @@ describe("Popover", () => {
           <div>Anchor element</div>
         </PopoverAnchor>
         <PopoverContent>Popover Content</PopoverContent>
-      </Popover>
+      </Popover>,
     );
 
     const trigger = screen.getByText("Open Popover");

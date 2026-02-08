@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { validateConfig, config } from "./config";
+import { describe, expect, it } from "vitest";
+import { config, validateConfig } from "./config";
 
 describe("validateConfig", () => {
   it("returns object with valid and errors", () => {

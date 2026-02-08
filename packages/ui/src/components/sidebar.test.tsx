@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import {
   Sidebar,
   SidebarContent,
@@ -35,7 +35,7 @@ describe("Sidebar", () => {
           <SidebarContent>Content</SidebarContent>
           <SidebarFooter>Footer</SidebarFooter>
         </Sidebar>
-      </SidebarProvider>
+      </SidebarProvider>,
     );
 
     expect(screen.getByText("Header")).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe("Sidebar", () => {
             <SidebarGroup>Group 2</SidebarGroup>
           </SidebarContent>
         </Sidebar>
-      </SidebarProvider>
+      </SidebarProvider>,
     );
 
     expect(screen.getByText("Group 1")).toBeInTheDocument();

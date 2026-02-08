@@ -1,46 +1,49 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { useEffect, useMemo, useState } from "react"
+import { motion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 
 function generateWavePath(
   yOffset: number,
   amplitude: number,
   frequency: number,
   width: number,
-  phase: number
+  phase: number,
 ): string {
-  const points: string[] = []
-  const steps = 100
+  const points: string[] = [];
+  const steps = 100;
 
   for (let i = 0; i <= steps; i++) {
-    const x = (i / steps) * width
+    const x = (i / steps) * width;
     const y =
       yOffset +
-      Math.sin((x / width) * Math.PI * 2 * frequency + phase) * amplitude
-    points.push(`${x},${y}`)
+      Math.sin((x / width) * Math.PI * 2 * frequency + phase) * amplitude;
+    points.push(`${x},${y}`);
   }
 
-  return `M${points[0]} ${points.slice(1).map((p) => `L${p}`).join(" ")}`
+  return `M${points[0]} ${points
+    .slice(1)
+    .map((p) => `L${p}`)
+    .join(" ")}`;
 }
 
 interface WaveConfig {
-  yOffset: number
-  amplitude: number
-  frequency: number
-  strokeColor: string
-  strokeWidth: number
-  duration: number
-  delay: number
-  opacity: number
+  yOffset: number;
+  amplitude: number;
+  frequency: number;
+  strokeColor: string;
+  strokeWidth: number;
+  duration: number;
+  delay: number;
+  opacity: number;
 }
 
 export function Waves() {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   const waves: WaveConfig[] = useMemo(
     () => [
@@ -125,8 +128,8 @@ export function Waves() {
         opacity: 0.18,
       },
     ],
-    []
-  )
+    [],
+  );
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -167,7 +170,7 @@ export function Waves() {
         }}
       />
     </div>
-  )
+  );
 }
 
 function WaveLine({ wave }: { wave: WaveConfig }) {
@@ -176,15 +179,15 @@ function WaveLine({ wave }: { wave: WaveConfig }) {
     wave.amplitude,
     wave.frequency,
     2000,
-    0
-  )
+    0,
+  );
   const path2 = generateWavePath(
     wave.yOffset,
     wave.amplitude,
     wave.frequency,
     2000,
-    Math.PI * 2
-  )
+    Math.PI * 2,
+  );
 
   return (
     <motion.path
@@ -206,5 +209,5 @@ function WaveLine({ wave }: { wave: WaveConfig }) {
         ease: "easeInOut",
       }}
     />
-  )
+  );
 }

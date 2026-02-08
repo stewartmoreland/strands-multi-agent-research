@@ -14,8 +14,8 @@
 
 // Export specialist tools (default: use env BEDROCK_MODEL_ID)
 export { analysisTool, createAnalysisTool } from "./analysis";
-export { researchTool, createResearchTool } from "./research";
-export { writingTool, createWritingTool } from "./writing";
+export { createResearchTool, researchTool } from "./research";
+export { createWritingTool, writingTool } from "./writing";
 
 // Export types for consumers who need them
 export type {

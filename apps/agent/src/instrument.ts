@@ -4,8 +4,8 @@
  * Traces are exported to AWS X-Ray via OTLP HTTP (GenAI Observability / Transaction Search).
  */
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
-import { NodeSDK } from "@opentelemetry/sdk-node";
 import { resourceFromAttributes } from "@opentelemetry/resources";
+import { NodeSDK } from "@opentelemetry/sdk-node";
 
 const region = process.env.AWS_REGION ?? "us-east-1";
 const serviceName =

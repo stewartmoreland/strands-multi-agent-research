@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import {
   Menubar,
   MenubarContent,
@@ -21,7 +21,7 @@ describe("Menubar", () => {
             <MenubarItem>Exit</MenubarItem>
           </MenubarContent>
         </MenubarMenu>
-      </Menubar>
+      </Menubar>,
     );
 
     expect(screen.getByText("File")).toBeInTheDocument();
@@ -33,7 +33,7 @@ describe("Menubar", () => {
         <MenubarMenu>
           <MenubarTrigger>File</MenubarTrigger>
         </MenubarMenu>
-      </Menubar>
+      </Menubar>,
     );
 
     expect(screen.getByRole("menubar")).toHaveClass("custom-menubar");
@@ -120,7 +120,7 @@ describe("Menubar", () => {
         <MenubarMenu>
           <MenubarTrigger>File</MenubarTrigger>
         </MenubarMenu>
-      </Menubar>
+      </Menubar>,
     );
 
     expect(screen.getByText("File")).toHaveClass("flex");

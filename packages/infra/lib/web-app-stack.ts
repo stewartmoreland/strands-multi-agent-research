@@ -1,3 +1,4 @@
+import * as cdk from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
@@ -9,7 +10,6 @@ import * as route53 from "aws-cdk-lib/aws-route53";
 import * as targets from "aws-cdk-lib/aws-route53-targets";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as s3assets from "aws-cdk-lib/aws-s3-assets";
-import * as cdk from "aws-cdk-lib";
 import type { Construct } from "constructs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -50,11 +50,19 @@ export class WebAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: WebAppStackProps) {
     super(scope, id, props);
 
-    const { domainName, hostedZoneId, hostedZoneName, certificateArn, userPoolId, userPoolClientId, cognitoRegion, agentApiUrl, agentInvocationsUrl } =
-      props;
+    const {
+      domainName,
+      hostedZoneId,
+      hostedZoneName,
+      certificateArn,
+      userPoolId,
+      userPoolClientId,
+      cognitoRegion,
+      agentApiUrl,
+      agentInvocationsUrl,
+    } = props;
 
-    const hasCustomDomain =
-      domainName && hostedZoneId && hostedZoneName;
+    const hasCustomDomain = domainName && hostedZoneId && hostedZoneName;
 
     // ==========================================================================
     // S3 Bucket for static website
@@ -107,9 +115,7 @@ export class WebAppStack extends cdk.Stack {
     // ==========================================================================
     const distribution = new cloudfront.Distribution(this, "Distribution", {
       defaultBehavior: {
-        origin: origins.S3BucketOrigin.withOriginAccessControl(
-          websiteBucket,
-        ),
+        origin: origins.S3BucketOrigin.withOriginAccessControl(websiteBucket),
       },
       defaultRootObject: "index.html",
       errorResponses: [
@@ -225,7 +231,10 @@ export class WebAppStack extends cdk.Stack {
       new iam.PolicyStatement({
         sid: "CloudFrontInvalidate",
         effect: iam.Effect.ALLOW,
-        actions: ["cloudfront:CreateInvalidation", "cloudfront:GetInvalidation"],
+        actions: [
+          "cloudfront:CreateInvalidation",
+          "cloudfront:GetInvalidation",
+        ],
         resources: ["*"],
       }),
     );
@@ -256,10 +265,7 @@ export class WebAppStack extends cdk.Stack {
             ],
           },
           build: {
-            commands: [
-              "echo Building web app with env vars...",
-              "yarn build",
-            ],
+            commands: ["echo Building web app with env vars...", "yarn build"],
           },
           post_build: {
             commands: [

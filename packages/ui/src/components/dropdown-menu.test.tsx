@@ -1,20 +1,20 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuCheckboxItem,
-  DropdownMenuRadioItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuRadioGroup,
+  DropdownMenuTrigger,
 } from "./dropdown-menu";
 
 describe("DropdownMenu", () => {
@@ -30,7 +30,7 @@ describe("DropdownMenu", () => {
           <DropdownMenuItem>Team</DropdownMenuItem>
           <DropdownMenuItem>Subscription</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     );
   };
 
@@ -87,7 +87,7 @@ describe("DropdownMenu", () => {
           </DropdownMenuCheckboxItem>
           <DropdownMenuCheckboxItem>Show Activity Bar</DropdownMenuCheckboxItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     );
 
     const trigger = screen.getByRole("button", { name: "Open Menu" });
@@ -109,7 +109,7 @@ describe("DropdownMenu", () => {
             <DropdownMenuRadioItem value="colm">Colm</DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     );
 
     const trigger = screen.getByRole("button", { name: "Open Menu" });
@@ -136,7 +136,7 @@ describe("DropdownMenu", () => {
             </DropdownMenuPortal>
           </DropdownMenuSub>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     );
 
     const trigger = screen.getByRole("button", { name: "Open Menu" });
@@ -160,7 +160,7 @@ describe("DropdownMenu", () => {
         <DropdownMenuContent className="custom-content">
           <DropdownMenuItem className="custom-item">Item</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     );
 
     const trigger = screen.getByRole("button", { name: "Open Menu" });
@@ -175,7 +175,7 @@ describe("DropdownMenu", () => {
         <DropdownMenuContent>
           <DropdownMenuItem>Item</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     );
 
     const trigger = screen.getByRole("button", { name: "Open Menu" });
@@ -193,7 +193,7 @@ describe("DropdownMenu", () => {
           <DropdownMenuItem disabled>Disabled Item</DropdownMenuItem>
           <DropdownMenuItem>Enabled Item</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     );
 
     const trigger = screen.getByRole("button", { name: "Open Menu" });
@@ -215,7 +215,7 @@ describe("DropdownMenu", () => {
           <DropdownMenuItem>Second Item</DropdownMenuItem>
           <DropdownMenuItem>Third Item</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     );
 
     const trigger = screen.getByRole("button", { name: "Open Menu" });
@@ -241,7 +241,7 @@ describe("DropdownMenu", () => {
         <DropdownMenuContent>
           <DropdownMenuItem>Item</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     );
 
     expect(screen.getByRole("menu")).toBeInTheDocument();

@@ -1,12 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "./tabs";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 describe("Tabs", () => {
   const renderTabs = (props = {}) => {
@@ -18,7 +13,7 @@ describe("Tabs", () => {
         </TabsList>
         <TabsContent value="tab1">Content 1</TabsContent>
         <TabsContent value="tab2">Content 2</TabsContent>
-      </Tabs>
+      </Tabs>,
     );
   };
 
@@ -74,7 +69,7 @@ describe("Tabs", () => {
         <TabsContent value="tab1" className="custom-content">
           Content 1
         </TabsContent>
-      </Tabs>
+      </Tabs>,
     );
 
     const tabs = screen.getByRole("tablist").parentElement;
@@ -99,7 +94,7 @@ describe("Tabs", () => {
         </TabsList>
         <TabsContent value="tab1">Content 1</TabsContent>
         <TabsContent value="tab2">Content 2</TabsContent>
-      </Tabs>
+      </Tabs>,
     );
 
     const tabTriggers = screen.getAllByRole("tab");
@@ -117,7 +112,7 @@ describe("Tabs", () => {
         </TabsList>
         <TabsContent value="tab1">Content 1</TabsContent>
         <TabsContent value="tab2">Content 2</TabsContent>
-      </Tabs>
+      </Tabs>,
     );
 
     const tabTriggers = screen.getAllByRole("tab");
@@ -149,7 +144,7 @@ describe("Tabs", () => {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="tab1">Content 1</TabsContent>
-      </Tabs>
+      </Tabs>,
     );
 
     const tabs = screen.getByLabelText("Custom tabs");

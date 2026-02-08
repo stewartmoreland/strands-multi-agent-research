@@ -27,6 +27,9 @@ if (typeof win.ResizeObserver === "undefined") {
   } as unknown as typeof ResizeObserver;
 }
 
-if (typeof win.Element !== "undefined" && !win.Element.prototype.scrollIntoView) {
+if (
+  typeof win.Element !== "undefined" &&
+  !win.Element.prototype.scrollIntoView
+) {
   win.Element.prototype.scrollIntoView = () => {};
 }

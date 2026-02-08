@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
+import { describe, expect, it } from "vitest";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 
 describe("Avatar", () => {
   it("renders correctly with default props", () => {
@@ -32,7 +32,7 @@ describe("Avatar", () => {
       <Avatar>
         <AvatarImage src="/test.jpg" alt="Test Avatar" />
         <AvatarFallback>FB</AvatarFallback>
-      </Avatar>
+      </Avatar>,
     );
     const fallback = screen.getByText("FB");
     expect(fallback).toBeInTheDocument();
@@ -53,7 +53,7 @@ describe("Avatar", () => {
     render(
       <Avatar>
         <AvatarFallback>FB</AvatarFallback>
-      </Avatar>
+      </Avatar>,
     );
     const fallback = screen.getByText("FB");
     expect(fallback).toHaveClass("flex items-center justify-center");
@@ -67,11 +67,11 @@ describe("Avatar", () => {
           className={`size-${size === "sm" ? "8" : size === "md" ? "10" : "12"}`}
         >
           <AvatarFallback>FB</AvatarFallback>
-        </Avatar>
+        </Avatar>,
       );
       const avatar = screen.getByText("FB");
       expect(avatar.parentElement).toHaveClass(
-        `size-${size === "sm" ? "8" : size === "md" ? "10" : "12"}`
+        `size-${size === "sm" ? "8" : size === "md" ? "10" : "12"}`,
       );
       unmount();
     });

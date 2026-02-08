@@ -10,7 +10,8 @@ export const config = {
   agent: {
     /** URL for POST /invocations (SSE). Direct AgentCore in prod, local agent in dev. */
     invocationsUrl:
-      import.meta.env.VITE_AGENT_INVOCATIONS_URL || "http://localhost:8080/agent/invocations",
+      import.meta.env.VITE_AGENT_INVOCATIONS_URL ||
+      "http://localhost:8080/agent/invocations",
     /** Base URL for API (models, sessions). No invocations. */
     apiUrl: import.meta.env.VITE_AGENT_API_URL || "/api",
     /** GET /sessions - list chat sessions */

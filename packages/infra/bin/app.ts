@@ -23,8 +23,7 @@ const hostedZoneName = app.node.tryGetContext("hostedZoneName") as
   | string
   | undefined;
 
-const hasCustomDomain =
-  domainName && hostedZoneId && hostedZoneName;
+const hasCustomDomain = domainName && hostedZoneId && hostedZoneName;
 
 const researchAgentStack = new ResearchAgentStack(app, "ResearchAgentStack", {
   env,
@@ -78,7 +77,7 @@ const webAppStack = new WebAppStack(app, "ResearchAgentWebAppStack", {
   userPoolClientId: researchAgentStack.userPoolClient.userPoolClientId,
   cognitoRegion: researchAgentStack.region,
   agentApiUrl: apiStack.apiUrl,
-  agentInvocationsUrl: `https://bedrock-agentcore.${researchAgentStack.region}.amazonaws.com/runtimes/${researchAgentStack.agentRuntimeId}/invocations?accountId=${researchAgentStack.account}`,  
+  agentInvocationsUrl: `https://bedrock-agentcore.${researchAgentStack.region}.amazonaws.com/runtimes/${researchAgentStack.agentRuntimeId}/invocations?accountId=${researchAgentStack.account}`,
   tags: {
     Project: "multi-agent-research",
     ManagedBy: "CDK",

@@ -4,10 +4,10 @@
  * No /invocations (frontend calls AgentCore directly for SSE).
  */
 
-import type { Request, Response, NextFunction } from "express";
+import { listFoundationModels, memoryAdapter } from "@repo/util";
+import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import { getActorIdFromToken } from "./jwt";
-import { memoryAdapter, listFoundationModels } from "@repo/util";
 
 const LOG_PREFIX = "[api]";
 

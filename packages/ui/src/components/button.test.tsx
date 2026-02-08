@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { Button } from "./button";
 
 describe("Button", () => {
@@ -48,7 +48,7 @@ describe("Button", () => {
     render(
       <Button asChild>
         <a href="/">Link Button</a>
-      </Button>
+      </Button>,
     );
     const link = screen.getByRole("link");
     expect(link).toBeInTheDocument();
