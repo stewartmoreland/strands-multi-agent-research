@@ -3,12 +3,13 @@
  */
 
 import app from "./app";
+import { logger } from "./logger";
 
 const PORT = Number.parseInt(process.env.API_PORT || "3001", 10);
 
 app.listen(PORT, () => {
-  console.log("[api] Listening on http://localhost:%s", PORT);
-  console.log(
-    "[api] Routes: GET /models, GET /sessions, GET /sessions/:id/events",
-  );
+  logger.info("Listening", {
+    url: `http://localhost:${PORT}`,
+    routes: ["GET /models", "GET /sessions", "GET /sessions/:id/events"],
+  });
 });

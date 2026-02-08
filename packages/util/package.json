@@ -19,6 +19,11 @@
       "types": "./dist/memoryAdapter.d.ts",
       "import": "./dist/memoryAdapter.js",
       "require": "./dist/memoryAdapter.js"
+    },
+    "./logger": {
+      "types": "./dist/logger.d.ts",
+      "import": "./dist/logger.js",
+      "require": "./dist/logger.js"
     }
   },
   "scripts": {
@@ -33,6 +38,7 @@
   "dependencies": {
     "@aws-sdk/client-bedrock": "^3.985.0",
     "@aws-sdk/client-bedrock-agentcore": "^3.985.0",
+    "@opentelemetry/api": "^1.9.0",
     "@repo/shared": "*"
   },
   "devDependencies": {

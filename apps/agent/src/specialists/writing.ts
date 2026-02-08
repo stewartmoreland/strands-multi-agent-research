@@ -9,6 +9,7 @@
  * This specialist does not require external tools - it uses pure LLM inference.
  */
 
+import { createLogger } from "@repo/util/logger";
 import { Agent, BedrockModel, tool } from "@strands-agents/sdk";
 import { z } from "zod";
 import {
@@ -16,6 +17,8 @@ import {
   type OutputFormat,
   type WritingInput,
 } from "./types";
+
+const logger = createLogger("research_agent", { defaultAttributes: { specialist: "Writing Specialist" } });
 
 /**
  * System prompt for the writing specialist agent
@@ -62,7 +65,7 @@ function createWritingAgent(
     printer: false,
   });
 
-  console.log("[Writing Specialist] Initialized");
+  logger.info("Initialized");
   return agent;
 }
 
@@ -167,12 +170,12 @@ async function performWriting(
       }
     }
   } catch (error) {
-    console.error("[Writing Specialist] Agent invocation failed:", error);
-    console.log(`[Writing Specialist] Using fallback for: ${task}`);
+    logger.error("Agent invocation failed", { task }, error instanceof Error ? error : new Error(String(error)));
+    logger.info("Using fallback", { task });
     return getFallbackWriting(task, previousNotes);
   }
 
-  console.log(`[Writing Specialist] Using fallback for: ${task}`);
+  logger.info("Using fallback", { task });
   return getFallbackWriting(task, previousNotes);
 }
 
@@ -198,7 +201,7 @@ export const writingTool = tool({
       .describe("Desired output format: summary, report, or bullet_points"),
   }),
   callback: async ({ task, previousNotes, format }) => {
-    console.log(`[Writing Specialist] Processing: ${task}`);
+    logger.info("Processing", { task });
     return performWriting({ task, previousNotes, format });
   },
 });
@@ -225,7 +228,7 @@ export function createWritingTool(modelId: string) {
         .describe("Desired output format: summary, report, or bullet_points"),
     }),
     callback: async ({ task, previousNotes, format }) => {
-      console.log(`[Writing Specialist] Processing: ${task}`);
+      logger.info("Processing", { task });
       return performWriting({ task, previousNotes, format }, modelId);
     },
   });

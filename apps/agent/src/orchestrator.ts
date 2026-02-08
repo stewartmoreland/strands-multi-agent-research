@@ -5,6 +5,7 @@
 
 import type { UiEvent } from "@repo/shared/events";
 import { memoryAdapter } from "@repo/util";
+import { logger } from "./logger";
 import { Agent, BedrockModel } from "@strands-agents/sdk";
 import {
   createAnalysisTool,
@@ -89,7 +90,7 @@ export const orchestrator = {
           prompt,
         );
       } catch (error) {
-        console.warn("Failed to log user message to memory:", error);
+        logger.warn("Failed to log user message to memory", { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -104,7 +105,7 @@ export const orchestrator = {
             .join("\n")}\n`;
         }
       } catch (error) {
-        console.warn("Failed to retrieve memories:", error);
+        logger.warn("Failed to retrieve memories", { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -128,7 +129,7 @@ export const orchestrator = {
         }
       }
     } catch (error) {
-      console.error("Agent stream error:", error);
+      logger.error("Agent stream error", undefined, error instanceof Error ? error : new Error(String(error)));
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
       yield { type: "error", message: errorMessage };
@@ -144,7 +145,7 @@ export const orchestrator = {
           fullResponse,
         );
       } catch (error) {
-        console.warn("Failed to log assistant message to memory:", error);
+        logger.warn("Failed to log assistant message to memory", { error: error instanceof Error ? error.message : String(error) });
       }
     }
   },
@@ -249,7 +250,7 @@ function mapStrandsEventToUiEvent(event: unknown): UiEvent | null {
   }
 
   if (process.env.NODE_ENV === "development") {
-    console.debug("Unhandled Strands event:", evt.type, evt);
+    logger.debug("Unhandled Strands event", { type: evt.type, event: evt });
   }
 
   return null;

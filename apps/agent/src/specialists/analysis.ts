@@ -9,9 +9,12 @@
  * Falls back to simulated results when AgentCore is not available.
  */
 
+import { createLogger } from "@repo/util/logger";
 import { Agent, BedrockModel, tool } from "@strands-agents/sdk";
 import { z } from "zod";
 import { getSpecialistConfig, type AnalysisInput } from "./types";
+
+const logger = createLogger("research_agent", { defaultAttributes: { specialist: "Analysis Specialist" } });
 
 /**
  * System prompt for the analysis specialist agent
@@ -40,10 +43,7 @@ async function createAnalysisAgent(
   config: ReturnType<typeof getSpecialistConfig>,
 ): Promise<Agent | null> {
   if (!config.useAgentCore) {
-    console.log(
-      "[Analysis Specialist] AgentCore disabled, using local fallback",
-      config,
-    );
+    logger.info("AgentCore disabled, using local fallback", { config });
     return null;
   }
 
@@ -64,15 +64,10 @@ async function createAnalysisAgent(
       printer: false,
     });
 
-    console.log(
-      "[Analysis Specialist] Initialized with AgentCore Code Interpreter",
-    );
+    logger.info("Initialized with AgentCore Code Interpreter");
     return agent;
   } catch (error) {
-    console.warn(
-      "[Analysis Specialist] Failed to initialize AgentCore Code Interpreter:",
-      error instanceof Error ? error.message : error,
-    );
+    logger.warn("Failed to initialize AgentCore Code Interpreter", { error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }
@@ -172,13 +167,13 @@ async function performAnalysis(
         }
       }
     } catch (error) {
-      console.error("[Analysis Specialist] Agent invocation failed:", error);
-      console.log(`[Analysis Specialist] Using fallback for: ${task}`);
+      logger.error("Agent invocation failed", { task }, error instanceof Error ? error : new Error(String(error)));
+      logger.info("Using fallback", { task });
       return getFallbackAnalysis(task, previousNotes, data);
     }
   }
 
-  console.log(`[Analysis Specialist] Using fallback for: ${task}`);
+  logger.info("Using fallback", { task });
   return getFallbackAnalysis(task, previousNotes, data);
 }
 
@@ -208,7 +203,7 @@ export const analysisTool = tool({
       .describe("Preferred programming language for code execution"),
   }),
   callback: async ({ task, data, previousNotes, language }) => {
-    console.log(`[Analysis Specialist] Processing: ${task}`);
+    logger.info("Processing", { task });
     return performAnalysis({ task, data, previousNotes, language });
   },
 });
@@ -237,7 +232,7 @@ export function createAnalysisTool(modelId: string) {
         .describe("Preferred programming language for code execution"),
     }),
     callback: async ({ task, data, previousNotes, language }) => {
-      console.log(`[Analysis Specialist] Processing: ${task}`);
+      logger.info("Processing", { task });
       return performAnalysis({ task, data, previousNotes, language }, modelId);
     },
   });

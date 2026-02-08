@@ -190,6 +190,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-lambda-powertools/commons@npm:2.30.2":
+  version: 2.30.2
+  resolution: "@aws-lambda-powertools/commons@npm:2.30.2"
+  dependencies:
+    "@aws/lambda-invoke-store": "npm:0.2.3"
+  checksum: 10c0/4147877b7f3621ff0c45d99a19a3a6bdf295ff4ff69b6c3bc49c9cb15b0f91d12650fc90377a968c659c9e1a5b3b059ef85d1e4c76b7ae36fb6335b66ed4b7d1
+  languageName: node
+  linkType: hard
+
+"@aws-lambda-powertools/logger@npm:^2.30.2":
+  version: 2.30.2
+  resolution: "@aws-lambda-powertools/logger@npm:2.30.2"
+  dependencies:
+    "@aws-lambda-powertools/commons": "npm:2.30.2"
+    "@aws/lambda-invoke-store": "npm:0.2.3"
+  peerDependencies:
+    "@aws-lambda-powertools/jmespath": 2.30.2
+    "@middy/core": 4.x || 5.x || 6.x || 7.x
+  peerDependenciesMeta:
+    "@aws-lambda-powertools/jmespath":
+      optional: true
+    "@middy/core":
+      optional: true
+  checksum: 10c0/dad8ec43aa3e6d28a4ffb59f9e90c88a72b576bbb04c518645287b76ce6d2a3acb916ae23418ba4da52baf67ce8a82436848a9f443a371a1ab0a3636e1fae02f
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-bedrock-agent-runtime@npm:^3.984.0":
   version: 3.984.0
   resolution: "@aws-sdk/client-bedrock-agent-runtime@npm:3.984.0"
@@ -1591,7 +1618,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws/lambda-invoke-store@npm:^0.2.2":
+"@aws/lambda-invoke-store@npm:0.2.3, @aws/lambda-invoke-store@npm:^0.2.2":
   version: 0.2.3
   resolution: "@aws/lambda-invoke-store@npm:0.2.3"
   checksum: 10c0/3869a5d2494ff81fba306d603c0f2e36c59f89c4efdffd1105a208a595da77059547209a163b6f0c1b716e9d273ce24f94dcbd5a08bad74b2602d13711b0cb3b
@@ -3104,6 +3131,18 @@ __metadata:
   dependencies:
     langium: "npm:3.3.1"
   checksum: 10c0/9711174ff31f32d93c8da03ed6b1a1380f5ccfb27ffcdfaf42236da4b381aa0602752b3afc7893582d5ccdfc79b0465c69afe963b825328049575831f4ddd28e
+  languageName: node
+  linkType: hard
+
+"@middy/core@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "@middy/core@npm:7.0.2"
+  peerDependencies:
+    "@aws/durable-execution-sdk-js": ^1.0.0
+  peerDependenciesMeta:
+    "@aws/durable-execution-sdk-js":
+      optional: true
+  checksum: 10c0/dfd264d89c2bfab521026f062331c5942552bd7d382a088a784899ac2a8d9b04a7274e7c563ecbaa5dc1b08600ec86290ed71a21c564e9bda04c0a113b0d38a2
   languageName: node
   linkType: hard
 
@@ -5189,6 +5228,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-bedrock": "npm:^3.985.0"
     "@aws-sdk/client-bedrock-agentcore": "npm:^3.985.0"
+    "@opentelemetry/api": "npm:^1.9.0"
     "@repo/eslint-config": "npm:*"
     "@repo/shared": "npm:*"
     "@repo/typescript-config": "npm:*"
@@ -7299,9 +7339,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api@workspace:apps/api"
   dependencies:
+    "@aws-lambda-powertools/logger": "npm:^2.30.2"
     "@aws-sdk/client-bedrock": "npm:^3.985.0"
     "@aws-sdk/client-bedrock-agentcore": "npm:^3.985.0"
     "@codegenie/serverless-express": "npm:^4.17.1"
+    "@middy/core": "npm:^7.0.2"
     "@repo/eslint-config": "npm:*"
     "@repo/shared": "npm:*"
     "@repo/typescript-config": "npm:*"

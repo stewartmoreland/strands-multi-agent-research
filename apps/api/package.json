@@ -14,9 +14,11 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@aws-lambda-powertools/logger": "^2.30.2",
     "@aws-sdk/client-bedrock": "^3.985.0",
     "@aws-sdk/client-bedrock-agentcore": "^3.985.0",
     "@codegenie/serverless-express": "^4.17.1",
+    "@middy/core": "^7.0.2",
     "@repo/shared": "*",
     "@repo/util": "*",
     "express": "^5.2.1"

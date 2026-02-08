@@ -11,6 +11,10 @@
  * - Authentication via Cognito M2M or custom JWT
  */
 
+import { createLogger } from "@repo/util/logger";
+
+const logger = createLogger("research_agent", { defaultAttributes: { component: "GatewayClient" } });
+
 interface ToolCallResult {
   success: boolean;
   data?: unknown;
@@ -42,9 +46,7 @@ class GatewayMcpClient {
     this.tools = new Map();
 
     if (!this.gatewayUrl) {
-      console.log(
-        "[GatewayClient] No Gateway URL configured, tool calls will be simulated",
-      );
+      logger.info("No Gateway URL configured, tool calls will be simulated");
     }
   }
 
@@ -89,7 +91,7 @@ class GatewayMcpClient {
     // const tools = await client.listTools();
     // return tools;
 
-    console.log("[GatewayClient] Would list tools from Gateway");
+    logger.info("Would list tools from Gateway");
     return [];
   }
 
@@ -97,8 +99,7 @@ class GatewayMcpClient {
    * Call a tool through the Gateway
    */
   async callTool(toolName: string, args: unknown): Promise<ToolCallResult> {
-    console.log(`[GatewayClient] Calling tool: ${toolName}`);
-    console.log(`[GatewayClient] Arguments:`, JSON.stringify(args, null, 2));
+    logger.info("Calling tool", { tool_name: toolName, arguments: args });
 
     if (!this.gatewayUrl) {
       // Simulate tool call for development
@@ -138,7 +139,7 @@ class GatewayMcpClient {
    * Search for tools using semantic search
    */
   async searchTools(query: string): Promise<McpToolDefinition[]> {
-    console.log(`[GatewayClient] Searching tools for: ${query}`);
+    logger.info("Searching tools", { query });
 
     if (!this.gatewayUrl) {
       // Return all simulated tools for development
@@ -147,7 +148,7 @@ class GatewayMcpClient {
 
     // Production: Use Gateway's semantic search
     // This would be done through the MCP protocol or a dedicated search endpoint
-    console.log("[GatewayClient] Would search tools in Gateway");
+    logger.info("Would search tools in Gateway");
     return [];
   }
 

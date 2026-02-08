@@ -7,9 +7,9 @@
 import { listFoundationModels, memoryAdapter } from "@repo/util";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
+import { randomUUID } from "node:crypto";
 import { getActorIdFromToken } from "./jwt";
-
-const LOG_PREFIX = "[api]";
+import { logger } from "./logger";
 
 const app = express();
 app.use(express.json());
@@ -29,14 +29,26 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Request logging so API activity is visible when running with turbo/yarn dev
+// Request ID and structured logging: append request_id for CloudWatch correlation
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const requestId =
+    (req.headers["x-request-id"] as string) ?? randomUUID();
+  res.setHeader("X-Request-Id", requestId);
+  logger.appendKeys({ request_id: requestId });
+  next();
+});
+
+// Request completion logging (structured for CloudWatch Logs Insights)
 app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   res.on("finish", () => {
-    const duration = Date.now() - start;
-    console.log(
-      `${LOG_PREFIX} ${req.method} ${req.path} ${res.statusCode} ${duration}ms`,
-    );
+    const duration_ms = Date.now() - start;
+    logger.info("Request completed", {
+      method: req.method,
+      path: req.path,
+      status_code: res.statusCode,
+      duration_ms,
+    });
   });
   next();
 });
@@ -54,7 +66,7 @@ app.get("/models", async (_req, res: Response) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     const stack = err instanceof Error ? err.stack : undefined;
-    console.error(`${LOG_PREFIX} GET /models error:`, message, stack ?? "");
+    logger.error("GET /models failed", { error: message, stack });
     const body: { error: string; detail?: string } = {
       error: "Failed to list models",
     };
@@ -95,7 +107,7 @@ app.get("/sessions", async (req: Request, res: Response) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     const stack = err instanceof Error ? err.stack : undefined;
-    console.error(`${LOG_PREFIX} GET /sessions error:`, message, stack ?? "");
+    logger.error("GET /sessions failed", { error: message, stack });
     const body: { error: string; detail?: string } = {
       error: "Failed to list sessions",
     };
@@ -123,6 +135,8 @@ app.get("/sessions/:sessionId/events", async (req: Request, res: Response) => {
     return;
   }
 
+  logger.appendKeys({ session_id: sessionId });
+
   try {
     const eventsResponse = await memoryAdapter.listEvents(actorId, sessionId, {
       maxResults: 100,
@@ -140,7 +154,10 @@ app.get("/sessions/:sessionId/events", async (req: Request, res: Response) => {
     });
     res.end(JSON.stringify({ events }));
   } catch (error) {
-    console.error("List sessions error:", error);
+    logger.error("GET /sessions/:sessionId/events failed", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     res.writeHead(500, {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
