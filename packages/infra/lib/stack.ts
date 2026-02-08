@@ -318,7 +318,16 @@ exports.handler = async (event, context) => {
     // ==========================================================================
     this.agentRole = new iam.Role(this, "AgentRole", {
       roleName: "research-agent-role",
-      assumedBy: new iam.ServicePrincipal("bedrock-agentcore.amazonaws.com"),
+      assumedBy: new iam.ServicePrincipal(
+        "bedrock-agentcore.amazonaws.com",
+      ).withConditions({
+        StringEquals: {
+          "aws:SourceAccount": this.account,
+        },
+        ArnLike: {
+          "aws:SourceArn": `arn:aws:bedrock-agentcore:${this.region}:${this.account}:*`,
+        },
+      }),
       description: "Role for the research agent runtime",
     });
 
@@ -411,7 +420,7 @@ exports.handler = async (event, context) => {
         ],
         resources: [
           `arn:aws:bedrock-agentcore:${this.region}:${this.account}:workload-identity-directory/default`,
-          `arn:aws:bedrock-agentcore:${this.region}:${this.account}:workload-identity-directory/default/workload-identity/*`,
+          `arn:aws:bedrock-agentcore:${this.region}:${this.account}:workload-identity-directory/default/workload-identity/research_agent-*`,
         ],
       }),
     );
@@ -666,6 +675,7 @@ exports.handler = async (event, context) => {
           // .well-known/openid-configuration
           discoveryUrl: `https://cognito-idp.${this.region}.amazonaws.com/${this.userPool.userPoolId}/.well-known/openid-configuration`,
           allowedClients: [this.userPoolClient.userPoolClientId],
+          allowedAudience: [this.userPoolClient.userPoolClientId],
         },
       },
       roleArn: this.agentRole.roleArn,
@@ -690,9 +700,10 @@ exports.handler = async (event, context) => {
       },
     });
 
-    // Ensure the runtime is created after ECR/image build and AgentCore Memory/Gateway
+    // Ensure the runtime is created after ECR/image build, Cognito client, and AgentCore Memory/Gateway
     agentRuntime.node.addDependency(this.ecrRepository);
     agentRuntime.node.addDependency(triggerBuild);
+    agentRuntime.node.addDependency(this.userPoolClient);
     agentRuntime.node.addDependency(agentMemory);
     agentRuntime.node.addDependency(agentGateway);
 
