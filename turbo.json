@@ -22,6 +22,7 @@
       "outputs": []
     },
   "test": {
+    "dependsOn": ["^build"],
     "outputs": [],
     "inputs": ["$TURBO_DEFAULT$", "src/**", "lib/**", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
   },
