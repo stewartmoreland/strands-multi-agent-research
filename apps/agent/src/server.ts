@@ -1,9 +1,15 @@
+console.log("[research-agent] server.js loading");
 import { context, propagation } from "@opentelemetry/api";
 import type { InvocationRequest } from "@repo/shared";
 import { listFoundationModels, memoryAdapter } from "@repo/util";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { orchestrator } from "./orchestrator";
-import { getActorIdFromAuth, parseBody, sendEvent } from "./serverHelpers";
+import {
+  getActorIdFromAuth,
+  normalizeInvocationsBody,
+  parseBody,
+  sendEvent,
+} from "./serverHelpers";
 
 const PORT = parseInt(process.env.PORT || "8080", 10);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -15,8 +21,11 @@ async function handleInvocations(
   req: IncomingMessage,
   res: ServerResponse,
 ): Promise<void> {
-  // Parse request body
-  const body = await parseBody<InvocationRequest>(req);
+  // Parse request body (supports top-level prompt or input.prompt per AgentCore contract)
+  const raw = await parseBody<InvocationRequest | { input?: InvocationRequest }>(
+    req,
+  );
+  const body = normalizeInvocationsBody(raw);
   const { prompt, sessionId, userId, modelId } = body;
 
   if (!prompt) {
@@ -310,6 +319,7 @@ async function requestHandler(
 }
 
 // Create and start server
+console.log("[research-agent] creating HTTP server");
 const server = createServer(requestHandler);
 
 server.listen(PORT, HOST, () => {

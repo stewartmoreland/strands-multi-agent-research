@@ -826,7 +826,8 @@ exports.handler = async (event, context) => {
 
     new cdk.CfnOutput(this, "AgentLogGroupName", {
       value: agentLogGroup.logGroupName,
-      description: "CloudWatch log group for agent",
+      description:
+        "Custom log group. Runtime container logs are under /aws/bedrock-agentcore/runtimes/<runtimeId>-<endpoint>/runtime-logs",
       exportName: "ResearchAgentLogGroup",
     });
 

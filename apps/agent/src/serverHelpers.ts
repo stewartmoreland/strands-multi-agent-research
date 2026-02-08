@@ -3,8 +3,28 @@
  * Extracted for testability.
  */
 
+import type { InvocationRequest } from "@repo/shared";
 import type { UiEvent } from "@repo/shared/events";
 import type { IncomingMessage, ServerResponse } from "node:http";
+
+/**
+ * Normalize request body to InvocationRequest.
+ * AgentCore may send either { prompt, ... } or { input: { prompt, ... } }.
+ */
+export function normalizeInvocationsBody(
+  raw: InvocationRequest | { input?: InvocationRequest },
+): InvocationRequest {
+  if (raw && typeof (raw as { input?: unknown }).input === "object") {
+    const inner = (raw as { input: InvocationRequest }).input;
+    return {
+      prompt: inner.prompt,
+      sessionId: inner.sessionId,
+      userId: inner.userId,
+      modelId: inner.modelId,
+    };
+  }
+  return raw as InvocationRequest;
+}
 
 /**
  * Resolve actorId (user sub) from Authorization Bearer JWT.

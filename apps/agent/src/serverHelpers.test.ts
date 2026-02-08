@@ -1,6 +1,11 @@
 import { IncomingMessage } from "node:http";
 import { describe, expect, it } from "vitest";
-import { getActorIdFromAuth, parseBody, sendEvent } from "./serverHelpers";
+import {
+  getActorIdFromAuth,
+  normalizeInvocationsBody,
+  parseBody,
+  sendEvent,
+} from "./serverHelpers";
 
 function createMockRequest(
   overrides: Partial<{
@@ -59,6 +64,40 @@ describe("getActorIdFromAuth", () => {
       headers: { authorization: `Bearer ${token}` },
     });
     expect(getActorIdFromAuth(req)).toBeNull();
+  });
+});
+
+describe("normalizeInvocationsBody", () => {
+  it("returns top-level prompt and fields as-is", () => {
+    const raw = {
+      prompt: "Hello",
+      sessionId: "s1",
+      userId: "u1",
+      modelId: "m1",
+    };
+    expect(normalizeInvocationsBody(raw)).toEqual(raw);
+  });
+
+  it("unwraps input.prompt and input fields when input is present", () => {
+    const raw = {
+      input: {
+        prompt: "Hi",
+        sessionId: "s2",
+        userId: "u2",
+        modelId: "m2",
+      },
+    };
+    expect(normalizeInvocationsBody(raw)).toEqual({
+      prompt: "Hi",
+      sessionId: "s2",
+      userId: "u2",
+      modelId: "m2",
+    });
+  });
+
+  it("returns top-level when input is not an object", () => {
+    const raw = { prompt: "Hey", input: "ignored" };
+    expect(normalizeInvocationsBody(raw)).toEqual({ prompt: "Hey", input: "ignored" });
   });
 });
 
