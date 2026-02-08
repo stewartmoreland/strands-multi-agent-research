@@ -97,7 +97,10 @@ describe("normalizeInvocationsBody", () => {
 
   it("returns top-level when input is not an object", () => {
     const raw = { prompt: "Hey", input: "ignored" };
-    expect(normalizeInvocationsBody(raw)).toEqual({ prompt: "Hey", input: "ignored" });
+    expect(normalizeInvocationsBody(raw)).toEqual({
+      prompt: "Hey",
+      input: "ignored",
+    });
   });
 });
 

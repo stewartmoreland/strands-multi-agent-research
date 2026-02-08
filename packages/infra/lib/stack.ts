@@ -675,7 +675,8 @@ exports.handler = async (event, context) => {
           // .well-known/openid-configuration
           discoveryUrl: `https://cognito-idp.${this.region}.amazonaws.com/${this.userPool.userPoolId}/.well-known/openid-configuration`,
           allowedClients: [this.userPoolClient.userPoolClientId],
-          allowedAudience: [this.userPoolClient.userPoolClientId],
+          // Do not set allowedAudience: Cognito access tokens use aud differently;
+          // client_id validation via allowedClients is sufficient.
         },
       },
       roleArn: this.agentRole.roleArn,
