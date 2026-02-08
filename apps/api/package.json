@@ -18,6 +18,7 @@
     "@aws-sdk/client-bedrock-agentcore": "^3.984.0",
     "@codegenie/serverless-express": "^4.17.1",
     "@repo/shared": "*",
+    "@repo/util": "*",
     "express": "^5.2.1"
   },
   "devDependencies": {
@@ -31,6 +32,6 @@
     "supertest": "^7.0.0",
     "tsx": "^4.19.0",
     "typescript": "5.5.4",
-    "vitest": "^2.1.8"
+    "vitest": "^4.0.18"
   }
 }

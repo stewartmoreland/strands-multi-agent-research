@@ -1,33 +1,57 @@
-import { describe, it, expect } from "vitest";
-import { render } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { Button } from "./button";
 
 describe("Button", () => {
-  it("renders with children", () => {
-    const { getByRole } = render(<Button>Click me</Button>);
-    expect(getByRole("button", { name: /click me/i })).toBeInTheDocument();
+  it("renders correctly with default props", () => {
+    render(<Button>Click me</Button>);
+    const button = screen.getByRole("button");
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveClass("inline-flex items-center justify-center");
   });
 
-  it("renders with default variant and size attributes", () => {
-    const { getByRole } = render(<Button>Submit</Button>);
-    const btn = getByRole("button", { name: /submit/i });
-    expect(btn).toHaveAttribute("data-variant", "default");
-    expect(btn).toHaveAttribute("data-size", "default");
+  it("handles click events", () => {
+    const handleClick = vi.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+    fireEvent.click(screen.getByRole("button"));
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it("applies variant and size", () => {
-    const { getByRole } = render(
-      <Button variant="destructive" size="lg">
-        Delete
-      </Button>,
+  it("applies variant classes correctly", () => {
+    render(<Button variant="destructive">Click me</Button>);
+    expect(screen.getByRole("button")).toHaveClass("bg-destructive");
+  });
+
+  it("applies size classes correctly", () => {
+    render(<Button size="lg">Click me</Button>);
+    expect(screen.getByRole("button")).toHaveClass("h-10");
+  });
+
+  it("applies disabled state correctly", () => {
+    render(<Button disabled>Click me</Button>);
+    const button = screen.getByRole("button");
+    expect(button).toBeDisabled();
+    expect(button).toHaveClass("disabled:opacity-50");
+  });
+
+  it("applies full width correctly", () => {
+    render(<Button className="w-full">Click me</Button>);
+    expect(screen.getByRole("button")).toHaveClass("w-full");
+  });
+
+  it("applies custom className correctly", () => {
+    render(<Button className="custom-class">Click me</Button>);
+    expect(screen.getByRole("button")).toHaveClass("custom-class");
+  });
+
+  it("renders as child component when asChild is true", () => {
+    render(
+      <Button asChild>
+        <a href="/">Link Button</a>
+      </Button>
     );
-    const btn = getByRole("button", { name: /delete/i });
-    expect(btn).toHaveAttribute("data-variant", "destructive");
-    expect(btn).toHaveAttribute("data-size", "lg");
-  });
-
-  it("forwards disabled", () => {
-    const { getByRole } = render(<Button disabled>Disabled</Button>);
-    expect(getByRole("button", { name: /disabled/i })).toBeDisabled();
+    const link = screen.getByRole("link");
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveClass("inline-flex items-center justify-center");
   });
 });

@@ -12,6 +12,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn ./.yarn
 COPY packages/infra/package.json ./packages/infra/
 COPY packages/shared/package.json ./packages/shared/
+COPY packages/util/package.json ./packages/util/
 COPY packages/typescript-config/package.json ./packages/typescript-config/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 COPY packages/ui/package.json ./packages/ui/
@@ -24,11 +25,14 @@ RUN yarn install --immutable
 
 # Copy source code
 COPY packages/shared ./packages/shared
+COPY packages/util ./packages/util
 COPY packages/typescript-config ./packages/typescript-config
+COPY packages/eslint-config ./packages/eslint-config
 COPY apps/agent ./apps/agent
 
 # Build
 RUN yarn workspace @repo/shared build
+RUN yarn workspace @repo/util build
 RUN yarn workspace agent build
 
 # Production image
@@ -38,7 +42,9 @@ WORKDIR /app
 
 # Copy built artifacts
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/packages/util/dist ./packages/util/dist
 COPY --from=builder /app/packages/shared/package.json ./packages/shared/
+COPY --from=builder /app/packages/util/package.json ./packages/util/
 COPY --from=builder /app/apps/agent/dist ./apps/agent/dist
 COPY --from=builder /app/apps/agent/package.json ./apps/agent/
 COPY --from=builder /app/node_modules ./node_modules

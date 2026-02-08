@@ -27,8 +27,8 @@
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@tailwindcss/vite": "^4.0.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.0.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/md5": "^2",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.1",
@@ -40,6 +40,6 @@
     "tailwindcss": "^4.1.18",
     "typescript": "5.5.4",
     "vite": "^5.1.4",
-    "vitest": "^2.1.8"
+    "vitest": "^4.0.18"
   }
 }

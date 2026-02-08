@@ -26,6 +26,7 @@
     "@opentelemetry/sdk-node": "^0.211.0",
     "@opentelemetry/semantic-conventions": "^1.39.0",
     "@repo/shared": "*",
+    "@repo/util": "*",
     "@strands-agents/sdk": "^0.2.1",
     "aws-jwt-verify": "^5.1.1",
     "bedrock-agentcore": "^0.2.0",
@@ -39,6 +40,6 @@
     "eslint": "^9.39.2",
     "tsx": "^4.19.0",
     "typescript": "5.5.4",
-    "vitest": "^2.1.8"
+    "vitest": "^4.0.18"
   }
 }

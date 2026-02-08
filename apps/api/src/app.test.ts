@@ -1,13 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
-import { listFoundationModels } from "./listModels";
-import { memoryAdapter } from "./memoryAdapter";
+import { listFoundationModels, memoryAdapter } from "@repo/util";
 import app from "./app";
 
-vi.mock("./listModels", () => ({
+vi.mock("@repo/util", () => ({
   listFoundationModels: vi.fn(),
-}));
-vi.mock("./memoryAdapter", () => ({
   memoryAdapter: {
     listSessions: vi.fn(),
     listEvents: vi.fn(),
@@ -51,12 +48,13 @@ describe("GET /sessions", () => {
     const payload = JSON.stringify({ sub: "actor-1" });
     const base64 = Buffer.from(payload, "utf-8").toString("base64");
     const token = `h.${base64}.s`;
-vi.mocked(memoryAdapter.listSessions).mockResolvedValue([
-    {
-      sessionId: "s1",
-      createdAt: new Date("2025-01-01"),
-    },
-  ]);
+    vi.mocked(memoryAdapter.listSessions).mockResolvedValue([
+      {
+        actorId: "actor-1",
+        sessionId: "s1",
+        createdAt: new Date("2025-01-01"),
+      },
+    ]);
     vi.mocked(memoryAdapter.listEvents).mockResolvedValue([]);
     const res = await request(app)
       .get("/sessions")

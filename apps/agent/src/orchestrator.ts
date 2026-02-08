@@ -5,7 +5,7 @@
 
 import type { UiEvent } from "@repo/shared/events";
 import { Agent, BedrockModel } from "@strands-agents/sdk";
-import { memoryAdapter } from "./memoryAdapter";
+import { memoryAdapter } from "@repo/util";
 import {
   createAnalysisTool,
   createResearchTool,

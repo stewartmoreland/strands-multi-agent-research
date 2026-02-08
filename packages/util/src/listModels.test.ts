@@ -1,23 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { listFoundationModels } from "./listModels";
-
-vi.mock("@aws-sdk/client-bedrock", () => ({
-  BedrockClient: vi.fn(),
-  ListFoundationModelsCommand: vi.fn(),
-}));
+import { listFoundationModels } from "./listModels"
 
 const mockSend = vi.fn();
 
-beforeEach(async () => {
-  vi.resetModules();
+vi.mock("@aws-sdk/client-bedrock", () => ({
+  BedrockClient: class {
+    send = mockSend;
+  },
+  ListFoundationModelsCommand: class {
+    constructor(public args?: unknown) {}
+  },
+}));
+
+beforeEach(() => {
   mockSend.mockReset();
-  const { BedrockClient } = await import("@aws-sdk/client-bedrock");
-  vi.mocked(BedrockClient).mockImplementation(
-    () =>
-      ({
-        send: mockSend,
-      }) as unknown as InstanceType<typeof BedrockClient>,
-  );
 });
 
 describe("listFoundationModels", () => {

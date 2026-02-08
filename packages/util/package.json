@@ -1,17 +1,24 @@
 {
-  "name": "@repo/shared",
+  "name": "@repo/util",
   "version": "0.0.0",
-  "type": "module",
+  "private": true,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
-    "./events": {
-      "import": "./dist/events.js",
-      "types": "./dist/events.d.ts"
+    "./listModels": {
+      "types": "./dist/listModels.d.ts",
+      "import": "./dist/listModels.js",
+      "require": "./dist/listModels.js"
+    },
+    "./memoryAdapter": {
+      "types": "./dist/memoryAdapter.d.ts",
+      "import": "./dist/memoryAdapter.js",
+      "require": "./dist/memoryAdapter.js"
     }
   },
   "scripts": {
@@ -22,6 +29,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock": "^3.985.0",
+    "@aws-sdk/client-bedrock-agentcore": "^3.985.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",

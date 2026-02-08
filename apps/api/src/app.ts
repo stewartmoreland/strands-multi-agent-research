@@ -7,8 +7,7 @@
 import type { Request, Response, NextFunction } from "express";
 import express from "express";
 import { getActorIdFromToken } from "./jwt";
-import { listFoundationModels } from "./listModels";
-import { memoryAdapter } from "./memoryAdapter";
+import { memoryAdapter, listFoundationModels } from "@repo/util";
 
 const LOG_PREFIX = "[api]";
 

@@ -32,5 +32,8 @@
       "prettier-plugin-tailwindcss",
       "prettier-plugin-organize-imports"
     ]
+  },
+  "dependencies": {
+    "react-hook-form": "^7.71.1"
   }
 }
