@@ -1,22 +1,24 @@
 # Build and deploy CDK stacks (ResearchAgentStack, WebAppStack, optional WebAppCertStack).
 # Uses OIDC for AWS; set repo secret AWS_ROLE_ARN to the IAM role ARN.
+# - Push: runs CI only (test + build). No deploy.
+# - workflow_dispatch: runs test, build, then deploys to selected environment (stage/prod).
+#   Environment secrets: HOSTED_ZONE_ID. Environment variables: HOSTED_ZONE_NAME, DOMAIN_NAME.
 
 name: Build and Deploy
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   workflow_dispatch:
     inputs:
-      domainName:
-        description: "Custom domain (e.g. app.example.com). Optional; requires hostedZoneId and hostedZoneName."
-        required: false
-      hostedZoneId:
-        description: "Route53 hosted zone ID (required if domainName is set)"
-        required: false
-      hostedZoneName:
-        description: "Route53 hosted zone name (e.g. example.com). Required if domainName is set."
-        required: false
+      environment:
+        description: "Deployment environment"
+        required: true
+        type: choice
+        options:
+          - stage
+          - prod
+        default: stage
 
 env:
   AWS_REGION: us-east-1
@@ -27,9 +29,37 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
-    name: Build and Deploy
+  ci:
+    name: Test and Build
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Build
+        run: yarn build
+
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -65,8 +95,8 @@ jobs:
       - name: CDK Deploy
         run: |
           CDK_CONTEXT=""
-          if [ -n "${{ inputs.domainName }}" ] && [ -n "${{ inputs.hostedZoneId }}" ] && [ -n "${{ inputs.hostedZoneName }}" ]; then
-            CDK_CONTEXT="-c domainName=${{ inputs.domainName }} -c hostedZoneId=${{ inputs.hostedZoneId }} -c hostedZoneName=${{ inputs.hostedZoneName }}"
+          if [ -n "${{ vars.DOMAIN_NAME }}" ] && [ -n "${{ secrets.HOSTED_ZONE_ID }}" ] && [ -n "${{ vars.HOSTED_ZONE_NAME }}" ]; then
+            CDK_CONTEXT="-c domainName=${{ vars.DOMAIN_NAME }} -c hostedZoneId=${{ secrets.HOSTED_ZONE_ID }} -c hostedZoneName=${{ vars.HOSTED_ZONE_NAME }}"
           fi
           npx cdk deploy --all --require-approval never $CDK_CONTEXT
         working-directory: packages/infra
