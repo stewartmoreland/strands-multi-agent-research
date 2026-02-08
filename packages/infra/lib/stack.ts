@@ -663,7 +663,8 @@ exports.handler = async (event, context) => {
       protocolConfiguration: "HTTP",
       authorizerConfiguration: {
         customJwtAuthorizer: {
-          discoveryUrl: `https://cognito-idp.${this.region}.amazonaws.com/${this.userPool.userPoolId}`,
+          // .well-known/openid-configuration
+          discoveryUrl: `https://cognito-idp.${this.region}.amazonaws.com/${this.userPool.userPoolId}/.well-known/openid-configuration`,
           allowedClients: [this.userPoolClient.userPoolClientId],
         },
       },
