@@ -67,4 +67,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 WORKDIR /app/apps/agent
 
 # Load OpenTelemetry instrumentation before server (AgentCore Observability)
-CMD ["node", "--import", "./dist/instrument.js", "dist/server.js"]
+CMD ["node", "--require", "@opentelemetry/auto-instrumentations-node/register", "dist/server.js"]
