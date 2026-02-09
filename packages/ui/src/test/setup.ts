@@ -1,11 +1,11 @@
-import "@testing-library/jest-dom/vitest";
-import { cleanup } from "@testing-library/react";
-import { afterEach } from "vitest";
+import '@testing-library/jest-dom/vitest'
+import { cleanup } from '@testing-library/react'
+import { afterEach } from 'vitest'
 
-afterEach(cleanup);
+afterEach(cleanup)
 
-const win = globalThis.window ?? globalThis;
-Object.defineProperty(win, "matchMedia", {
+const win = globalThis.window ?? globalThis
+Object.defineProperty(win, 'matchMedia', {
   writable: true,
   value: (query: string) => ({
     matches: false,
@@ -17,19 +17,16 @@ Object.defineProperty(win, "matchMedia", {
     removeEventListener: () => {},
     dispatchEvent: () => false,
   }),
-});
+})
 
-if (typeof win.ResizeObserver === "undefined") {
+if (typeof win.ResizeObserver === 'undefined') {
   win.ResizeObserver = class ResizeObserver {
     observe() {}
     unobserve() {}
     disconnect() {}
-  } as unknown as typeof ResizeObserver;
+  } as unknown as typeof ResizeObserver
 }
 
-if (
-  typeof win.Element !== "undefined" &&
-  !win.Element.prototype.scrollIntoView
-) {
-  win.Element.prototype.scrollIntoView = () => {};
+if (typeof win.Element !== 'undefined' && !win.Element.prototype.scrollIntoView) {
+  win.Element.prototype.scrollIntoView = () => {}
 }

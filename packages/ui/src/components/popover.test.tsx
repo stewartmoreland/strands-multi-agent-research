@@ -1,52 +1,47 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
-import {
-  Popover,
-  PopoverAnchor,
-  PopoverContent,
-  PopoverTrigger,
-} from "./popover";
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from './popover'
 
-describe("Popover", () => {
+describe('Popover', () => {
   const renderPopover = (props = {}) => {
     return render(
       <Popover {...props}>
         <PopoverTrigger>Open Popover</PopoverTrigger>
         <PopoverContent>Popover Content</PopoverContent>
       </Popover>,
-    );
-  };
+    )
+  }
 
-  it("renders trigger", () => {
-    renderPopover();
-    expect(screen.getByText("Open Popover")).toBeInTheDocument();
-  });
+  it('renders trigger', () => {
+    renderPopover()
+    expect(screen.getByText('Open Popover')).toBeInTheDocument()
+  })
 
-  it("shows content when trigger is clicked", async () => {
-    const user = userEvent.setup();
-    renderPopover();
+  it('shows content when trigger is clicked', async () => {
+    const user = userEvent.setup()
+    renderPopover()
 
-    const trigger = screen.getByText("Open Popover");
-    await user.click(trigger);
-
-    await waitFor(() => {
-      expect(screen.getByText("Popover Content")).toBeInTheDocument();
-    });
-  });
-
-  it("applies default styles to content", async () => {
-    const user = userEvent.setup();
-    renderPopover();
-
-    const trigger = screen.getByText("Open Popover");
-    await user.click(trigger);
+    const trigger = screen.getByText('Open Popover')
+    await user.click(trigger)
 
     await waitFor(() => {
-      const content = screen.getByText("Popover Content");
-      expect(content).toHaveClass("bg-popover");
-    });
-  });
+      expect(screen.getByText('Popover Content')).toBeInTheDocument()
+    })
+  })
+
+  it('applies default styles to content', async () => {
+    const user = userEvent.setup()
+    renderPopover()
+
+    const trigger = screen.getByText('Open Popover')
+    await user.click(trigger)
+
+    await waitFor(() => {
+      const content = screen.getByText('Popover Content')
+      expect(content).toHaveClass('bg-popover')
+    })
+  })
 
   // it("applies custom className to content", async () => {
   //   const user = userEvent.setup();
@@ -110,48 +105,48 @@ describe("Popover", () => {
   //   unmount();
   // });
 
-  it("closes popover when clicking outside", async () => {
-    const user = userEvent.setup();
-    renderPopover();
+  it('closes popover when clicking outside', async () => {
+    const user = userEvent.setup()
+    renderPopover()
 
     // Open popover
-    const trigger = screen.getByText("Open Popover");
-    await user.click(trigger);
+    const trigger = screen.getByText('Open Popover')
+    await user.click(trigger)
 
     // Wait for popover to open
     await waitFor(() => {
-      expect(screen.getByText("Popover Content")).toBeInTheDocument();
-    });
+      expect(screen.getByText('Popover Content')).toBeInTheDocument()
+    })
 
     // Click outside
-    await user.click(document.body);
+    await user.click(document.body)
 
     // Wait for popover to close
     await waitFor(() => {
-      expect(screen.queryByText("Popover Content")).not.toBeInTheDocument();
-    });
-  });
+      expect(screen.queryByText('Popover Content')).not.toBeInTheDocument()
+    })
+  })
 
-  it("handles controlled state", async () => {
-    const user = userEvent.setup();
-    const onOpenChange = vi.fn();
+  it('handles controlled state', async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
     render(
       <Popover open={false} onOpenChange={onOpenChange}>
         <PopoverTrigger>Open Popover</PopoverTrigger>
         <PopoverContent>Popover Content</PopoverContent>
       </Popover>,
-    );
+    )
 
-    const trigger = screen.getByText("Open Popover");
-    await user.click(trigger);
+    const trigger = screen.getByText('Open Popover')
+    await user.click(trigger)
 
     await waitFor(() => {
-      expect(onOpenChange).toHaveBeenCalledWith(true);
-    });
-  });
+      expect(onOpenChange).toHaveBeenCalledWith(true)
+    })
+  })
 
-  it("handles anchor positioning", async () => {
-    const user = userEvent.setup();
+  it('handles anchor positioning', async () => {
+    const user = userEvent.setup()
     render(
       <Popover>
         <PopoverTrigger>Open Popover</PopoverTrigger>
@@ -160,14 +155,14 @@ describe("Popover", () => {
         </PopoverAnchor>
         <PopoverContent>Popover Content</PopoverContent>
       </Popover>,
-    );
+    )
 
-    const trigger = screen.getByText("Open Popover");
-    await user.click(trigger);
+    const trigger = screen.getByText('Open Popover')
+    await user.click(trigger)
 
     await waitFor(() => {
-      expect(screen.getByText("Anchor element")).toBeInTheDocument();
-      expect(screen.getByText("Popover Content")).toBeInTheDocument();
-    });
-  });
-});
+      expect(screen.getByText('Anchor element')).toBeInTheDocument()
+      expect(screen.getByText('Popover Content')).toBeInTheDocument()
+    })
+  })
+})

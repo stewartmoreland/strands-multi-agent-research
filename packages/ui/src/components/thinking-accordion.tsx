@@ -1,78 +1,56 @@
-import { Brain } from "lucide-react";
-import * as React from "react";
-import { cn } from "../lib/utils";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "./accordion";
+import { Brain } from 'lucide-react'
+import * as React from 'react'
+import { cn } from '../lib/utils'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion'
 
 export interface ThinkingAccordionProps extends React.HTMLAttributes<HTMLDivElement> {
-  content: string;
-  isStreaming?: boolean;
-  defaultExpanded?: boolean;
-  maxCollapsedLines?: number;
+  content: string
+  isStreaming?: boolean
+  defaultExpanded?: boolean
+  maxCollapsedLines?: number
 }
 
 /**
  * Get the last N lines from a string
  */
 function getLastLines(text: string, n: number): string {
-  const lines = text.split("\n").filter((line) => line.trim() !== "");
-  if (lines.length <= n) return text;
-  return lines.slice(-n).join("\n");
+  const lines = text.split('\n').filter((line) => line.trim() !== '')
+  if (lines.length <= n) return text
+  return lines.slice(-n).join('\n')
 }
 
-const ThinkingAccordion = React.forwardRef<
-  HTMLDivElement,
-  ThinkingAccordionProps
->(
-  (
-    {
-      className,
-      content,
-      isStreaming = false,
-      defaultExpanded = false,
-      maxCollapsedLines = 4,
-      ...props
-    },
-    ref,
-  ) => {
-    const [isExpanded, setIsExpanded] = React.useState(defaultExpanded);
-    const scrollRef = React.useRef<HTMLDivElement>(null);
+const ThinkingAccordion = React.forwardRef<HTMLDivElement, ThinkingAccordionProps>(
+  ({ className, content, isStreaming = false, defaultExpanded = false, maxCollapsedLines = 4, ...props }, ref) => {
+    const [isExpanded, setIsExpanded] = React.useState(defaultExpanded)
+    const scrollRef = React.useRef<HTMLDivElement>(null)
 
     // Auto-scroll to bottom when content updates and expanded
     React.useEffect(() => {
       if (scrollRef.current && isExpanded) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight
       }
-    }, [content, isExpanded]);
+    }, [content, isExpanded])
 
     // Get preview content (last 4 lines)
-    const previewContent = React.useMemo(
-      () => getLastLines(content, maxCollapsedLines),
-      [content, maxCollapsedLines],
-    );
+    const previewContent = React.useMemo(() => getLastLines(content, maxCollapsedLines), [content, maxCollapsedLines])
 
-    const hasMoreContent =
-      content.split("\n").filter((l) => l.trim()).length > maxCollapsedLines;
+    const hasMoreContent = content.split('\n').filter((l) => l.trim()).length > maxCollapsedLines
 
     return (
-      <div ref={ref} className={cn("", className)} {...props}>
+      <div ref={ref} className={cn('', className)} {...props}>
         <Accordion
           type="single"
           collapsible
-          value={isExpanded ? "thinking" : ""}
-          onValueChange={(value) => setIsExpanded(value === "thinking")}
+          value={isExpanded ? 'thinking' : ''}
+          onValueChange={(value) => setIsExpanded(value === 'thinking')}
         >
           <AccordionItem
             value="thinking"
             className={cn(
-              "border rounded-xl overflow-hidden transition-all duration-300",
+              'border rounded-xl overflow-hidden transition-all duration-300',
               isStreaming
-                ? "bg-linear-to-r from-muted/50 to-muted/30 border-muted-foreground/20"
-                : "bg-muted/30 border-border/50",
+                ? 'bg-linear-to-r from-muted/50 to-muted/30 border-muted-foreground/20'
+                : 'bg-muted/30 border-border/50',
             )}
           >
             <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 transition-colors">
@@ -87,11 +65,11 @@ const ThinkingAccordion = React.forwardRef<
                 )}
                 <span
                   className={cn(
-                    "text-sm font-medium transition-colors",
-                    isStreaming ? "text-primary" : "text-muted-foreground",
+                    'text-sm font-medium transition-colors',
+                    isStreaming ? 'text-primary' : 'text-muted-foreground',
                   )}
                 >
-                  {isStreaming ? "Thinking..." : "Reasoning"}
+                  {isStreaming ? 'Thinking...' : 'Reasoning'}
                 </span>
               </div>
             </AccordionTrigger>
@@ -101,9 +79,7 @@ const ThinkingAccordion = React.forwardRef<
               <div className="px-4 pb-3 -mt-1">
                 <pre className="text-xs font-mono text-muted-foreground/80 whitespace-pre-wrap line-clamp-4 leading-relaxed">
                   {previewContent}
-                  {hasMoreContent && (
-                    <span className="text-muted-foreground/50"> ...</span>
-                  )}
+                  {hasMoreContent && <span className="text-muted-foreground/50"> ...</span>}
                 </pre>
               </div>
             )}
@@ -119,15 +95,15 @@ const ThinkingAccordion = React.forwardRef<
                     <span className="inline-flex items-center ml-1 gap-0.5">
                       <span
                         className="w-1 h-1 rounded-full bg-muted-foreground/50 animate-bounce"
-                        style={{ animationDelay: "0ms" }}
+                        style={{ animationDelay: '0ms' }}
                       />
                       <span
                         className="w-1 h-1 rounded-full bg-muted-foreground/50 animate-bounce"
-                        style={{ animationDelay: "150ms" }}
+                        style={{ animationDelay: '150ms' }}
                       />
                       <span
                         className="w-1 h-1 rounded-full bg-muted-foreground/50 animate-bounce"
-                        style={{ animationDelay: "300ms" }}
+                        style={{ animationDelay: '300ms' }}
                       />
                     </span>
                   )}
@@ -137,9 +113,9 @@ const ThinkingAccordion = React.forwardRef<
           </AccordionItem>
         </Accordion>
       </div>
-    );
+    )
   },
-);
-ThinkingAccordion.displayName = "ThinkingAccordion";
+)
+ThinkingAccordion.displayName = 'ThinkingAccordion'
 
-export { ThinkingAccordion };
+export { ThinkingAccordion }

@@ -1,17 +1,10 @@
-import { render, screen } from "@testing-library/react";
-import { beforeAll, describe, expect, it, vi } from "vitest";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarProvider,
-} from "./sidebar";
+import { render, screen } from '@testing-library/react'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarProvider } from './sidebar'
 
 // Mock matchMedia
 beforeAll(() => {
-  Object.defineProperty(window, "matchMedia", {
+  Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: vi.fn().mockImplementation((query) => ({
       matches: false,
@@ -23,11 +16,11 @@ beforeAll(() => {
       removeEventListener: vi.fn(),
       dispatchEvent: vi.fn(),
     })),
-  });
-});
+  })
+})
 
-describe("Sidebar", () => {
-  it("renders correctly with default props", () => {
+describe('Sidebar', () => {
+  it('renders correctly with default props', () => {
     render(
       <SidebarProvider>
         <Sidebar>
@@ -36,12 +29,12 @@ describe("Sidebar", () => {
           <SidebarFooter>Footer</SidebarFooter>
         </Sidebar>
       </SidebarProvider>,
-    );
+    )
 
-    expect(screen.getByText("Header")).toBeInTheDocument();
-    expect(screen.getByText("Content")).toBeInTheDocument();
-    expect(screen.getByText("Footer")).toBeInTheDocument();
-  });
+    expect(screen.getByText('Header')).toBeInTheDocument()
+    expect(screen.getByText('Content')).toBeInTheDocument()
+    expect(screen.getByText('Footer')).toBeInTheDocument()
+  })
 
   // it("applies custom className correctly", () => {
   //   render(
@@ -75,7 +68,7 @@ describe("Sidebar", () => {
   //   );
   // });
 
-  it("renders sidebar groups", () => {
+  it('renders sidebar groups', () => {
     render(
       <SidebarProvider>
         <Sidebar>
@@ -85,11 +78,11 @@ describe("Sidebar", () => {
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>,
-    );
+    )
 
-    expect(screen.getByText("Group 1")).toBeInTheDocument();
-    expect(screen.getByText("Group 2")).toBeInTheDocument();
-  });
+    expect(screen.getByText('Group 1')).toBeInTheDocument()
+    expect(screen.getByText('Group 2')).toBeInTheDocument()
+  })
 
   // it("applies correct styles to SidebarHeader", () => {
   //   render(
@@ -180,4 +173,4 @@ describe("Sidebar", () => {
   //     screen.getByText("Content").parentElement?.parentElement
   //   ).toHaveAttribute("data-variant", "floating");
   // });
-});
+})

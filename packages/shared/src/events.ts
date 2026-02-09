@@ -4,44 +4,44 @@
  */
 
 export interface MetaEvent {
-  type: "meta";
-  sessionId: string;
+  type: 'meta'
+  sessionId: string
 }
 
 export interface MessageDeltaEvent {
-  type: "message.delta";
-  text: string;
+  type: 'message.delta'
+  text: string
 }
 
 export interface ThinkingDeltaEvent {
-  type: "thinking.delta";
-  text: string;
+  type: 'thinking.delta'
+  text: string
 }
 
 export interface ToolStartEvent {
-  type: "tool.start";
-  toolName: string;
-  input: unknown;
+  type: 'tool.start'
+  toolName: string
+  input: unknown
 }
 
 export interface ToolEndEvent {
-  type: "tool.end";
-  toolName: string;
-  output: unknown;
+  type: 'tool.end'
+  toolName: string
+  output: unknown
 }
 
 export interface MessageDoneEvent {
-  type: "message.done";
+  type: 'message.done'
 }
 
 export interface ErrorEvent {
-  type: "error";
-  message: string;
+  type: 'error'
+  message: string
 }
 
 /** Emitted at the start of each invocation so the UI can group events per run. */
 export interface RunStartEvent {
-  type: "run.start";
+  type: 'run.start'
 }
 
 export type UiEvent =
@@ -52,43 +52,39 @@ export type UiEvent =
   | ToolEndEvent
   | MessageDoneEvent
   | ErrorEvent
-  | RunStartEvent;
+  | RunStartEvent
 
 /**
  * Type guard functions for UiEvent
  */
 export function isMetaEvent(event: UiEvent): event is MetaEvent {
-  return event.type === "meta";
+  return event.type === 'meta'
 }
 
-export function isMessageDeltaEvent(
-  event: UiEvent,
-): event is MessageDeltaEvent {
-  return event.type === "message.delta";
+export function isMessageDeltaEvent(event: UiEvent): event is MessageDeltaEvent {
+  return event.type === 'message.delta'
 }
 
-export function isThinkingDeltaEvent(
-  event: UiEvent,
-): event is ThinkingDeltaEvent {
-  return event.type === "thinking.delta";
+export function isThinkingDeltaEvent(event: UiEvent): event is ThinkingDeltaEvent {
+  return event.type === 'thinking.delta'
 }
 
 export function isToolStartEvent(event: UiEvent): event is ToolStartEvent {
-  return event.type === "tool.start";
+  return event.type === 'tool.start'
 }
 
 export function isToolEndEvent(event: UiEvent): event is ToolEndEvent {
-  return event.type === "tool.end";
+  return event.type === 'tool.end'
 }
 
 export function isMessageDoneEvent(event: UiEvent): event is MessageDoneEvent {
-  return event.type === "message.done";
+  return event.type === 'message.done'
 }
 
 export function isErrorEvent(event: UiEvent): event is ErrorEvent {
-  return event.type === "error";
+  return event.type === 'error'
 }
 
 export function isRunStartEvent(event: UiEvent): event is RunStartEvent {
-  return event.type === "run.start";
+  return event.type === 'run.start'
 }

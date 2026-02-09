@@ -7,38 +7,36 @@ import {
   BedrockClient,
   ListFoundationModelsCommand,
   type FoundationModelSummary as AwsSummary,
-} from "@aws-sdk/client-bedrock";
-import type { FoundationModelSummary } from "@repo/shared";
+} from '@aws-sdk/client-bedrock'
+import type { FoundationModelSummary } from '@repo/shared'
 
-const region = process.env.AWS_REGION || "us-east-1";
+const region = process.env.AWS_REGION || 'us-east-1'
 
 function toSummary(s: AwsSummary): FoundationModelSummary {
   return {
-    modelId: s.modelId ?? "",
+    modelId: s.modelId ?? '',
     modelName: s.modelName,
     providerName: s.providerName,
     modelLifecycle: s.modelLifecycle,
     outputModalities: s.outputModalities,
     responseStreamingSupported: s.responseStreamingSupported,
     inferenceTypesSupported: s.inferenceTypesSupported,
-  };
+  }
 }
 
-export async function listFoundationModels(): Promise<
-  FoundationModelSummary[]
-> {
-  const client = new BedrockClient({ region });
+export async function listFoundationModels(): Promise<FoundationModelSummary[]> {
+  const client = new BedrockClient({ region })
   const response = await client.send(
     new ListFoundationModelsCommand({
-      byOutputModality: "TEXT",
+      byOutputModality: 'TEXT',
     }),
-  );
-  const summaries = response.modelSummaries ?? [];
-  const results: FoundationModelSummary[] = [];
+  )
+  const summaries = response.modelSummaries ?? []
+  const results: FoundationModelSummary[] = []
   for (const s of summaries) {
-    const status = s.modelLifecycle?.status;
-    if (status === "LEGACY") continue;
-    results.push(toSummary(s));
+    const status = s.modelLifecycle?.status
+    if (status === 'LEGACY') continue
+    results.push(toSummary(s))
   }
-  return results;
+  return results
 }

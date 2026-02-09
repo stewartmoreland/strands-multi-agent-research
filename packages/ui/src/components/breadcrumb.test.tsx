@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,10 +7,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "./breadcrumb";
+} from './breadcrumb'
 
-describe("Breadcrumb", () => {
-  it("renders correctly with default props", () => {
+describe('Breadcrumb', () => {
+  it('renders correctly with default props', () => {
     render(
       <Breadcrumb>
         <BreadcrumbList>
@@ -23,13 +23,13 @@ describe("Breadcrumb", () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
-    );
+    )
 
-    expect(screen.getByText("Home")).toBeInTheDocument();
-    expect(screen.getByText("Current")).toBeInTheDocument();
-  });
+    expect(screen.getByText('Home')).toBeInTheDocument()
+    expect(screen.getByText('Current')).toBeInTheDocument()
+  })
 
-  it("applies custom className correctly", () => {
+  it('applies custom className correctly', () => {
     render(
       <Breadcrumb className="custom-breadcrumb">
         <BreadcrumbList>
@@ -38,10 +38,10 @@ describe("Breadcrumb", () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
-    );
+    )
 
-    expect(screen.getByRole("navigation")).toHaveClass("custom-breadcrumb");
-  });
+    expect(screen.getByRole('navigation')).toHaveClass('custom-breadcrumb')
+  })
 
   // it("renders multiple breadcrumb items with separators", () => {
   //   render(
@@ -112,7 +112,7 @@ describe("Breadcrumb", () => {
   //   ).toBeInTheDocument();
   // });
 
-  it("applies correct styles to BreadcrumbList", () => {
+  it('applies correct styles to BreadcrumbList', () => {
     render(
       <Breadcrumb>
         <BreadcrumbList>
@@ -121,14 +121,14 @@ describe("Breadcrumb", () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
-    );
+    )
 
-    const list = screen.getByRole("list");
-    expect(list).toHaveClass("flex");
-    expect(list).toHaveClass("items-center");
-  });
+    const list = screen.getByRole('list')
+    expect(list).toHaveClass('flex')
+    expect(list).toHaveClass('items-center')
+  })
 
-  it("applies correct styles to BreadcrumbItem", () => {
+  it('applies correct styles to BreadcrumbItem', () => {
     render(
       <Breadcrumb>
         <BreadcrumbList>
@@ -137,12 +137,12 @@ describe("Breadcrumb", () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
-    );
+    )
 
-    expect(screen.getByRole("listitem")).toHaveClass("inline-flex");
-  });
+    expect(screen.getByRole('listitem')).toHaveClass('inline-flex')
+  })
 
-  it("applies correct styles to BreadcrumbLink", () => {
+  it('applies correct styles to BreadcrumbLink', () => {
     render(
       <Breadcrumb>
         <BreadcrumbList>
@@ -151,14 +151,14 @@ describe("Breadcrumb", () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
-    );
+    )
 
-    const link = screen.getByRole("link");
-    expect(link).toHaveClass("hover:text-foreground");
-    expect(link).toHaveClass("transition-colors");
-  });
+    const link = screen.getByRole('link')
+    expect(link).toHaveClass('hover:text-foreground')
+    expect(link).toHaveClass('transition-colors')
+  })
 
-  it("applies correct styles to BreadcrumbPage", () => {
+  it('applies correct styles to BreadcrumbPage', () => {
     render(
       <Breadcrumb>
         <BreadcrumbList>
@@ -167,11 +167,11 @@ describe("Breadcrumb", () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
-    );
+    )
 
-    const page = screen.getByRole("link");
-    expect(page).toHaveClass("text-foreground");
-    expect(page).toHaveClass("font-normal");
-    expect(page).toHaveAttribute("aria-current", "page");
-  });
-});
+    const page = screen.getByRole('link')
+    expect(page).toHaveClass('text-foreground')
+    expect(page).toHaveClass('font-normal')
+    expect(page).toHaveAttribute('aria-current', 'page')
+  })
+})

@@ -31,6 +31,10 @@
     "plugins": [
       "prettier-plugin-tailwindcss",
       "prettier-plugin-organize-imports"
-    ]
+    ],
+    "singleQuote": true,
+    "trailingComma": "all",
+    "semi": false,
+    "printWidth": 120
   }
 }
