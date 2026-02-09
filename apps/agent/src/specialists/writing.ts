@@ -9,16 +9,14 @@
  * This specialist does not require external tools - it uses pure LLM inference.
  */
 
-import { createLogger } from "@repo/util/logger";
-import { Agent, BedrockModel, tool } from "@strands-agents/sdk";
-import { z } from "zod";
-import {
-  getSpecialistConfig,
-  type OutputFormat,
-  type WritingInput,
-} from "./types.js";
+import { createLogger } from '@repo/util/logger'
+import { Agent, BedrockModel, tool } from '@strands-agents/sdk'
+import { z } from 'zod'
+import { getSpecialistConfig, type OutputFormat, type WritingInput } from './types.js'
 
-const logger = createLogger("research_agent", { defaultAttributes: { specialist: "Writing Specialist" } });
+const logger = createLogger('research_agent', {
+  defaultAttributes: { specialist: 'Writing Specialist' },
+})
 
 /**
  * System prompt for the writing specialist agent
@@ -47,15 +45,13 @@ Markdown and formatting (responses are rendered as Markdown in the chat UI):
 - Use mermaid code blocks (e.g. \`\`\`mermaid) for flowcharts, sequence diagrams, or other diagrams when they would clarify the answer
 - Use fenced code blocks with the appropriate language (e.g. \`\`\`javascript, \`\`\`python) for code; syntax highlighting is applied automatically
 - You may use LaTeX in $...$ (inline) or $$...$$ (block) for math when relevant
-- Use raw HTML only sparingly when markdown is insufficient`;
+- Use raw HTML only sparingly when markdown is insufficient`
 
 /**
  * Create the writing agent.
  * @param config - Specialist config (use getSpecialistConfig({ modelId }) for per-request model).
  */
-function createWritingAgent(
-  config: ReturnType<typeof getSpecialistConfig>,
-): Agent {
+function createWritingAgent(config: ReturnType<typeof getSpecialistConfig>): Agent {
   const agent = new Agent({
     model: new BedrockModel({
       modelId: config.modelId,
@@ -63,27 +59,27 @@ function createWritingAgent(
     }),
     systemPrompt: WRITING_SYSTEM_PROMPT,
     printer: false,
-  });
+  })
 
-  logger.info("Initialized");
-  return agent;
+  logger.info('Initialized')
+  return agent
 }
 
 // Cache by modelId so we reuse agents when the same model is selected
-const writingAgentCache = new Map<string, Agent>();
+const writingAgentCache = new Map<string, Agent>()
 
 /**
  * Get or create the writing agent for the given model (or default config).
  */
 function getWritingAgent(modelId?: string): Agent {
-  const config = getSpecialistConfig(modelId != null ? { modelId } : undefined);
-  const key = config.modelId;
-  let agent = writingAgentCache.get(key);
+  const config = getSpecialistConfig(modelId != null ? { modelId } : undefined)
+  const key = config.modelId
+  let agent = writingAgentCache.get(key)
   if (!agent) {
-    agent = createWritingAgent(config);
-    writingAgentCache.set(key, agent);
+    agent = createWritingAgent(config)
+    writingAgentCache.set(key, agent)
   }
-  return agent;
+  return agent
 }
 
 /**
@@ -91,92 +87,84 @@ function getWritingAgent(modelId?: string): Agent {
  */
 function getFormatInstructions(format: OutputFormat | undefined): string {
   switch (format) {
-    case "summary":
-      return "Please provide a concise summary (2-3 paragraphs) focusing on the most important findings and conclusions.";
-    case "report":
-      return "Please provide a structured report with clear sections including: Introduction, Key Findings, Analysis, and Conclusions/Recommendations.";
-    case "bullet_points":
-      return "Please provide the key takeaways as a bulleted list, with each point being concise and actionable.";
+    case 'summary':
+      return 'Please provide a concise summary (2-3 paragraphs) focusing on the most important findings and conclusions.'
+    case 'report':
+      return 'Please provide a structured report with clear sections including: Introduction, Key Findings, Analysis, and Conclusions/Recommendations.'
+    case 'bullet_points':
+      return 'Please provide the key takeaways as a bulleted list, with each point being concise and actionable.'
     default:
-      return "Please synthesize the information into a clear, well-organized response.";
+      return 'Please synthesize the information into a clear, well-organized response.'
   }
 }
 
 /** Invocation timeout in ms (90s) so the orchestrator does not hang if Bedrock stalls */
-const INVOKE_TIMEOUT_MS = 90_000;
+const INVOKE_TIMEOUT_MS = 90_000
 
 /**
  * Return fallback synthesis when invoke fails or times out
  */
 function getFallbackWriting(task: string, previousNotes?: string): string {
   return [
-    "## Research Summary",
-    "",
+    '## Research Summary',
+    '',
     `Based on the analysis of "${task}", here are the key findings:`,
-    "",
+    '',
     previousNotes
       ? `The research and analysis revealed:\n${previousNotes.substring(0, 500)}...`
-      : "The investigation yielded comprehensive results.",
-    "",
-    "### Recommendations",
-    "",
-    "1. Review the detailed findings above",
-    "2. Consider the data-driven insights provided",
-    "3. Apply the synthesized conclusions to your use case",
-    "",
-    "---",
-    "*This summary was generated by the multi-agent research system.*",
-  ].join("\n");
+      : 'The investigation yielded comprehensive results.',
+    '',
+    '### Recommendations',
+    '',
+    '1. Review the detailed findings above',
+    '2. Consider the data-driven insights provided',
+    '3. Apply the synthesized conclusions to your use case',
+    '',
+    '---',
+    '*This summary was generated by the multi-agent research system.*',
+  ].join('\n')
 }
 
 /**
  * Perform writing/synthesis using the agent.
  * Wraps agent.invoke in a timeout so the orchestrator always gets a result.
  */
-async function performWriting(
-  input: WritingInput,
-  modelId?: string,
-): Promise<string> {
-  const { task, previousNotes, format } = input;
+async function performWriting(input: WritingInput, modelId?: string): Promise<string> {
+  const { task, previousNotes, format } = input
 
-  const agent = getWritingAgent(modelId);
+  const agent = getWritingAgent(modelId)
 
-  const notesSection = previousNotes
-    ? `\n\nResearch and analysis notes to synthesize:\n${previousNotes}`
-    : "";
-  const formatInstructions = getFormatInstructions(format);
-  const prompt = `Writing task: ${task}${notesSection}\n\n${formatInstructions}`;
+  const notesSection = previousNotes ? `\n\nResearch and analysis notes to synthesize:\n${previousNotes}` : ''
+  const formatInstructions = getFormatInstructions(format)
+  const prompt = `Writing task: ${task}${notesSection}\n\n${formatInstructions}`
 
   const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(
-      () => reject(new Error("Writing specialist invocation timed out")),
-      INVOKE_TIMEOUT_MS,
-    );
-  });
+    setTimeout(() => reject(new Error('Writing specialist invocation timed out')), INVOKE_TIMEOUT_MS)
+  })
 
   try {
-    const result = await Promise.race([agent.invoke(prompt), timeoutPromise]);
-    const message = result.lastMessage;
+    const result = await Promise.race([agent.invoke(prompt), timeoutPromise])
+    const message = result.lastMessage
     if (message) {
-      const textParts: string[] = [];
+      const textParts: string[] = []
       for (const block of message.content) {
-        if (block.type === "textBlock") {
-          textParts.push(block.text);
+        if (block.type === 'textBlock') {
+          textParts.push(block.text)
         }
       }
-      const text = textParts.join("\n");
+      const text = textParts.join('\n')
       if (text) {
-        return text;
+        return text
       }
     }
   } catch (error) {
-    logger.error("Agent invocation failed", { task }, error instanceof Error ? error : new Error(String(error)));
-    logger.info("Using fallback", { task });
-    return getFallbackWriting(task, previousNotes);
+    logger.error('Agent invocation failed', { task }, error instanceof Error ? error : new Error(String(error)))
+    logger.info('Using fallback', { task })
+    return getFallbackWriting(task, previousNotes)
   }
 
-  logger.info("Using fallback", { task });
-  return getFallbackWriting(task, previousNotes);
+  logger.info('Using fallback', { task })
+  return getFallbackWriting(task, previousNotes)
 }
 
 /**
@@ -186,50 +174,42 @@ async function performWriting(
  * Uses LLM inference to synthesize research and analysis into coherent output.
  */
 export const writingTool = tool({
-  name: "writing_specialist",
+  name: 'writing_specialist',
   description:
-    "Synthesis specialist: produce final narrative answer from research and analysis notes. Use this tool to synthesize findings into a coherent, well-structured response.",
+    'Synthesis specialist: produce final narrative answer from research and analysis notes. Use this tool to synthesize findings into a coherent, well-structured response.',
   inputSchema: z.object({
-    task: z.string().describe("The original task or question to address"),
-    previousNotes: z
-      .string()
-      .optional()
-      .describe("Notes and findings from research and analysis to synthesize"),
+    task: z.string().describe('The original task or question to address'),
+    previousNotes: z.string().optional().describe('Notes and findings from research and analysis to synthesize'),
     format: z
-      .enum(["summary", "report", "bullet_points"])
+      .enum(['summary', 'report', 'bullet_points'])
       .optional()
-      .describe("Desired output format: summary, report, or bullet_points"),
+      .describe('Desired output format: summary, report, or bullet_points'),
   }),
   callback: async ({ task, previousNotes, format }) => {
-    logger.info("Processing", { task });
-    return performWriting({ task, previousNotes, format });
+    logger.info('Processing', { task })
+    return performWriting({ task, previousNotes, format })
   },
-});
+})
 
 /**
  * Create a writing tool that uses the given model ID (for per-request model selection).
  */
 export function createWritingTool(modelId: string) {
   return tool({
-    name: "writing_specialist",
+    name: 'writing_specialist',
     description:
-      "Synthesis specialist: produce final narrative answer from research and analysis notes. Use this tool to synthesize findings into a coherent, well-structured response.",
+      'Synthesis specialist: produce final narrative answer from research and analysis notes. Use this tool to synthesize findings into a coherent, well-structured response.',
     inputSchema: z.object({
-      task: z.string().describe("The original task or question to address"),
-      previousNotes: z
-        .string()
-        .optional()
-        .describe(
-          "Notes and findings from research and analysis to synthesize",
-        ),
+      task: z.string().describe('The original task or question to address'),
+      previousNotes: z.string().optional().describe('Notes and findings from research and analysis to synthesize'),
       format: z
-        .enum(["summary", "report", "bullet_points"])
+        .enum(['summary', 'report', 'bullet_points'])
         .optional()
-        .describe("Desired output format: summary, report, or bullet_points"),
+        .describe('Desired output format: summary, report, or bullet_points'),
     }),
     callback: async ({ task, previousNotes, format }) => {
-      logger.info("Processing", { task });
-      return performWriting({ task, previousNotes, format }, modelId);
+      logger.info('Processing', { task })
+      return performWriting({ task, previousNotes, format }, modelId)
     },
-  });
+  })
 }

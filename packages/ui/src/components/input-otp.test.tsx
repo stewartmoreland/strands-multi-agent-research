@@ -1,10 +1,10 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "./input-otp";
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from './input-otp'
 
 // Global setup is applied via vitest.config.ts setupFiles
 
-describe("InputOTP", () => {
+describe('InputOTP', () => {
   // it("renders with default props", () => {
   //   render(
   //     <InputOTP maxLength={4}>
@@ -43,7 +43,7 @@ describe("InputOTP", () => {
   //   expect(container).toHaveClass("custom-container");
   // });
 
-  it("applies custom className to input group", () => {
+  it('applies custom className to input group', () => {
     const { container } = render(
       <InputOTP maxLength={4}>
         <InputOTPGroup className="custom-group">
@@ -53,14 +53,14 @@ describe("InputOTP", () => {
           <InputOTPSlot index={3} />
         </InputOTPGroup>
       </InputOTP>,
-    );
+    )
 
-    const group = container.querySelector('[data-slot="input-otp-group"]');
-    expect(group).toBeInTheDocument();
-    expect(group).toHaveClass("custom-group");
-  });
+    const group = container.querySelector('[data-slot="input-otp-group"]')
+    expect(group).toBeInTheDocument()
+    expect(group).toHaveClass('custom-group')
+  })
 
-  it("handles disabled state", () => {
+  it('handles disabled state', () => {
     render(
       <InputOTP maxLength={4} disabled>
         <InputOTPGroup>
@@ -70,13 +70,13 @@ describe("InputOTP", () => {
           <InputOTPSlot index={3} />
         </InputOTPGroup>
       </InputOTP>,
-    );
+    )
 
-    const input = screen.getByRole("textbox");
-    expect(input).toBeDisabled();
-  });
+    const input = screen.getByRole('textbox')
+    expect(input).toBeDisabled()
+  })
 
-  it("renders correct number of input slots", () => {
+  it('renders correct number of input slots', () => {
     const { container } = render(
       <InputOTP maxLength={4}>
         <InputOTPGroup>
@@ -86,11 +86,11 @@ describe("InputOTP", () => {
           <InputOTPSlot index={3} />
         </InputOTPGroup>
       </InputOTP>,
-    );
+    )
 
-    const slots = container.querySelectorAll('[data-slot="input-otp-slot"]');
-    expect(slots).toHaveLength(4);
-  });
+    const slots = container.querySelectorAll('[data-slot="input-otp-slot"]')
+    expect(slots).toHaveLength(4)
+  })
 
   // it("handles input focus and navigation", async () => {
   //   const user = userEvent.setup();
@@ -116,7 +116,7 @@ describe("InputOTP", () => {
   //   expect(input).toHaveValue("1");
   // });
 
-  it("maintains input group structure", () => {
+  it('maintains input group structure', () => {
     const { container } = render(
       <InputOTP maxLength={4}>
         <InputOTPGroup>
@@ -126,14 +126,14 @@ describe("InputOTP", () => {
           <InputOTPSlot index={3} />
         </InputOTPGroup>
       </InputOTP>,
-    );
+    )
 
-    const group = container.querySelector('[data-slot="input-otp-group"]');
-    expect(group).toBeInTheDocument();
-    expect(group).toHaveAttribute("data-slot", "input-otp-group");
-    expect(group).toHaveClass("flex");
-    expect(group).toHaveClass("items-center");
-  });
+    const group = container.querySelector('[data-slot="input-otp-group"]')
+    expect(group).toBeInTheDocument()
+    expect(group).toHaveAttribute('data-slot', 'input-otp-group')
+    expect(group).toHaveClass('flex')
+    expect(group).toHaveClass('items-center')
+  })
 
   // it("handles complete input sequence", async () => {
   //   const user = userEvent.setup();
@@ -157,4 +157,4 @@ describe("InputOTP", () => {
 
   //   expect(input).toHaveValue("1234");
   // });
-});
+})

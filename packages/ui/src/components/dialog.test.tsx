@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 import {
   Dialog,
   DialogClose,
@@ -10,9 +10,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./dialog";
+} from './dialog'
 
-describe("Dialog", () => {
+describe('Dialog', () => {
   const renderDialog = (props = {}) => {
     return render(
       <Dialog {...props}>
@@ -28,29 +28,29 @@ describe("Dialog", () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>,
-    );
-  };
+    )
+  }
 
-  it("renders trigger button correctly", () => {
-    renderDialog();
-    const trigger = screen.getByRole("button", { name: "Open Dialog" });
-    expect(trigger).toBeInTheDocument();
-  });
+  it('renders trigger button correctly', () => {
+    renderDialog()
+    const trigger = screen.getByRole('button', { name: 'Open Dialog' })
+    expect(trigger).toBeInTheDocument()
+  })
 
-  it("opens dialog when trigger is clicked", async () => {
-    const user = userEvent.setup();
-    renderDialog();
+  it('opens dialog when trigger is clicked', async () => {
+    const user = userEvent.setup()
+    renderDialog()
 
-    const trigger = screen.getByRole("button", { name: "Open Dialog" });
-    await user.click(trigger);
+    const trigger = screen.getByRole('button', { name: 'Open Dialog' })
+    await user.click(trigger)
 
     await waitFor(() => {
-      expect(screen.getByRole("dialog")).toBeInTheDocument();
-      expect(screen.getByText("Dialog Title")).toBeInTheDocument();
-      expect(screen.getByText("Dialog Description")).toBeInTheDocument();
-      expect(screen.getByText("Dialog Content")).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+      expect(screen.getByText('Dialog Title')).toBeInTheDocument()
+      expect(screen.getByText('Dialog Description')).toBeInTheDocument()
+      expect(screen.getByText('Dialog Content')).toBeInTheDocument()
+    })
+  })
 
   // it("closes dialog when close button is clicked", async () => {
   //   const user = userEvent.setup();
@@ -75,38 +75,36 @@ describe("Dialog", () => {
   //   });
   // });
 
-  it("closes dialog when escape key is pressed", async () => {
-    const user = userEvent.setup();
-    renderDialog();
+  it('closes dialog when escape key is pressed', async () => {
+    const user = userEvent.setup()
+    renderDialog()
 
     // Open dialog
-    const trigger = screen.getByRole("button", { name: "Open Dialog" });
-    await user.click(trigger);
+    const trigger = screen.getByRole('button', { name: 'Open Dialog' })
+    await user.click(trigger)
 
     // Wait for dialog to open
     await waitFor(() => {
-      expect(screen.getByRole("dialog")).toBeInTheDocument();
-    });
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
 
     // Press escape key
-    await user.keyboard("{Escape}");
+    await user.keyboard('{Escape}')
 
     // Wait for dialog to close
     await waitFor(() => {
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
-  });
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
 
-  it("applies custom className to all components", () => {
+  it('applies custom className to all components', () => {
     render(
       <Dialog>
         <DialogTrigger className="custom-trigger">Open Dialog</DialogTrigger>
         <DialogContent className="custom-content">
           <DialogHeader className="custom-header">
             <DialogTitle className="custom-title">Dialog Title</DialogTitle>
-            <DialogDescription className="custom-description">
-              Dialog Description
-            </DialogDescription>
+            <DialogDescription className="custom-description">Dialog Description</DialogDescription>
           </DialogHeader>
           <div>Dialog Content</div>
           <DialogFooter className="custom-footer">
@@ -114,14 +112,14 @@ describe("Dialog", () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>,
-    );
+    )
 
-    const trigger = screen.getByRole("button", { name: "Open Dialog" });
-    expect(trigger).toHaveClass("custom-trigger");
-  });
+    const trigger = screen.getByRole('button', { name: 'Open Dialog' })
+    expect(trigger).toHaveClass('custom-trigger')
+  })
 
-  it("handles controlled state", async () => {
-    const onOpenChange = vi.fn();
+  it('handles controlled state', async () => {
+    const onOpenChange = vi.fn()
     render(
       <Dialog open={false} onOpenChange={onOpenChange}>
         <DialogTrigger>Open Dialog</DialogTrigger>
@@ -131,13 +129,13 @@ describe("Dialog", () => {
           </DialogHeader>
         </DialogContent>
       </Dialog>,
-    );
+    )
 
-    const trigger = screen.getByRole("button", { name: "Open Dialog" });
-    await userEvent.click(trigger);
+    const trigger = screen.getByRole('button', { name: 'Open Dialog' })
+    await userEvent.click(trigger)
 
-    expect(onOpenChange).toHaveBeenCalledWith(true);
-  });
+    expect(onOpenChange).toHaveBeenCalledWith(true)
+  })
 
   // it("renders with aria-label", async () => {
   //   const user = userEvent.setup();
@@ -162,4 +160,4 @@ describe("Dialog", () => {
   //     expect(dialog).toBeInTheDocument();
   //   });
   // });
-});
+})

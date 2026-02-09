@@ -19,45 +19,35 @@ import {
   SidebarInput,
   SidebarMenu,
   SidebarMenuItem,
-} from "@repo/ui";
-import {
-  ChevronRight,
-  LogOut,
-  Moon,
-  Plus,
-  Search,
-  Sparkles,
-  Star,
-  Sun,
-  User,
-} from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import { useAuth } from "../contexts/AuthContext";
-import { getGravatarUrl } from "../lib/gravatar";
+} from '@repo/ui'
+import { ChevronRight, LogOut, Moon, Plus, Search, Sparkles, Star, Sun, User } from 'lucide-react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { useAuth } from '../contexts/AuthContext'
+import { getGravatarUrl } from '../lib/gravatar'
 
 export interface ChatHistoryEntry {
-  id: string;
-  title: string;
-  timestamp: Date;
-  messageCount: number;
+  id: string
+  title: string
+  timestamp: Date
+  messageCount: number
 }
 
 export interface AppSidebarProps {
-  chatHistory: ChatHistoryEntry[];
-  sessionsLoading: boolean;
-  selectedChatId: string | null;
-  isStreaming: boolean;
-  isDarkMode: boolean;
+  chatHistory: ChatHistoryEntry[]
+  sessionsLoading: boolean
+  selectedChatId: string | null
+  isStreaming: boolean
+  isDarkMode: boolean
   user: {
-    sub?: string;
-    email?: string;
-    preferredUsername?: string;
-    picture?: string;
-  } | null;
-  onNewChat: () => void;
-  onSelectChat: (chatId: string) => void;
-  onToggleTheme: () => void;
+    sub?: string
+    email?: string
+    preferredUsername?: string
+    picture?: string
+  } | null
+  onNewChat: () => void
+  onSelectChat: (chatId: string) => void
+  onToggleTheme: () => void
 }
 
 export function AppSidebar(props: Readonly<AppSidebarProps>) {
@@ -71,17 +61,13 @@ export function AppSidebar(props: Readonly<AppSidebarProps>) {
     onNewChat,
     onSelectChat,
     onToggleTheme,
-  } = props;
-  const [isPinnedOpen, setIsPinnedOpen] = useState(false);
-  const navigate = useNavigate();
-  const { signOut } = useAuth();
+  } = props
+  const [isPinnedOpen, setIsPinnedOpen] = useState(false)
+  const navigate = useNavigate()
+  const { signOut } = useAuth()
 
-  const displayName = user?.preferredUsername || user?.email || user?.sub;
-  const avatarSrc = user?.picture
-    ? user.picture
-    : user?.email
-      ? getGravatarUrl(user.email, 36)
-      : null;
+  const displayName = user?.preferredUsername || user?.email || user?.sub
+  const avatarSrc = user?.picture ? user.picture : user?.email ? getGravatarUrl(user.email, 36) : null
 
   return (
     <Sidebar className="border-r">
@@ -100,11 +86,7 @@ export function AppSidebar(props: Readonly<AppSidebarProps>) {
           <SidebarInput placeholder="Search..." className="pl-8" />
         </div>
 
-        <Button
-          className="w-full mt-3 gap-2"
-          onClick={onNewChat}
-          disabled={isStreaming}
-        >
+        <Button className="w-full mt-3 gap-2" onClick={onNewChat} disabled={isStreaming}>
           <Plus className="h-4 w-4" />
           Start New Chat
         </Button>
@@ -119,18 +101,12 @@ export function AppSidebar(props: Readonly<AppSidebarProps>) {
                   <Star className="h-4 w-4" />
                   <span>Pinned Chats</span>
                 </div>
-                <ChevronRight
-                  className={`h-4 w-4 ml-auto transition-transform ${
-                    isPinnedOpen ? "rotate-90" : ""
-                  }`}
-                />
+                <ChevronRight className={`h-4 w-4 ml-auto transition-transform ${isPinnedOpen ? 'rotate-90' : ''}`} />
               </SidebarGroupLabel>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <SidebarGroupContent>
-                <p className="text-xs text-muted-foreground px-2 py-3">
-                  No pinned chats yet
-                </p>
+                <p className="text-xs text-muted-foreground px-2 py-3">No pinned chats yet</p>
               </SidebarGroupContent>
             </CollapsibleContent>
           </SidebarGroup>
@@ -141,9 +117,7 @@ export function AppSidebar(props: Readonly<AppSidebarProps>) {
           <SidebarGroupContent>
             <SidebarMenu>
               {sessionsLoading ? (
-                <p className="text-xs text-muted-foreground px-2 py-3">
-                  Loading...
-                </p>
+                <p className="text-xs text-muted-foreground px-2 py-3">Loading...</p>
               ) : (
                 chatHistory.map((chat) => (
                   <SidebarMenuItem key={chat.id}>
@@ -171,11 +145,7 @@ export function AppSidebar(props: Readonly<AppSidebarProps>) {
               className="flex items-center gap-3 p-2 mt-2 w-full rounded-lg hover:bg-sidebar-accent cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {avatarSrc ? (
-                <img
-                  src={avatarSrc}
-                  alt=""
-                  className="h-9 w-9 rounded-full object-cover shrink-0"
-                />
+                <img src={avatarSrc} alt="" className="h-9 w-9 rounded-full object-cover shrink-0" />
               ) : (
                 <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center text-sm font-medium shrink-0">
                   {user?.sub?.substring(0, 2) ?? <User className="h-4 w-4" />}
@@ -183,36 +153,20 @@ export function AppSidebar(props: Readonly<AppSidebarProps>) {
               )}
               <div className="flex-1 min-w-0 text-left">
                 <p className="text-sm font-medium truncate">{displayName}</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {user?.email}
-                </p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="start" className="w-56">
-            <DropdownMenuItem
-              onSelect={() => navigate("/profile")}
-              className="cursor-pointer"
-            >
+            <DropdownMenuItem onSelect={() => navigate('/profile')} className="cursor-pointer">
               <User className="h-4 w-4" />
               Profile
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={onToggleTheme}
-              className="cursor-pointer"
-            >
-              {isDarkMode ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-              <span>{isDarkMode ? "Light" : "Dark"}</span>
+            <DropdownMenuItem onClick={onToggleTheme} className="cursor-pointer">
+              {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              <span>{isDarkMode ? 'Light' : 'Dark'}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => signOut()}
-              className="cursor-pointer"
-              variant="destructive"
-            >
+            <DropdownMenuItem onSelect={() => signOut()} className="cursor-pointer" variant="destructive">
               <LogOut className="h-4 w-4" />
               Sign out
             </DropdownMenuItem>
@@ -220,5 +174,5 @@ export function AppSidebar(props: Readonly<AppSidebarProps>) {
         </DropdownMenu>
       </SidebarFooter>
     </Sidebar>
-  );
+  )
 }

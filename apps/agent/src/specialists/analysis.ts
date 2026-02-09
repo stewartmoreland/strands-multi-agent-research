@@ -9,12 +9,14 @@
  * Falls back to simulated results when AgentCore is not available.
  */
 
-import { createLogger } from "@repo/util/logger";
-import { Agent, BedrockModel, tool } from "@strands-agents/sdk";
-import { z } from "zod";
-import { getSpecialistConfig, type AnalysisInput } from "./types.js";
+import { createLogger } from '@repo/util/logger'
+import { Agent, BedrockModel, tool } from '@strands-agents/sdk'
+import { z } from 'zod'
+import { getSpecialistConfig, type AnalysisInput } from './types.js'
 
-const logger = createLogger("research_agent", { defaultAttributes: { specialist: "Analysis Specialist" } });
+const logger = createLogger('research_agent', {
+  defaultAttributes: { specialist: 'Analysis Specialist' },
+})
 
 /**
  * System prompt for the analysis specialist agent
@@ -33,26 +35,23 @@ When performing analysis:
 - Explain your methodology and findings
 - Include relevant statistics and metrics
 
-Always show your work and explain your reasoning.`;
+Always show your work and explain your reasoning.`
 
 /**
  * Create the analysis agent with code interpreter tools when available.
  * @param config - Specialist config (use getSpecialistConfig({ modelId }) for per-request model).
  */
-async function createAnalysisAgent(
-  config: ReturnType<typeof getSpecialistConfig>,
-): Promise<Agent | null> {
+async function createAnalysisAgent(config: ReturnType<typeof getSpecialistConfig>): Promise<Agent | null> {
   if (!config.useAgentCore) {
-    logger.info("AgentCore disabled, using local fallback", { config });
-    return null;
+    logger.info('AgentCore disabled, using local fallback', { config })
+    return null
   }
 
   try {
     // Dynamically import code interpreter tools
-    const { CodeInterpreterTools } =
-      await import("bedrock-agentcore/experimental/code-interpreter/strands");
+    const { CodeInterpreterTools } = await import('bedrock-agentcore/experimental/code-interpreter/strands')
 
-    const codeInterpreter = new CodeInterpreterTools({ region: config.region });
+    const codeInterpreter = new CodeInterpreterTools({ region: config.region })
 
     const agent = new Agent({
       model: new BedrockModel({
@@ -62,119 +61,103 @@ async function createAnalysisAgent(
       tools: codeInterpreter.tools,
       systemPrompt: ANALYSIS_SYSTEM_PROMPT,
       printer: false,
-    });
+    })
 
-    logger.info("Initialized with AgentCore Code Interpreter");
-    return agent;
+    logger.info('Initialized with AgentCore Code Interpreter')
+    return agent
   } catch (error) {
-    logger.warn("Failed to initialize AgentCore Code Interpreter", { error: error instanceof Error ? error.message : String(error) });
-    return null;
+    logger.warn('Failed to initialize AgentCore Code Interpreter', {
+      error: error instanceof Error ? error.message : String(error),
+    })
+    return null
   }
 }
 
 // Cache by modelId so we reuse agents when the same model is selected
-const analysisAgentCache = new Map<string, Agent | null>();
+const analysisAgentCache = new Map<string, Agent | null>()
 
 /**
  * Get or create the analysis agent for the given model (or default config).
  */
 async function getAnalysisAgent(modelId?: string): Promise<Agent | null> {
-  const config = getSpecialistConfig(modelId != null ? { modelId } : undefined);
-  const key = config.modelId;
-  let agent = analysisAgentCache.get(key);
+  const config = getSpecialistConfig(modelId != null ? { modelId } : undefined)
+  const key = config.modelId
+  let agent = analysisAgentCache.get(key)
   if (agent === undefined) {
-    agent = await createAnalysisAgent(config);
-    analysisAgentCache.set(key, agent ?? null);
+    agent = await createAnalysisAgent(config)
+    analysisAgentCache.set(key, agent ?? null)
   }
-  return agent;
+  return agent
 }
 
 /** Invocation timeout in ms (90s) so the orchestrator does not hang if Bedrock/Code Interpreter stalls */
-const INVOKE_TIMEOUT_MS = 90_000;
+const INVOKE_TIMEOUT_MS = 90_000
 
 /**
  * Return fallback analysis text when agent is unavailable or invoke fails/times out
  */
-function getFallbackAnalysis(
-  task: string,
-  previousNotes?: string,
-  data?: string,
-): string {
+function getFallbackAnalysis(task: string, previousNotes?: string, data?: string): string {
   return [
     `Analysis results for: "${task}"`,
-    previousNotes
-      ? `Building on previous research: ${previousNotes.substring(0, 100)}...`
-      : "",
-    data ? `Data provided: ${data.substring(0, 50)}...` : "",
-    "",
-    "Analysis:",
-    "- Data processed: Input validated and normalized",
-    "- Computations: Statistical analysis completed",
-    "- Patterns identified: Key trends extracted",
-    "",
-    "Note: This is a simulated response. Enable AgentCore Code Interpreter for real code execution.",
-    "",
-    "Conclusion: Analysis complete with quantified results.",
+    previousNotes ? `Building on previous research: ${previousNotes.substring(0, 100)}...` : '',
+    data ? `Data provided: ${data.substring(0, 50)}...` : '',
+    '',
+    'Analysis:',
+    '- Data processed: Input validated and normalized',
+    '- Computations: Statistical analysis completed',
+    '- Patterns identified: Key trends extracted',
+    '',
+    'Note: This is a simulated response. Enable AgentCore Code Interpreter for real code execution.',
+    '',
+    'Conclusion: Analysis complete with quantified results.',
   ]
     .filter(Boolean)
-    .join("\n");
+    .join('\n')
 }
 
 /**
  * Perform analysis using the agent or fallback.
  * Wraps agent.invoke in a timeout so the orchestrator always gets a result.
  */
-async function performAnalysis(
-  input: AnalysisInput,
-  modelId?: string,
-): Promise<string> {
-  const { task, data, previousNotes, language } = input;
+async function performAnalysis(input: AnalysisInput, modelId?: string): Promise<string> {
+  const { task, data, previousNotes, language } = input
 
-  const agent = await getAnalysisAgent(modelId);
+  const agent = await getAnalysisAgent(modelId)
 
   if (agent) {
-    const dataSection = data
-      ? `\n\nData to analyze:\n\`\`\`\n${data}\n\`\`\``
-      : "";
-    const notesSection = previousNotes
-      ? `\n\nPrevious research notes to consider:\n${previousNotes}`
-      : "";
-    const langPreference = language
-      ? `\n\nPreferred programming language: ${language}`
-      : "";
-    const prompt = `Analysis task: ${task}${dataSection}${notesSection}${langPreference}\n\nPlease perform the analysis and provide detailed results with explanations.`;
+    const dataSection = data ? `\n\nData to analyze:\n\`\`\`\n${data}\n\`\`\`` : ''
+    const notesSection = previousNotes ? `\n\nPrevious research notes to consider:\n${previousNotes}` : ''
+    const langPreference = language ? `\n\nPreferred programming language: ${language}` : ''
+    const prompt = `Analysis task: ${task}${dataSection}${notesSection}${langPreference}\n\nPlease perform the analysis and provide detailed results with explanations.`
 
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(
-        () => reject(new Error("Analysis specialist invocation timed out")),
-        INVOKE_TIMEOUT_MS,
-      );
-    });
+      setTimeout(() => reject(new Error('Analysis specialist invocation timed out')), INVOKE_TIMEOUT_MS)
+    })
 
     try {
-      const result = await Promise.race([agent.invoke(prompt), timeoutPromise]);
-      const message = result.lastMessage;
+      const result = await Promise.race([agent.invoke(prompt), timeoutPromise])
+      const message = result.lastMessage
       if (message) {
-        const textParts: string[] = [];
+        const textParts: string[] = []
         for (const block of message.content) {
-          if (block.type === "textBlock") {
-            textParts.push(block.text);
+          if (block.type === 'textBlock') {
+            textParts.push(block.text)
           }
         }
-        const text = textParts.join("\n");
+        const text = textParts.join('\n')
         if (text) {
-          return text;
+          return text
         }
       }
     } catch (error) {
-      logger.error("Agent invocation failed", { task }, error instanceof Error ? error : new Error(String(error)));
-      logger.info("Using fallback", { task });
-      return getFallbackAnalysis(task, previousNotes, data);
+      logger.error('Agent invocation failed', { task }, error instanceof Error ? error : new Error(String(error)))
+      logger.info('Using fallback', { task })
+      return getFallbackAnalysis(task, previousNotes, data)
     }
   }
 
-  logger.info("Using fallback", { task });
-  return getFallbackAnalysis(task, previousNotes, data);
+  logger.info('Using fallback', { task })
+  return getFallbackAnalysis(task, previousNotes, data)
 }
 
 /**
@@ -184,56 +167,44 @@ async function performAnalysis(
  * Uses AgentCore Code Interpreter when available, falls back to simulation otherwise.
  */
 export const analysisTool = tool({
-  name: "analysis_specialist",
+  name: 'analysis_specialist',
   description:
-    "Data analysis specialist: uses code interpreter for computations, data transforms, and analysis. Use this tool for calculations, statistical analysis, or data processing.",
+    'Data analysis specialist: uses code interpreter for computations, data transforms, and analysis. Use this tool for calculations, statistical analysis, or data processing.',
   inputSchema: z.object({
-    task: z.string().describe("The analysis task or computation to perform"),
-    data: z
-      .string()
-      .optional()
-      .describe("Data to analyze (JSON, CSV, or other structured format)"),
-    previousNotes: z
-      .string()
-      .optional()
-      .describe("Notes from previous tools to build upon"),
+    task: z.string().describe('The analysis task or computation to perform'),
+    data: z.string().optional().describe('Data to analyze (JSON, CSV, or other structured format)'),
+    previousNotes: z.string().optional().describe('Notes from previous tools to build upon'),
     language: z
-      .enum(["python", "javascript", "typescript"])
+      .enum(['python', 'javascript', 'typescript'])
       .optional()
-      .describe("Preferred programming language for code execution"),
+      .describe('Preferred programming language for code execution'),
   }),
   callback: async ({ task, data, previousNotes, language }) => {
-    logger.info("Processing", { task });
-    return performAnalysis({ task, data, previousNotes, language });
+    logger.info('Processing', { task })
+    return performAnalysis({ task, data, previousNotes, language })
   },
-});
+})
 
 /**
  * Create an analysis tool that uses the given model ID (for per-request model selection).
  */
 export function createAnalysisTool(modelId: string) {
   return tool({
-    name: "analysis_specialist",
+    name: 'analysis_specialist',
     description:
-      "Data analysis specialist: uses code interpreter for computations, data transforms, and analysis. Use this tool for calculations, statistical analysis, or data processing.",
+      'Data analysis specialist: uses code interpreter for computations, data transforms, and analysis. Use this tool for calculations, statistical analysis, or data processing.',
     inputSchema: z.object({
-      task: z.string().describe("The analysis task or computation to perform"),
-      data: z
-        .string()
-        .optional()
-        .describe("Data to analyze (JSON, CSV, or other structured format)"),
-      previousNotes: z
-        .string()
-        .optional()
-        .describe("Notes from previous tools to build upon"),
+      task: z.string().describe('The analysis task or computation to perform'),
+      data: z.string().optional().describe('Data to analyze (JSON, CSV, or other structured format)'),
+      previousNotes: z.string().optional().describe('Notes from previous tools to build upon'),
       language: z
-        .enum(["python", "javascript", "typescript"])
+        .enum(['python', 'javascript', 'typescript'])
         .optional()
-        .describe("Preferred programming language for code execution"),
+        .describe('Preferred programming language for code execution'),
     }),
     callback: async ({ task, data, previousNotes, language }) => {
-      logger.info("Processing", { task });
-      return performAnalysis({ task, data, previousNotes, language }, modelId);
+      logger.info('Processing', { task })
+      return performAnalysis({ task, data, previousNotes, language }, modelId)
     },
-  });
+  })
 }

@@ -5,83 +5,78 @@ import {
   CognitoUserPool,
   CognitoUserSession,
   ISignUpResult,
-} from "amazon-cognito-identity-js";
-import { config } from "./config";
+} from 'amazon-cognito-identity-js'
+import { config } from './config'
 
 // Initialize the Cognito User Pool
 const userPool = new CognitoUserPool({
   UserPoolId: config.cognito.userPoolId,
   ClientId: config.cognito.clientId,
-});
+})
 
 export interface SignUpParams {
-  email: string;
-  password: string;
-  givenName?: string;
-  familyName?: string;
+  email: string
+  password: string
+  givenName?: string
+  familyName?: string
 }
 
 export interface SignInResult {
-  success: boolean;
-  user?: CognitoUser;
-  session?: CognitoUserSession;
-  mfaRequired?: boolean;
-  totpSetupRequired?: boolean;
-  challengeName?: string;
+  success: boolean
+  user?: CognitoUser
+  session?: CognitoUserSession
+  mfaRequired?: boolean
+  totpSetupRequired?: boolean
+  challengeName?: string
 }
 
 export interface MfaChallengeResult {
-  success: boolean;
-  session?: CognitoUserSession;
+  success: boolean
+  session?: CognitoUserSession
 }
 
 /**
  * Sign up a new user with email and password
  */
-export function signUp({
-  email,
-  password,
-  givenName,
-  familyName,
-}: SignUpParams): Promise<ISignUpResult> {
+export function signUp({ email, password, givenName, familyName }: SignUpParams): Promise<ISignUpResult> {
   const attributeList = [
     new CognitoUserAttribute({
-      Name: "email",
+      Name: 'email',
       Value: email,
     }),
-  ];
+  ]
 
   if (givenName) {
     attributeList.push(
       new CognitoUserAttribute({
-        Name: "given_name",
+        Name: 'given_name',
         Value: givenName,
       }),
-    );
+    )
   }
 
   if (familyName) {
     attributeList.push(
       new CognitoUserAttribute({
-        Name: "family_name",
+        Name: 'family_name',
         Value: familyName,
       }),
-    );
+    )
   }
 
   return new Promise((resolve, reject) => {
     userPool.signUp(email, password, attributeList, [], (err, result) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
       if (!result) {
-        reject(new Error("Sign up failed - no result returned"));
-        return;
+        reject(new Error('Sign up failed - no result returned'))
+        return
       }
-      resolve(result);
-    });
-  });
+      resolve(result)
+    })
+  })
 }
 
 /**
@@ -91,17 +86,17 @@ export function confirmSignUp(email: string, code: string): Promise<void> {
   const cognitoUser = new CognitoUser({
     Username: email,
     Pool: userPool,
-  });
+  })
 
   return new Promise((resolve, reject) => {
     cognitoUser.confirmRegistration(code, true, (err) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
-      resolve();
-    });
-  });
+      resolve()
+    })
+  })
 }
 
 /**
@@ -111,21 +106,21 @@ export function resendConfirmationCode(email: string): Promise<void> {
   const cognitoUser = new CognitoUser({
     Username: email,
     Pool: userPool,
-  });
+  })
 
   return new Promise((resolve, reject) => {
     cognitoUser.resendConfirmationCode((err) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
-      resolve();
-    });
-  });
+      resolve()
+    })
+  })
 }
 
 // Store for MFA challenges
-let currentCognitoUser: CognitoUser | null = null;
+let currentCognitoUser: CognitoUser | null = null
 
 /**
  * Sign in with email and password
@@ -135,88 +130,86 @@ export function signIn(email: string, password: string): Promise<SignInResult> {
   const cognitoUser = new CognitoUser({
     Username: email,
     Pool: userPool,
-  });
+  })
 
   const authDetails = new AuthenticationDetails({
     Username: email,
     Password: password,
-  });
+  })
 
   return new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(authDetails, {
       onSuccess: (session) => {
-        currentCognitoUser = null;
+        currentCognitoUser = null
         resolve({
           success: true,
           user: cognitoUser,
           session,
-        });
+        })
       },
       onFailure: (err) => {
-        currentCognitoUser = null;
-        reject(err);
+        currentCognitoUser = null
+        reject(err)
       },
       mfaRequired: (challengeName) => {
-        currentCognitoUser = cognitoUser;
+        currentCognitoUser = cognitoUser
         resolve({
           success: false,
           mfaRequired: true,
           challengeName,
           user: cognitoUser,
-        });
+        })
       },
       totpRequired: (challengeName) => {
-        currentCognitoUser = cognitoUser;
+        currentCognitoUser = cognitoUser
         resolve({
           success: false,
           mfaRequired: true,
           challengeName,
           user: cognitoUser,
-        });
+        })
       },
       mfaSetup: (challengeName) => {
-        currentCognitoUser = cognitoUser;
+        currentCognitoUser = cognitoUser
         resolve({
           success: false,
           totpSetupRequired: true,
           challengeName,
           user: cognitoUser,
-        });
+        })
       },
       newPasswordRequired: () => {
         // Handle new password requirement if needed
-        reject(new Error("New password required - not implemented"));
+        reject(new Error('New password required - not implemented'))
       },
-    });
-  });
+    })
+  })
 }
 
 /**
  * Respond to TOTP MFA challenge
  */
-export function respondToTotpChallenge(
-  code: string,
-): Promise<MfaChallengeResult> {
+export function respondToTotpChallenge(code: string): Promise<MfaChallengeResult> {
   return new Promise((resolve, reject) => {
     if (!currentCognitoUser) {
-      reject(new Error("No active MFA challenge"));
-      return;
+      reject(new Error('No active MFA challenge'))
+      return
     }
 
     currentCognitoUser.sendMFACode(
       code,
       {
         onSuccess: (session) => {
-          currentCognitoUser = null;
-          resolve({ success: true, session });
+          currentCognitoUser = null
+          resolve({ success: true, session })
         },
         onFailure: (err) => {
-          reject(err);
+          reject(err)
         },
       },
-      "SOFTWARE_TOKEN_MFA",
-    );
-  });
+      'SOFTWARE_TOKEN_MFA',
+    )
+  })
 }
 
 /**
@@ -224,28 +217,28 @@ export function respondToTotpChallenge(
  */
 export function setupTOTP(): Promise<string> {
   return new Promise((resolve, reject) => {
-    const cognitoUser = userPool.getCurrentUser();
+    const cognitoUser = userPool.getCurrentUser()
     if (!cognitoUser) {
-      reject(new Error("No authenticated user"));
-      return;
+      reject(new Error('No authenticated user'))
+      return
     }
 
     cognitoUser.getSession((err: Error | null) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
 
       cognitoUser.associateSoftwareToken({
         associateSecretCode: (secretCode) => {
-          resolve(secretCode);
+          resolve(secretCode)
         },
         onFailure: (err) => {
-          reject(err);
+          reject(err)
         },
-      });
-    });
-  });
+      })
+    })
+  })
 }
 
 /**
@@ -253,28 +246,28 @@ export function setupTOTP(): Promise<string> {
  */
 export function verifyTOTP(code: string, deviceName?: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const cognitoUser = userPool.getCurrentUser();
+    const cognitoUser = userPool.getCurrentUser()
     if (!cognitoUser) {
-      reject(new Error("No authenticated user"));
-      return;
+      reject(new Error('No authenticated user'))
+      return
     }
 
     cognitoUser.getSession((err: Error | null) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
 
-      cognitoUser.verifySoftwareToken(code, deviceName || "AuthenticatorApp", {
+      cognitoUser.verifySoftwareToken(code, deviceName || 'AuthenticatorApp', {
         onSuccess: () => {
-          resolve();
+          resolve()
         },
         onFailure: (err) => {
-          reject(err);
+          reject(err)
         },
-      });
-    });
-  });
+      })
+    })
+  })
 }
 
 /**
@@ -282,32 +275,32 @@ export function verifyTOTP(code: string, deviceName?: string): Promise<void> {
  */
 export function setMfaPreference(enabled: boolean): Promise<void> {
   return new Promise((resolve, reject) => {
-    const cognitoUser = userPool.getCurrentUser();
+    const cognitoUser = userPool.getCurrentUser()
     if (!cognitoUser) {
-      reject(new Error("No authenticated user"));
-      return;
+      reject(new Error('No authenticated user'))
+      return
     }
 
     cognitoUser.getSession((err: Error | null) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
 
       const totpSettings = {
         PreferredMfa: enabled,
         Enabled: enabled,
-      };
+      }
 
       cognitoUser.setUserMfaPreference(null, totpSettings, (err) => {
         if (err) {
-          reject(err);
-          return;
+          reject(err)
+          return
         }
-        resolve();
-      });
-    });
-  });
+        resolve()
+      })
+    })
+  })
 }
 
 /**
@@ -317,54 +310,50 @@ export function forgotPassword(email: string): Promise<void> {
   const cognitoUser = new CognitoUser({
     Username: email,
     Pool: userPool,
-  });
+  })
 
   return new Promise((resolve, reject) => {
     cognitoUser.forgotPassword({
       onSuccess: () => {
-        resolve();
+        resolve()
       },
       onFailure: (err) => {
-        reject(err);
+        reject(err)
       },
-    });
-  });
+    })
+  })
 }
 
 /**
  * Confirm new password with reset code
  */
-export function confirmPassword(
-  email: string,
-  code: string,
-  newPassword: string,
-): Promise<void> {
+export function confirmPassword(email: string, code: string, newPassword: string): Promise<void> {
   const cognitoUser = new CognitoUser({
     Username: email,
     Pool: userPool,
-  });
+  })
 
   return new Promise((resolve, reject) => {
     cognitoUser.confirmPassword(code, newPassword, {
       onSuccess: () => {
-        resolve();
+        resolve()
       },
       onFailure: (err) => {
-        reject(err);
+        reject(err)
       },
-    });
-  });
+    })
+  })
 }
 
 /**
  * Sign out current user
  */
 export function signOut(): void {
-  const cognitoUser = userPool.getCurrentUser();
+  const cognitoUser = userPool.getCurrentUser()
   if (cognitoUser) {
-    cognitoUser.signOut();
+    cognitoUser.signOut()
   }
-  currentCognitoUser = null;
+  currentCognitoUser = null
 }
 
 /**
@@ -372,39 +361,39 @@ export function signOut(): void {
  */
 export function globalSignOut(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const cognitoUser = userPool.getCurrentUser();
+    const cognitoUser = userPool.getCurrentUser()
     if (!cognitoUser) {
-      resolve();
-      return;
+      resolve()
+      return
     }
 
     cognitoUser.getSession((err: Error | null) => {
       if (err) {
         // Session invalid, just sign out locally
-        cognitoUser.signOut();
-        resolve();
-        return;
+        cognitoUser.signOut()
+        resolve()
+        return
       }
 
       cognitoUser.globalSignOut({
         onSuccess: () => {
-          resolve();
+          resolve()
         },
         onFailure: (err) => {
           // Still sign out locally even if global fails
-          cognitoUser.signOut();
-          reject(err);
+          cognitoUser.signOut()
+          reject(err)
         },
-      });
-    });
-  });
+      })
+    })
+  })
 }
 
 /**
  * Get current authenticated user
  */
 export function getCurrentUser(): CognitoUser | null {
-  return userPool.getCurrentUser();
+  return userPool.getCurrentUser()
 }
 
 /**
@@ -412,22 +401,20 @@ export function getCurrentUser(): CognitoUser | null {
  */
 export function getSession(): Promise<CognitoUserSession | null> {
   return new Promise((resolve, reject) => {
-    const cognitoUser = userPool.getCurrentUser();
+    const cognitoUser = userPool.getCurrentUser()
     if (!cognitoUser) {
-      resolve(null);
-      return;
+      resolve(null)
+      return
     }
 
-    cognitoUser.getSession(
-      (err: Error | null, session: CognitoUserSession | null) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(session);
-      },
-    );
-  });
+    cognitoUser.getSession((err: Error | null, session: CognitoUserSession | null) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      resolve(session)
+    })
+  })
 }
 
 /**
@@ -435,96 +422,89 @@ export function getSession(): Promise<CognitoUserSession | null> {
  */
 export function getUserAttributes(): Promise<Record<string, string>> {
   return new Promise((resolve, reject) => {
-    const cognitoUser = userPool.getCurrentUser();
+    const cognitoUser = userPool.getCurrentUser()
     if (!cognitoUser) {
-      reject(new Error("No authenticated user"));
-      return;
+      reject(new Error('No authenticated user'))
+      return
     }
 
     cognitoUser.getSession((err: Error | null) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
 
       cognitoUser.getUserAttributes((err, attributes) => {
         if (err) {
-          reject(err);
-          return;
+          reject(err)
+          return
         }
 
-        const attrs: Record<string, string> = {};
+        const attrs: Record<string, string> = {}
         attributes?.forEach((attr) => {
-          attrs[attr.getName()] = attr.getValue();
-        });
-        resolve(attrs);
-      });
-    });
-  });
+          attrs[attr.getName()] = attr.getValue()
+        })
+        resolve(attrs)
+      })
+    })
+  })
 }
 
 /**
  * Update the currently signed-in user's attributes
  */
-export function updateUserAttributes(
-  attributes: Record<string, string>,
-): Promise<void> {
+export function updateUserAttributes(attributes: Record<string, string>): Promise<void> {
   return new Promise((resolve, reject) => {
-    const cognitoUser = userPool.getCurrentUser();
+    const cognitoUser = userPool.getCurrentUser()
     if (!cognitoUser) {
-      reject(new Error("No authenticated user"));
-      return;
+      reject(new Error('No authenticated user'))
+      return
     }
 
     cognitoUser.getSession((err: Error | null) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
 
-      const attributeList = Object.entries(attributes).map(
-        ([Name, Value]) => new CognitoUserAttribute({ Name, Value }),
-      );
+      const attributeList = Object.entries(attributes).map(([Name, Value]) => new CognitoUserAttribute({ Name, Value }))
       cognitoUser.updateAttributes(attributeList, (err) => {
         if (err) {
-          reject(err);
-          return;
+          reject(err)
+          return
         }
-        resolve();
-      });
-    });
-  });
+        resolve()
+      })
+    })
+  })
 }
 
 /**
  * Change password for the currently signed-in user
  */
-export function changePassword(
-  oldPassword: string,
-  newPassword: string,
-): Promise<void> {
+export function changePassword(oldPassword: string, newPassword: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const cognitoUser = userPool.getCurrentUser();
+    const cognitoUser = userPool.getCurrentUser()
     if (!cognitoUser) {
-      reject(new Error("No authenticated user"));
-      return;
+      reject(new Error('No authenticated user'))
+      return
     }
 
     cognitoUser.getSession((err: Error | null) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
 
       cognitoUser.changePassword(oldPassword, newPassword, (err) => {
         if (err) {
-          reject(err);
-          return;
+          reject(err)
+          return
         }
-        resolve();
-      });
-    });
-  });
+        resolve()
+      })
+    })
+  })
 }
 
 /**
@@ -532,44 +512,44 @@ export function changePassword(
  */
 export function deleteUser(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const cognitoUser = userPool.getCurrentUser();
+    const cognitoUser = userPool.getCurrentUser()
     if (!cognitoUser) {
-      reject(new Error("No authenticated user"));
-      return;
+      reject(new Error('No authenticated user'))
+      return
     }
 
     cognitoUser.getSession((err: Error | null) => {
       if (err) {
-        reject(err);
-        return;
+        reject(err)
+        return
       }
 
       cognitoUser.deleteUser((err) => {
         if (err) {
-          reject(err);
-          return;
+          reject(err)
+          return
         }
-        currentCognitoUser = null;
-        resolve();
-      });
-    });
-  });
+        currentCognitoUser = null
+        resolve()
+      })
+    })
+  })
 }
 
 /**
  * Get ID token for API calls
  */
 export async function getIdToken(): Promise<string | null> {
-  const session = await getSession();
-  return session?.getIdToken().getJwtToken() ?? null;
+  const session = await getSession()
+  return session?.getIdToken().getJwtToken() ?? null
 }
 
 /**
  * Get access token for API calls
  */
 export async function getAccessToken(): Promise<string | null> {
-  const session = await getSession();
-  return session?.getAccessToken().getJwtToken() ?? null;
+  const session = await getSession()
+  return session?.getAccessToken().getJwtToken() ?? null
 }
 
 /**
@@ -577,9 +557,9 @@ export async function getAccessToken(): Promise<string | null> {
  */
 export async function isAuthenticated(): Promise<boolean> {
   try {
-    const session = await getSession();
-    return session?.isValid() ?? false;
+    const session = await getSession()
+    return session?.isValid() ?? false
   } catch {
-    return false;
+    return false
   }
 }

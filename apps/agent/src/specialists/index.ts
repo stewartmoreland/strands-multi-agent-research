@@ -13,9 +13,9 @@
  */
 
 // Export specialist tools (default: use env BEDROCK_MODEL_ID)
-export { analysisTool, createAnalysisTool } from "./analysis.js";
-export { createResearchTool, researchTool } from "./research.js";
-export { createWritingTool, writingTool } from "./writing.js";
+export { analysisTool, createAnalysisTool } from './analysis.js'
+export { createResearchTool, researchTool } from './research.js'
+export { createWritingTool, writingTool } from './writing.js'
 
 // Export types for consumers who need them
 export type {
@@ -25,6 +25,6 @@ export type {
   SpecialistConfig,
   SpecialistResult,
   WritingInput,
-} from "./types.js";
+} from './types.js'
 
-export { getDefaultModelId, getSpecialistConfig } from "./types.js";
+export { getDefaultModelId, getSpecialistConfig } from './types.js'

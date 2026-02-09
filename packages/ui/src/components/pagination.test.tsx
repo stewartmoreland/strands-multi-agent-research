@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 import {
   Pagination,
   PaginationContent,
@@ -7,10 +7,10 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "./pagination";
+} from './pagination'
 
-describe("Pagination", () => {
-  it("renders correctly with default props", () => {
+describe('Pagination', () => {
+  it('renders correctly with default props', () => {
     render(
       <Pagination>
         <PaginationContent>
@@ -25,14 +25,14 @@ describe("Pagination", () => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>,
-    );
+    )
 
-    expect(screen.getByText("Previous")).toBeInTheDocument();
-    expect(screen.getByText("1")).toBeInTheDocument();
-    expect(screen.getByText("Next")).toBeInTheDocument();
-  });
+    expect(screen.getByText('Previous')).toBeInTheDocument()
+    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.getByText('Next')).toBeInTheDocument()
+  })
 
-  it("applies custom className correctly", () => {
+  it('applies custom className correctly', () => {
     render(
       <Pagination className="custom-pagination">
         <PaginationContent>
@@ -41,12 +41,12 @@ describe("Pagination", () => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>,
-    );
+    )
 
-    expect(screen.getByRole("navigation")).toHaveClass("custom-pagination");
-  });
+    expect(screen.getByRole('navigation')).toHaveClass('custom-pagination')
+  })
 
-  it("renders multiple page links", () => {
+  it('renders multiple page links', () => {
     render(
       <Pagination>
         <PaginationContent>
@@ -67,12 +67,12 @@ describe("Pagination", () => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>,
-    );
+    )
 
-    expect(screen.getByText("1")).toBeInTheDocument();
-    expect(screen.getByText("2")).toBeInTheDocument();
-    expect(screen.getByText("3")).toBeInTheDocument();
-  });
+    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText('3')).toBeInTheDocument()
+  })
 
   // it("renders ellipsis", () => {
   //   render(
@@ -94,7 +94,7 @@ describe("Pagination", () => {
   //   expect(screen.getByText("...")).toBeInTheDocument();
   // });
 
-  it("applies correct styles to PaginationContent", () => {
+  it('applies correct styles to PaginationContent', () => {
     render(
       <Pagination>
         <PaginationContent>
@@ -103,10 +103,10 @@ describe("Pagination", () => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>,
-    );
+    )
 
-    expect(screen.getByRole("list")).toHaveClass("flex");
-  });
+    expect(screen.getByRole('list')).toHaveClass('flex')
+  })
 
   // it("applies correct styles to PaginationItem", () => {
   //   render(
@@ -122,7 +122,7 @@ describe("Pagination", () => {
   //   expect(screen.getByRole("listitem")).toHaveClass("flex");
   // });
 
-  it("applies correct styles to PaginationLink", () => {
+  it('applies correct styles to PaginationLink', () => {
     render(
       <Pagination>
         <PaginationContent>
@@ -131,13 +131,13 @@ describe("Pagination", () => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>,
-    );
+    )
 
-    const link = screen.getByRole("link");
-    expect(link).toHaveClass("hover:bg-accent");
-  });
+    const link = screen.getByRole('link')
+    expect(link).toHaveClass('hover:bg-accent')
+  })
 
-  it("renders previous and next buttons with correct styles", () => {
+  it('renders previous and next buttons with correct styles', () => {
     render(
       <Pagination>
         <PaginationContent>
@@ -149,12 +149,12 @@ describe("Pagination", () => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>,
-    );
+    )
 
-    const prevButton = screen.getByText("Previous").closest("a");
-    const nextButton = screen.getByText("Next").closest("a");
+    const prevButton = screen.getByText('Previous').closest('a')
+    const nextButton = screen.getByText('Next').closest('a')
 
-    expect(prevButton).toHaveClass("gap-1");
-    expect(nextButton).toHaveClass("gap-1");
-  });
-});
+    expect(prevButton).toHaveClass('gap-1')
+    expect(nextButton).toHaveClass('gap-1')
+  })
+})

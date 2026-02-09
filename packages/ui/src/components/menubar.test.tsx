@@ -1,16 +1,9 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarTrigger,
-} from "./menubar";
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from './menubar'
 
-describe("Menubar", () => {
-  it("renders correctly with default props", () => {
+describe('Menubar', () => {
+  it('renders correctly with default props', () => {
     render(
       <Menubar>
         <MenubarMenu>
@@ -22,22 +15,22 @@ describe("Menubar", () => {
           </MenubarContent>
         </MenubarMenu>
       </Menubar>,
-    );
+    )
 
-    expect(screen.getByText("File")).toBeInTheDocument();
-  });
+    expect(screen.getByText('File')).toBeInTheDocument()
+  })
 
-  it("applies custom className correctly", () => {
+  it('applies custom className correctly', () => {
     render(
       <Menubar className="custom-menubar">
         <MenubarMenu>
           <MenubarTrigger>File</MenubarTrigger>
         </MenubarMenu>
       </Menubar>,
-    );
+    )
 
-    expect(screen.getByRole("menubar")).toHaveClass("custom-menubar");
-  });
+    expect(screen.getByRole('menubar')).toHaveClass('custom-menubar')
+  })
 
   // it("handles menu item click", async () => {
   //   const handleClick = jest.fn();
@@ -114,17 +107,17 @@ describe("Menubar", () => {
   //   expect(screen.getByText("File").parentElement).toHaveClass("relative");
   // });
 
-  it("applies correct styles to MenubarTrigger", () => {
+  it('applies correct styles to MenubarTrigger', () => {
     render(
       <Menubar>
         <MenubarMenu>
           <MenubarTrigger>File</MenubarTrigger>
         </MenubarMenu>
       </Menubar>,
-    );
+    )
 
-    expect(screen.getByText("File")).toHaveClass("flex");
-  });
+    expect(screen.getByText('File')).toHaveClass('flex')
+  })
 
   // it("applies correct styles to MenubarContent", async () => {
   //   render(
@@ -187,4 +180,4 @@ describe("Menubar", () => {
   //     expect(screen.getByRole("separator")).toBeInTheDocument();
   //   });
   // });
-});
+})

@@ -1,15 +1,10 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
-import { Button } from "./button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./tooltip";
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
+import { Button } from './button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip'
 
-describe("Tooltip", () => {
+describe('Tooltip', () => {
   // Setup default delay duration for all tests
   const renderTooltip = (props = {}) => {
     return render(
@@ -21,14 +16,14 @@ describe("Tooltip", () => {
           <TooltipContent>Tooltip content</TooltipContent>
         </Tooltip>
       </TooltipProvider>,
-    );
-  };
+    )
+  }
 
-  it("renders trigger button correctly", () => {
-    renderTooltip();
-    const trigger = screen.getByRole("button", { name: "Hover me" });
-    expect(trigger).toBeInTheDocument();
-  });
+  it('renders trigger button correctly', () => {
+    renderTooltip()
+    const trigger = screen.getByRole('button', { name: 'Hover me' })
+    expect(trigger).toBeInTheDocument()
+  })
 
   // it("shows tooltip on hover", async () => {
   //   const user = userEvent.setup();
@@ -96,8 +91,8 @@ describe("Tooltip", () => {
   //   expect(trigger).toHaveClass("custom-trigger");
   // });
 
-  it("handles controlled state", async () => {
-    const onOpenChange = vi.fn();
+  it('handles controlled state', async () => {
+    const onOpenChange = vi.fn()
     render(
       <TooltipProvider delayDuration={0}>
         <Tooltip open={false} onOpenChange={onOpenChange}>
@@ -107,19 +102,19 @@ describe("Tooltip", () => {
           <TooltipContent>Tooltip content</TooltipContent>
         </Tooltip>
       </TooltipProvider>,
-    );
+    )
 
-    const trigger = screen.getByRole("button", { name: "Hover me" });
-    await userEvent.hover(trigger);
+    const trigger = screen.getByRole('button', { name: 'Hover me' })
+    await userEvent.hover(trigger)
 
     // Wait for tooltip to appear and check callback
     await waitFor(
       () => {
-        expect(onOpenChange).toHaveBeenCalledWith(true);
+        expect(onOpenChange).toHaveBeenCalledWith(true)
       },
       { timeout: 1000 },
-    );
-  });
+    )
+  })
 
   // it("handles different positions", async () => {
   //   const user = userEvent.setup();
@@ -177,4 +172,4 @@ describe("Tooltip", () => {
   //     { timeout: 1000 }
   //   );
   // });
-});
+})

@@ -1,33 +1,25 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { useForm } from "react-hook-form";
-import { describe, expect, it } from "vitest";
-import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./form";
-import { Input } from "./input";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { useForm } from 'react-hook-form'
+import { describe, expect, it } from 'vitest'
+import * as z from 'zod'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './form'
+import { Input } from './input'
 
 const formSchema = z.object({
   username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+    message: 'Username must be at least 2 characters.',
   }),
-});
+})
 
-describe("Form", () => {
+describe('Form', () => {
   const TestForm = () => {
     const form = useForm({
       defaultValues: {
-        username: "",
+        username: '',
       },
-    });
+    })
 
     return (
       <Form {...form}>
@@ -48,17 +40,17 @@ describe("Form", () => {
           />
         </form>
       </Form>
-    );
-  };
+    )
+  }
 
   const TestFormWithValidation = () => {
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
-      mode: "onBlur",
+      mode: 'onBlur',
       defaultValues: {
-        username: "",
+        username: '',
       },
-    });
+    })
 
     return (
       <Form {...form}>
@@ -78,41 +70,39 @@ describe("Form", () => {
           />
         </form>
       </Form>
-    );
-  };
+    )
+  }
 
-  it("renders form elements correctly", () => {
-    render(<TestForm />);
+  it('renders form elements correctly', () => {
+    render(<TestForm />)
 
-    expect(screen.getByLabelText("Username")).toBeInTheDocument();
-    expect(screen.getByText("Enter your username")).toBeInTheDocument();
-  });
+    expect(screen.getByLabelText('Username')).toBeInTheDocument()
+    expect(screen.getByText('Enter your username')).toBeInTheDocument()
+  })
 
-  it("applies correct styling to form elements", () => {
-    render(<TestForm />);
+  it('applies correct styling to form elements', () => {
+    render(<TestForm />)
 
-    const input = screen.getByLabelText("Username");
-    const description = screen.getByText("Enter your username");
+    const input = screen.getByLabelText('Username')
+    const description = screen.getByText('Enter your username')
 
-    expect(input).toHaveAttribute("data-slot", "form-control");
-    expect(description).toHaveClass("text-muted-foreground");
-    expect(description).toHaveClass("text-sm");
-  });
+    expect(input).toHaveAttribute('data-slot', 'form-control')
+    expect(description).toHaveClass('text-muted-foreground')
+    expect(description).toHaveClass('text-sm')
+  })
 
-  it("handles form validation", async () => {
-    const user = userEvent.setup();
-    render(<TestFormWithValidation />);
+  it('handles form validation', async () => {
+    const user = userEvent.setup()
+    render(<TestFormWithValidation />)
 
-    const input = screen.getByLabelText("Username");
-    await user.type(input, "a");
-    await user.tab();
+    const input = screen.getByLabelText('Username')
+    await user.type(input, 'a')
+    await user.tab()
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Username must be at least 2 characters."),
-      ).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('Username must be at least 2 characters.')).toBeInTheDocument()
+    })
+  })
 
   // it("updates form control aria attributes on error", async () => {
   //   const user = userEvent.setup();
@@ -127,12 +117,12 @@ describe("Form", () => {
   //   });
   // });
 
-  it("renders form description with correct id and association", () => {
-    render(<TestForm />);
+  it('renders form description with correct id and association', () => {
+    render(<TestForm />)
 
-    const input = screen.getByLabelText("Username");
-    const description = screen.getByText("Enter your username");
+    const input = screen.getByLabelText('Username')
+    const description = screen.getByText('Enter your username')
 
-    expect(input).toHaveAttribute("aria-describedby", description.id);
-  });
-});
+    expect(input).toHaveAttribute('aria-describedby', description.id)
+  })
+})

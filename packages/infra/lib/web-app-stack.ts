@@ -1,42 +1,42 @@
-import * as cdk from "aws-cdk-lib";
-import * as acm from "aws-cdk-lib/aws-certificatemanager";
-import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
-import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
-import * as codebuild from "aws-cdk-lib/aws-codebuild";
-import * as iam from "aws-cdk-lib/aws-iam";
-import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as logs from "aws-cdk-lib/aws-logs";
-import * as route53 from "aws-cdk-lib/aws-route53";
-import * as targets from "aws-cdk-lib/aws-route53-targets";
-import * as s3 from "aws-cdk-lib/aws-s3";
-import * as s3assets from "aws-cdk-lib/aws-s3-assets";
-import type { Construct } from "constructs";
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+import * as cdk from 'aws-cdk-lib'
+import * as acm from 'aws-cdk-lib/aws-certificatemanager'
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront'
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins'
+import * as codebuild from 'aws-cdk-lib/aws-codebuild'
+import * as iam from 'aws-cdk-lib/aws-iam'
+import * as lambda from 'aws-cdk-lib/aws-lambda'
+import * as logs from 'aws-cdk-lib/aws-logs'
+import * as route53 from 'aws-cdk-lib/aws-route53'
+import * as targets from 'aws-cdk-lib/aws-route53-targets'
+import * as s3 from 'aws-cdk-lib/aws-s3'
+import * as s3assets from 'aws-cdk-lib/aws-s3-assets'
+import type { Construct } from 'constructs'
+import * as path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 // ESM equivalent of __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export interface WebAppStackProps extends cdk.StackProps {
   /** Custom domain for the web app (e.g. app.example.com). When provided with hostedZoneId, creates ACM cert and Route53 records. */
-  readonly domainName?: string;
+  readonly domainName?: string
   /** Route53 hosted zone ID. Required when domainName is provided. */
-  readonly hostedZoneId?: string;
+  readonly hostedZoneId?: string
   /** Route53 hosted zone name (e.g. example.com). Required when domainName is provided. */
-  readonly hostedZoneName?: string;
+  readonly hostedZoneName?: string
   /** Pre-created ACM certificate ARN (us-east-1). Use when stack is not in us-east-1; otherwise cert is created in this stack. */
-  readonly certificateArn?: string;
+  readonly certificateArn?: string
   /** Cognito user pool ID. Required when using Cognito for authentication. */
-  readonly userPoolId?: string;
+  readonly userPoolId?: string
   /** Cognito user pool client ID. Required when using Cognito for authentication. */
-  readonly userPoolClientId?: string;
+  readonly userPoolClientId?: string
   /** Cognito region. Required when using Cognito for authentication. */
-  readonly cognitoRegion?: string;
+  readonly cognitoRegion?: string
   /** Agent API URL. Required when using Agent API for authentication. */
-  readonly agentApiUrl?: string;
+  readonly agentApiUrl?: string
   /** Agent runtime ARN. Web app builds invocations URL at runtime (encodeURIComponent(arn) in path). */
-  readonly agentRuntimeArn?: string;
+  readonly agentRuntimeArn?: string
 }
 
 /**
@@ -48,7 +48,7 @@ export interface WebAppStackProps extends cdk.StackProps {
  */
 export class WebAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: WebAppStackProps) {
-    super(scope, id, props);
+    super(scope, id, props)
 
     const {
       domainName,
@@ -60,188 +60,166 @@ export class WebAppStack extends cdk.Stack {
       cognitoRegion,
       agentApiUrl,
       agentRuntimeArn,
-    } = props;
+    } = props
 
-    const hasCustomDomain = domainName && hostedZoneId && hostedZoneName;
+    const hasCustomDomain = domainName && hostedZoneId && hostedZoneName
 
     // ==========================================================================
     // S3 Bucket for static website
     // ==========================================================================
-    const websiteBucket = new s3.Bucket(this, "WebsiteBucket", {
+    const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
       bucketName: `research-web-app-${this.account}-${this.region}`,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
-    });
+    })
 
     // ==========================================================================
     // ACM Certificate (us-east-1 required for CloudFront)
     // ==========================================================================
-    let certificate: acm.ICertificate | undefined;
-    let hostedZone: route53.IHostedZone | undefined;
+    let certificate: acm.ICertificate | undefined
+    let hostedZone: route53.IHostedZone | undefined
 
     if (hasCustomDomain) {
-      const zoneId = hostedZoneId;
-      const zoneNameVal = hostedZoneName;
-      hostedZone = route53.HostedZone.fromHostedZoneAttributes(
-        this,
-        "HostedZone",
-        { hostedZoneId: zoneId, zoneName: zoneNameVal },
-      );
+      const zoneId = hostedZoneId
+      const zoneNameVal = hostedZoneName
+      hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
+        hostedZoneId: zoneId,
+        zoneName: zoneNameVal,
+      })
 
-      const domain = domainName;
+      const domain = domainName
 
       // Certificate must be in us-east-1 for CloudFront
       if (certificateArn) {
-        certificate = acm.Certificate.fromCertificateArn(
-          this,
-          "WebCertImport",
-          certificateArn,
-        );
-      } else if (this.region === "us-east-1") {
-        certificate = new acm.Certificate(this, "WebCert", {
+        certificate = acm.Certificate.fromCertificateArn(this, 'WebCertImport', certificateArn)
+      } else if (this.region === 'us-east-1') {
+        certificate = new acm.Certificate(this, 'WebCert', {
           domainName: domain,
           validation: acm.CertificateValidation.fromDns(hostedZone),
-        });
+        })
       } else {
         throw new Error(
-          "When using a custom domain outside us-east-1, pass certificateArn from a CertificateStack deployed in us-east-1.",
-        );
+          'When using a custom domain outside us-east-1, pass certificateArn from a CertificateStack deployed in us-east-1.',
+        )
       }
     }
 
     // ==========================================================================
     // CloudFront Distribution
     // ==========================================================================
-    const distribution = new cloudfront.Distribution(this, "Distribution", {
+    const distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(websiteBucket),
       },
-      defaultRootObject: "index.html",
+      defaultRootObject: 'index.html',
       errorResponses: [
         {
           httpStatus: 403,
           responseHttpStatus: 200,
-          responsePagePath: "/index.html",
+          responsePagePath: '/index.html',
         },
         {
           httpStatus: 404,
           responseHttpStatus: 200,
-          responsePagePath: "/index.html",
+          responsePagePath: '/index.html',
         },
       ],
       ...(hasCustomDomain && certificate && domainName
         ? {
             domainNames: [domainName],
             certificate,
-            minimumProtocolVersion:
-              cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+            minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
           }
         : {}),
-    });
+    })
 
     // ==========================================================================
     // Route53 A/AAAA records (when custom domain)
     // ==========================================================================
     if (hasCustomDomain && hostedZone) {
-      const recordName =
-        domainName === hostedZoneName
-          ? ""
-          : domainName.slice(0, -((hostedZoneName?.length ?? 0) + 1));
+      const recordName = domainName === hostedZoneName ? '' : domainName.slice(0, -((hostedZoneName?.length ?? 0) + 1))
 
-      new route53.ARecord(this, "AliasRecord", {
+      new route53.ARecord(this, 'AliasRecord', {
         zone: hostedZone,
         recordName: recordName || undefined,
-        target: route53.RecordTarget.fromAlias(
-          new targets.CloudFrontTarget(distribution),
-        ),
-      });
+        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      })
 
-      new route53.AaaaRecord(this, "AliasRecordAAAA", {
+      new route53.AaaaRecord(this, 'AliasRecordAAAA', {
         zone: hostedZone,
         recordName: recordName || undefined,
-        target: route53.RecordTarget.fromAlias(
-          new targets.CloudFrontTarget(distribution),
-        ),
-      });
+        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      })
     }
 
     // ==========================================================================
     // CodeBuild Project for web app build
     // ==========================================================================
-    const sourceAsset = new s3assets.Asset(this, "WebSourceAsset", {
-      path: path.join(__dirname, "..", "..", ".."),
+    const sourceAsset = new s3assets.Asset(this, 'WebSourceAsset', {
+      path: path.join(__dirname, '..', '..', '..'),
       exclude: [
-        "node_modules",
-        "**/node_modules",
-        "dist",
-        "**/dist",
-        ".git",
-        ".cursor",
-        ".yarn/cache",
-        "*.log",
-        ".env*",
-        "!.env.example",
-        "cdk.out",
+        'node_modules',
+        '**/node_modules',
+        'dist',
+        '**/dist',
+        '.git',
+        '.cursor',
+        '.yarn/cache',
+        '*.log',
+        '.env*',
+        '!.env.example',
+        'cdk.out',
       ],
-    });
+    })
 
-    const codeBuildRole = new iam.Role(this, "WebCodeBuildRole", {
-      roleName: "research-web-codebuild-role",
-      assumedBy: new iam.ServicePrincipal("codebuild.amazonaws.com"),
-      description: "Role for CodeBuild to build and deploy web app",
-    });
+    const codeBuildRole = new iam.Role(this, 'WebCodeBuildRole', {
+      roleName: 'research-web-codebuild-role',
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      description: 'Role for CodeBuild to build and deploy web app',
+    })
 
     codeBuildRole.addToPolicy(
       new iam.PolicyStatement({
-        sid: "CloudWatchLogs",
+        sid: 'CloudWatchLogs',
         effect: iam.Effect.ALLOW,
-        actions: [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
-        ],
-        resources: [
-          `arn:aws:logs:${this.region}:${this.account}:log-group:/aws/codebuild/*`,
-        ],
+        actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+        resources: [`arn:aws:logs:${this.region}:${this.account}:log-group:/aws/codebuild/*`],
       }),
-    );
+    )
 
     codeBuildRole.addToPolicy(
       new iam.PolicyStatement({
-        sid: "S3SourceAccess",
+        sid: 'S3SourceAccess',
         effect: iam.Effect.ALLOW,
-        actions: ["s3:GetObject", "s3:GetObjectVersion"],
+        actions: ['s3:GetObject', 's3:GetObjectVersion'],
         resources: [`${sourceAsset.bucket.bucketArn}/*`],
       }),
-    );
+    )
 
     codeBuildRole.addToPolicy(
       new iam.PolicyStatement({
-        sid: "S3DeployAccess",
+        sid: 'S3DeployAccess',
         effect: iam.Effect.ALLOW,
-        actions: ["s3:PutObject", "s3:DeleteObject", "s3:ListBucket"],
+        actions: ['s3:PutObject', 's3:DeleteObject', 's3:ListBucket'],
         resources: [websiteBucket.bucketArn, `${websiteBucket.bucketArn}/*`],
       }),
-    );
+    )
 
     // Use Resource "*" to avoid IAM "policy failed legacy parsing": dynamic ARNs
     // (e.g. distribution ID via Ref) in Resource produce Fn::Join that IAM rejects.
     codeBuildRole.addToPolicy(
       new iam.PolicyStatement({
-        sid: "CloudFrontInvalidate",
+        sid: 'CloudFrontInvalidate',
         effect: iam.Effect.ALLOW,
-        actions: [
-          "cloudfront:CreateInvalidation",
-          "cloudfront:GetInvalidation",
-        ],
-        resources: ["*"],
+        actions: ['cloudfront:CreateInvalidation', 'cloudfront:GetInvalidation'],
+        resources: ['*'],
       }),
-    );
+    )
 
-    const buildProject = new codebuild.Project(this, "WebBuildProject", {
-      projectName: "research-web-build",
-      description: "Build and deploy React web app to S3",
+    const buildProject = new codebuild.Project(this, 'WebBuildProject', {
+      projectName: 'research-web-build',
+      description: 'Build and deploy React web app to S3',
       role: codeBuildRole,
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
@@ -252,26 +230,22 @@ export class WebAppStack extends cdk.Stack {
         path: sourceAsset.s3ObjectKey,
       }),
       buildSpec: codebuild.BuildSpec.fromObject({
-        version: "0.2",
+        version: '0.2',
         phases: {
           install: {
-            "runtime-versions": {
-              nodejs: "22",
+            'runtime-versions': {
+              nodejs: '22',
             },
-            commands: [
-              "echo Installing dependencies...",
-              "npm install -g yarn",
-              "yarn install --frozen-lockfile",
-            ],
+            commands: ['echo Installing dependencies...', 'npm install -g yarn', 'yarn install --frozen-lockfile'],
           },
           build: {
-            commands: ["echo Building web app with env vars...", "yarn build"],
+            commands: ['echo Building web app with env vars...', 'yarn build'],
           },
           post_build: {
             commands: [
-              "echo Deploying to S3...",
+              'echo Deploying to S3...',
               `aws s3 sync apps/web/dist s3://${websiteBucket.bucketName}/ --delete`,
-              "echo Invalidating CloudFront cache...",
+              'echo Invalidating CloudFront cache...',
               `aws cloudfront create-invalidation --distribution-id ${distribution.distributionId} --paths "/*"`,
             ],
           },
@@ -294,7 +268,7 @@ export class WebAppStack extends cdk.Stack {
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         VITE_AGENT_RUNTIME_ARN: {
-          value: agentRuntimeArn ?? "",
+          value: agentRuntimeArn ?? '',
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         VITE_AGENT_API_URL: {
@@ -303,19 +277,16 @@ export class WebAppStack extends cdk.Stack {
         },
       },
       timeout: cdk.Duration.minutes(20),
-    });
+    })
 
     // ==========================================================================
     // Custom Resource to trigger build on deployment
     // ==========================================================================
-    const buildTriggerFunction = new lambda.Function(
-      this,
-      "WebBuildTriggerFunction",
-      {
-        runtime: lambda.Runtime.NODEJS_22_X,
-        handler: "index.handler",
-        timeout: cdk.Duration.minutes(15),
-        code: lambda.Code.fromInline(`
+    const buildTriggerFunction = new lambda.Function(this, 'WebBuildTriggerFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      timeout: cdk.Duration.minutes(15),
+      code: lambda.Code.fromInline(`
 const { CodeBuildClient, StartBuildCommand, BatchGetBuildsCommand } = require('@aws-sdk/client-codebuild');
 const https = require('https');
 const url = require('url');
@@ -402,64 +373,61 @@ exports.handler = async (event, context) => {
   }
 };
       `),
-        logGroup: new logs.LogGroup(this, "WebBuildTriggerLogGroup", {
-          retention: logs.RetentionDays.ONE_WEEK,
-          removalPolicy: cdk.RemovalPolicy.DESTROY,
-        }),
-      },
-    );
+      logGroup: new logs.LogGroup(this, 'WebBuildTriggerLogGroup', {
+        retention: logs.RetentionDays.ONE_WEEK,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      }),
+    })
 
     buildTriggerFunction.addToRolePolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: ["codebuild:StartBuild", "codebuild:BatchGetBuilds"],
+        actions: ['codebuild:StartBuild', 'codebuild:BatchGetBuilds'],
         resources: [buildProject.projectArn],
       }),
-    );
+    )
 
-    new cdk.CustomResource(this, "TriggerWebBuild", {
+    new cdk.CustomResource(this, 'TriggerWebBuild', {
       serviceToken: buildTriggerFunction.functionArn,
       properties: {
         ProjectName: buildProject.projectName,
         BuildTrigger: Date.now().toString(),
       },
-    });
+    })
 
     // Ensure build runs after distribution and bucket exist
-    buildProject.node.addDependency(distribution);
-    buildProject.node.addDependency(websiteBucket);
+    buildProject.node.addDependency(distribution)
+    buildProject.node.addDependency(websiteBucket)
 
     // ==========================================================================
     // Stack Outputs
     // ==========================================================================
-    const webAppUrl = hasCustomDomain
-      ? `https://${domainName}`
-      : `https://${distribution.distributionDomainName}`;
+    const webAppUrl = hasCustomDomain ? `https://${domainName}` : `https://${distribution.distributionDomainName}`
 
-    new cdk.CfnOutput(this, "WebAppUrl", {
+    new cdk.CfnOutput(this, 'WebAppUrl', {
       value: webAppUrl,
-      description: "URL of the deployed web app",
-      exportName: "ResearchWebAppUrl",
-    });
+      description: 'URL of the deployed web app',
+      exportName: 'ResearchWebAppUrl',
+    })
 
-    new cdk.CfnOutput(this, "CloudFrontDistributionId", {
+    new cdk.CfnOutput(this, 'CloudFrontDistributionId', {
       value: distribution.distributionId,
-      description: "CloudFront distribution ID for cache invalidation",
-      exportName: "ResearchWebCloudFrontDistributionId",
-    });
+      description: 'CloudFront distribution ID for cache invalidation',
+      exportName: 'ResearchWebCloudFrontDistributionId',
+    })
 
-    new cdk.CfnOutput(this, "S3BucketName", {
+    new cdk.CfnOutput(this, 'S3BucketName', {
       value: websiteBucket.bucketName,
-      description: "S3 bucket hosting the web app",
-      exportName: "ResearchWebS3BucketName",
-    });
+      description: 'S3 bucket hosting the web app',
+      exportName: 'ResearchWebS3BucketName',
+    })
 
     if (hasCustomDomain && certificate) {
-      new cdk.CfnOutput(this, "CertificateArn", {
+      new cdk.CfnOutput(this, 'CertificateArn', {
         value: certificate.certificateArn,
-        description: "ACM certificate ARN for the custom domain",
-        exportName: "ResearchWebCertificateArn",
-      });
+        description: 'ACM certificate ARN for the custom domain',
+        exportName: 'ResearchWebCertificateArn',
+      })
     }
   }
 }

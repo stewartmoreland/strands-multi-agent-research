@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -7,7 +7,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "./navigation-menu";
+} from './navigation-menu'
 
 // Mock ResizeObserver
 class ResizeObserverMock {
@@ -16,10 +16,10 @@ class ResizeObserverMock {
   disconnect() {}
 }
 
-globalThis.ResizeObserver = ResizeObserverMock;
+globalThis.ResizeObserver = ResizeObserverMock
 
-describe("NavigationMenu", () => {
-  it("renders correctly with default props", () => {
+describe('NavigationMenu', () => {
+  it('renders correctly with default props', () => {
     render(
       <NavigationMenu>
         <NavigationMenuList>
@@ -31,12 +31,12 @@ describe("NavigationMenu", () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>,
-    );
+    )
 
-    expect(screen.getByText("Item 1")).toBeInTheDocument();
-  });
+    expect(screen.getByText('Item 1')).toBeInTheDocument()
+  })
 
-  it("applies custom className correctly", () => {
+  it('applies custom className correctly', () => {
     render(
       <NavigationMenu className="custom-menu">
         <NavigationMenuList>
@@ -45,30 +45,28 @@ describe("NavigationMenu", () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>,
-    );
+    )
 
-    expect(screen.getByRole("navigation")).toHaveClass("custom-menu");
-  });
+    expect(screen.getByRole('navigation')).toHaveClass('custom-menu')
+  })
 
-  it("handles menu item click", () => {
-    const handleClick = vi.fn();
+  it('handles menu item click', () => {
+    const handleClick = vi.fn()
     render(
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger onClick={handleClick}>
-              Item 1
-            </NavigationMenuTrigger>
+            <NavigationMenuTrigger onClick={handleClick}>Item 1</NavigationMenuTrigger>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>,
-    );
+    )
 
-    fireEvent.click(screen.getByText("Item 1"));
-    expect(handleClick).toHaveBeenCalled();
-  });
+    fireEvent.click(screen.getByText('Item 1'))
+    expect(handleClick).toHaveBeenCalled()
+  })
 
-  it("renders multiple menu items", () => {
+  it('renders multiple menu items', () => {
     render(
       <NavigationMenu>
         <NavigationMenuList>
@@ -80,13 +78,13 @@ describe("NavigationMenu", () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>,
-    );
+    )
 
-    expect(screen.getByText("Item 1")).toBeInTheDocument();
-    expect(screen.getByText("Item 2")).toBeInTheDocument();
-  });
+    expect(screen.getByText('Item 1')).toBeInTheDocument()
+    expect(screen.getByText('Item 2')).toBeInTheDocument()
+  })
 
-  it("renders menu content when trigger is clicked", async () => {
+  it('renders menu content when trigger is clicked', async () => {
     render(
       <NavigationMenu>
         <NavigationMenuList>
@@ -98,16 +96,16 @@ describe("NavigationMenu", () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>,
-    );
+    )
 
-    fireEvent.click(screen.getByText("Item 1"));
+    fireEvent.click(screen.getByText('Item 1'))
 
     await waitFor(() => {
-      expect(screen.getByText("Content 1")).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('Content 1')).toBeInTheDocument()
+    })
+  })
 
-  it("applies correct styles to NavigationMenuList", () => {
+  it('applies correct styles to NavigationMenuList', () => {
     render(
       <NavigationMenu>
         <NavigationMenuList>
@@ -116,12 +114,12 @@ describe("NavigationMenu", () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>,
-    );
+    )
 
-    expect(screen.getByRole("list")).toHaveClass("flex");
-  });
+    expect(screen.getByRole('list')).toHaveClass('flex')
+  })
 
-  it("applies correct styles to NavigationMenuItem", () => {
+  it('applies correct styles to NavigationMenuItem', () => {
     render(
       <NavigationMenu>
         <NavigationMenuList>
@@ -130,12 +128,12 @@ describe("NavigationMenu", () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>,
-    );
+    )
 
-    expect(screen.getByText("Item 1").parentElement).toHaveClass("relative");
-  });
+    expect(screen.getByText('Item 1').parentElement).toHaveClass('relative')
+  })
 
-  it("applies correct styles to NavigationMenuTrigger", () => {
+  it('applies correct styles to NavigationMenuTrigger', () => {
     render(
       <NavigationMenu>
         <NavigationMenuList>
@@ -144,10 +142,10 @@ describe("NavigationMenu", () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>,
-    );
+    )
 
-    expect(screen.getByText("Item 1")).toHaveClass("group");
-  });
+    expect(screen.getByText('Item 1')).toHaveClass('group')
+  })
 
   // it("applies correct styles to NavigationMenuContent", async () => {
   //   render(
@@ -171,4 +169,4 @@ describe("NavigationMenu", () => {
   //     );
   //   });
   // });
-});
+})

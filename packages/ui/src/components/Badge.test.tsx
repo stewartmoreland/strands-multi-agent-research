@@ -1,55 +1,50 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import { Badge } from "./badge";
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
+import { Badge } from './badge'
 
-describe("Badge", () => {
+describe('Badge', () => {
   const renderBadge = (props = {}) => {
-    return render(<Badge {...props}>Badge Content</Badge>);
-  };
+    return render(<Badge {...props}>Badge Content</Badge>)
+  }
 
-  it("renders badge with content", () => {
-    renderBadge();
-    expect(screen.getByText("Badge Content")).toBeInTheDocument();
-  });
+  it('renders badge with content', () => {
+    renderBadge()
+    expect(screen.getByText('Badge Content')).toBeInTheDocument()
+  })
 
-  it("applies default variant styles", () => {
-    renderBadge();
-    const badge = screen.getByText("Badge Content");
-    expect(badge).toHaveClass("bg-primary");
-  });
+  it('applies default variant styles', () => {
+    renderBadge()
+    const badge = screen.getByText('Badge Content')
+    expect(badge).toHaveClass('bg-primary')
+  })
 
-  it("applies custom variant styles", () => {
-    renderBadge({ variant: "secondary" });
-    const badge = screen.getByText("Badge Content");
-    expect(badge).toHaveClass("bg-secondary");
-  });
+  it('applies custom variant styles', () => {
+    renderBadge({ variant: 'secondary' })
+    const badge = screen.getByText('Badge Content')
+    expect(badge).toHaveClass('bg-secondary')
+  })
 
-  it("applies custom className", () => {
-    renderBadge({ className: "custom-badge" });
-    const badge = screen.getByText("Badge Content");
-    expect(badge).toHaveClass("custom-badge");
-  });
+  it('applies custom className', () => {
+    renderBadge({ className: 'custom-badge' })
+    const badge = screen.getByText('Badge Content')
+    expect(badge).toHaveClass('custom-badge')
+  })
 
-  it("handles different variants", () => {
-    const variants = [
-      "default",
-      "secondary",
-      "destructive",
-      "outline",
-    ] as const;
+  it('handles different variants', () => {
+    const variants = ['default', 'secondary', 'destructive', 'outline'] as const
     variants.forEach((variant) => {
-      const { unmount } = renderBadge({ variant });
-      const badge = screen.getByText("Badge Content");
-      if (variant === "default") {
-        expect(badge).toHaveClass("bg-primary");
-      } else if (variant === "outline") {
-        expect(badge).toHaveClass("border");
+      const { unmount } = renderBadge({ variant })
+      const badge = screen.getByText('Badge Content')
+      if (variant === 'default') {
+        expect(badge).toHaveClass('bg-primary')
+      } else if (variant === 'outline') {
+        expect(badge).toHaveClass('border')
       } else {
-        expect(badge).toHaveClass(`bg-${variant}`);
+        expect(badge).toHaveClass(`bg-${variant}`)
       }
-      unmount();
-    });
-  });
+      unmount()
+    })
+  })
 
   // it("handles different sizes", () => {
   //   const sizes = ["default", "sm", "lg"] as const;
@@ -67,10 +62,10 @@ describe("Badge", () => {
   //   });
   // });
 
-  it("combines variant and custom className", () => {
-    renderBadge({ variant: "secondary", className: "custom-badge" });
-    const badge = screen.getByText("Badge Content");
-    expect(badge).toHaveClass("bg-secondary");
-    expect(badge).toHaveClass("custom-badge");
-  });
-});
+  it('combines variant and custom className', () => {
+    renderBadge({ variant: 'secondary', className: 'custom-badge' })
+    const badge = screen.getByText('Badge Content')
+    expect(badge).toHaveClass('bg-secondary')
+    expect(badge).toHaveClass('custom-badge')
+  })
+})
