@@ -22,7 +22,7 @@ import { useSessionEvents } from "./hooks/useSessionEvents";
 import { useSessions } from "./hooks/useSessions";
 
 function App() {
-  const { user, getIdToken } = useAuth();
+  const { user, getIdToken, getAccessToken } = useAuth();
   const { models: availableModels, isLoading: modelsLoading } =
     useBedrockModels();
 
@@ -80,7 +80,7 @@ function App() {
 
   const { events, isStreaming, error, run, reset, setSessionId } =
     useAgentStream({
-      getAuthToken: getIdToken,
+      getAuthToken: getAccessToken,
       userId: user?.sub,
       modelId: selectedModel || undefined,
     });

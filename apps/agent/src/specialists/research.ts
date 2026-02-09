@@ -9,9 +9,12 @@
  * Falls back to simulated results when AgentCore is not available.
  */
 
+import { createLogger } from "@repo/util/logger";
 import { Agent, BedrockModel, tool } from "@strands-agents/sdk";
 import { z } from "zod";
-import { getSpecialistConfig, type ResearchInput } from "./types";
+import { getSpecialistConfig, type ResearchInput } from "./types.js";
+
+const logger = createLogger("research_agent", { defaultAttributes: { specialist: "Research Specialist" } });
 
 /**
  * System prompt for the research specialist agent
@@ -39,10 +42,7 @@ async function createResearchAgent(
   config: ReturnType<typeof getSpecialistConfig>,
 ): Promise<Agent | null> {
   if (!config.useAgentCore) {
-    console.log(
-      "[Research Specialist] AgentCore disabled, using local fallback",
-      config,
-    );
+    logger.info("AgentCore disabled, using local fallback", { config });
     return null;
   }
 
@@ -63,13 +63,10 @@ async function createResearchAgent(
       printer: false,
     });
 
-    console.log("[Research Specialist] Initialized with AgentCore Browser");
+    logger.info("Initialized with AgentCore Browser");
     return agent;
   } catch (error) {
-    console.warn(
-      "[Research Specialist] Failed to initialize AgentCore Browser:",
-      error instanceof Error ? error.message : error,
-    );
+    logger.warn("Failed to initialize AgentCore Browser", { error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }
@@ -162,13 +159,13 @@ async function performResearch(
         }
       }
     } catch (error) {
-      console.error("[Research Specialist] Agent invocation failed:", error);
-      console.log(`[Research Specialist] Using fallback for: ${task}`);
+      logger.error("Agent invocation failed", { task }, error instanceof Error ? error : new Error(String(error)));
+      logger.info("Using fallback", { task });
       return getFallbackResearch(task, urls, context);
     }
   }
 
-  console.log(`[Research Specialist] Using fallback for: ${task}`);
+  logger.info("Using fallback", { task });
   return getFallbackResearch(task, urls, context);
 }
 
@@ -194,7 +191,7 @@ export const researchTool = tool({
       .describe("Additional context or constraints for the research"),
   }),
   callback: async ({ task, urls, context }) => {
-    console.log(`[Research Specialist] Processing: ${task}`);
+    logger.info("Processing", { task });
     const result = await performResearch({ task, urls, context });
     return result;
   },
@@ -220,7 +217,7 @@ export function createResearchTool(modelId: string) {
         .describe("Additional context or constraints for the research"),
     }),
     callback: async ({ task, urls, context }) => {
-      console.log(`[Research Specialist] Processing: ${task}`);
+      logger.info("Processing", { task });
       return performResearch({ task, urls, context }, modelId);
     },
   });

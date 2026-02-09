@@ -3,7 +3,7 @@
 # Platform: ARM64 (determined by CodeBuild environment, required for AgentCore Runtime)
 # Using ECR Public Gallery to avoid Docker Hub rate limits
 
-FROM public.ecr.aws/docker/library/node:20-slim AS builder
+FROM public.ecr.aws/docker/library/node:24-slim AS builder
 
 WORKDIR /app
 
@@ -36,7 +36,7 @@ RUN yarn workspace @repo/util build
 RUN yarn workspace agent build
 
 # Production image
-FROM public.ecr.aws/docker/library/node:20-slim AS runner
+FROM public.ecr.aws/docker/library/node:24-slim AS runner
 
 WORKDIR /app
 
@@ -56,6 +56,7 @@ COPY --from=builder /app/package.json ./
 # - ARM64 architecture (handled by build platform)
 ENV HOST=0.0.0.0
 ENV PORT=8080
+USER node
 
 EXPOSE 8080
 
@@ -66,4 +67,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 WORKDIR /app/apps/agent
 
 # Load OpenTelemetry instrumentation before server (AgentCore Observability)
-CMD ["node", "--import", "./dist/instrument.js", "dist/server.js"]
+CMD ["node", "--require", "@opentelemetry/auto-instrumentations-node/register", "./dist/server.js"]

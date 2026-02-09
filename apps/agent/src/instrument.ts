@@ -3,6 +3,7 @@
  * Must be loaded before any other application code so the tracer provider is registered.
  * Traces are exported to AWS X-Ray via OTLP HTTP (GenAI Observability / Transaction Search).
  */
+import { createLogger } from "@repo/util/logger";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 import { NodeSDK } from "@opentelemetry/sdk-node";
@@ -28,3 +29,4 @@ const sdk = new NodeSDK({
 });
 
 sdk.start();
+createLogger("research_agent").info("Instrument loaded");

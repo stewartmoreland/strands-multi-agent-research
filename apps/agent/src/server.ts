@@ -1,12 +1,30 @@
 import { context, propagation } from "@opentelemetry/api";
 import type { InvocationRequest } from "@repo/shared";
 import { listFoundationModels, memoryAdapter } from "@repo/util";
+import { logger } from "./logger.js";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
-import { orchestrator } from "./orchestrator";
-import { getActorIdFromAuth, parseBody, sendEvent } from "./serverHelpers";
+import { orchestrator } from "./orchestrator.js";
+import {
+  getActorIdFromAuth,
+  normalizeInvocationsBody,
+  parseBody,
+  sendEvent,
+} from "./serverHelpers.js";
 
 const PORT = parseInt(process.env.PORT || "8080", 10);
 const HOST = process.env.HOST || "0.0.0.0";
+
+// Log uncaught errors to stderr and exit so failures appear in CloudWatch runtime-logs
+process.on("uncaughtException", (err: Error) => {
+  process.stderr.write(`uncaughtException: ${err.message}\n${err.stack ?? ""}\n`);
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason: unknown) => {
+  const msg = reason instanceof Error ? reason.message : String(reason);
+  const stack = reason instanceof Error ? reason.stack : undefined;
+  process.stderr.write(`unhandledRejection: ${msg}\n${stack ?? ""}\n`);
+  process.exit(1);
+});
 
 /**
  * Handle /invocations endpoint
@@ -15,8 +33,11 @@ async function handleInvocations(
   req: IncomingMessage,
   res: ServerResponse,
 ): Promise<void> {
-  // Parse request body
-  const body = await parseBody<InvocationRequest>(req);
+  // Parse request body (supports top-level prompt or input.prompt per AgentCore contract)
+  const raw = await parseBody<InvocationRequest | { input?: InvocationRequest }>(
+    req,
+  );
+  const body = normalizeInvocationsBody(raw);
   const { prompt, sessionId, userId, modelId } = body;
 
   if (!prompt) {
@@ -121,7 +142,7 @@ async function handleModels(
     });
     res.end(JSON.stringify({ models }));
   } catch (error) {
-    console.error("List models error:", error);
+    logger.error("List models error", undefined, error instanceof Error ? error : new Error(String(error)));
     res.writeHead(500, {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
@@ -171,7 +192,7 @@ async function handleSessions(
     });
     res.end(JSON.stringify({ sessions }));
   } catch (error) {
-    console.error("List sessions error:", error);
+    logger.error("List sessions error", undefined, error instanceof Error ? error : new Error(String(error)));
     res.writeHead(500, {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
@@ -303,36 +324,43 @@ async function requestHandler(
       res.end(JSON.stringify({ error: "Not found" }));
     }
   } catch (error) {
-    console.error("Request handler error:", error);
+    logger.error("Request handler error", undefined, error instanceof Error ? error : new Error(String(error)));
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: "Internal server error" }));
   }
 }
 
 // Create and start server
+logger.info("Creating HTTP server");
 const server = createServer(requestHandler);
 
+server.on("error", (err: Error) => {
+  process.stderr.write(`Server error: ${err.message}\n${err.stack ?? ""}\n`);
+  process.exit(1);
+});
+
 server.listen(PORT, HOST, () => {
-  console.log(`Agent server listening on http://${HOST}:${PORT}`);
-  console.log("Endpoints:");
-  console.log(
-    `  POST /invocations - Agent invocation (supports SSE streaming)`,
-  );
-  console.log(`  GET  /models            - List Bedrock foundation models`);
-  console.log(
-    `  GET  /sessions         - List chat sessions (requires Authorization)`,
-  );
-  console.log(
-    `  GET  /sessions/:id/events - Session message history (requires Authorization)`,
-  );
-  console.log(`  GET  /ping             - Health check (AgentCore Runtime)`);
+  logger.info("Agent server listening", {
+    host: HOST,
+    port: PORT,
+    url: `http://${HOST}:${PORT}`,
+  });
+  logger.info("Endpoints", {
+    endpoints: [
+      "POST /invocations - Agent invocation (supports SSE streaming)",
+      "GET  /models            - List Bedrock foundation models",
+      "GET  /sessions         - List chat sessions (requires Authorization)",
+      "GET  /sessions/:id/events - Session message history (requires Authorization)",
+      "GET  /ping             - Health check (AgentCore Runtime)",
+    ],
+  });
 });
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
-  console.log("SIGTERM received, shutting down...");
+  logger.info("SIGTERM received, shutting down...");
   server.close(() => {
-    console.log("Server closed");
+    logger.info("Server closed");
     process.exit(0);
   });
 });

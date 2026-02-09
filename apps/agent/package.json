@@ -21,6 +21,7 @@
     "@aws-sdk/client-bedrock-runtime": "^3.984.0",
     "@modelcontextprotocol/sdk": "^1.26.0",
     "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.69.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.211.0",
     "@opentelemetry/resources": "^2.5.0",
     "@opentelemetry/sdk-node": "^0.211.0",
@@ -35,11 +36,11 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
-    "@types/node": "^22.10.0",
-    "@vitest/coverage-v8": "^2.1.8",
+    "@types/node": "^25.2.2",
+    "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^9.39.2",
-    "tsx": "^4.19.0",
-    "typescript": "5.5.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }
 }

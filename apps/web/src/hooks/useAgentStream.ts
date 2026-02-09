@@ -1,16 +1,14 @@
 import type { UiEvent } from "@repo/shared/events";
 import { useCallback, useRef, useState } from "react";
+import { config } from "../lib/config";
 
 /**
- * Default endpoint from environment variable or fallback to local proxy
- * - For local development: '/api/invocations' (proxied through Vite to localhost:8080)
- * - For production: Full AgentCore Runtime URL (e.g., https://bedrock-agentcore.{region}.amazonaws.com/runtimes/{runtimeId}/invocations)
+ * Default endpoint: config.agent.invocationsUrl (built from ARN+region when set, else env or local proxy).
  */
-const DEFAULT_ENDPOINT =
-  import.meta.env.VITE_AGENT_INVOCATIONS_URL || "/agent/invocations";
+const DEFAULT_ENDPOINT = config.agent.invocationsUrl;
 
 interface UseAgentStreamOptions {
-  /** Custom endpoint URL (defaults to VITE_AGENT_INVOCATIONS_URL or '/agent/invocations') */
+  /** Custom endpoint URL (defaults to config.agent.invocationsUrl) */
   endpoint?: string;
   /** Function to get auth token for production AgentCore calls */
   getAuthToken?: () => Promise<string | null>;

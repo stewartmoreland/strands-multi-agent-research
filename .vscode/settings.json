@@ -1,10 +1,10 @@
 {
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "*.ts": "${capture}.js, ${capture}.js.map, ${capture}.test.ts, ${capture}.d.ts, ${capture}.web.ts, ${capture}.web.js, ${capture}.web.js.map",
-    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.test.js, ${capture}.d.ts, ${capture}.web.ts, ${capture}.web.js, ${capture}.web.js.map",
-    "*.jsx": "${capture}.js, ${capture}.js.map, ${capture}.test.jsx, ${capture}.d.ts, ${capture}.web.tsx, ${capture}.web.js, ${capture}.web.js.map, ${capture}.web.d.ts, ${capture}.stories.jsx",
-    "*.tsx": "${capture}.ts, ${capture}.ts.map, ${capture}.test.tsx, ${capture}.d.ts, ${capture}.web.tsx, ${capture}.web.js, ${capture}.web.js.map, ${capture}.web.d.ts, ${capture}.stories.tsx",
+    "*.ts": "${capture}.js, ${capture}.js.map, ${capture}.test.ts, ${capture}.d.ts, ${capture}.d.ts.map",
+    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.test.js, ${capture}.d.ts, ${capture}.d.js.map",
+    "*.jsx": "${capture}.js, ${capture}.js.map, ${capture}.test.jsx, ${capture}.d.ts, ${capture}.d.jsx.map",
+    "*.tsx": "${capture}.ts, ${capture}.ts.map, ${capture}.test.tsx, ${capture}.d.ts, ${capture}.d.tsx.map",
     "tsconfig.json": "tsconfig.*.json",
     "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb"
   },
