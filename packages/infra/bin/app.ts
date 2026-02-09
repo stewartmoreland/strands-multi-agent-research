@@ -77,7 +77,7 @@ const webAppStack = new WebAppStack(app, "ResearchAgentWebAppStack", {
   userPoolClientId: researchAgentStack.userPoolClient.userPoolClientId,
   cognitoRegion: researchAgentStack.region,
   agentApiUrl: apiStack.apiUrl,
-  agentInvocationsUrl: `https://bedrock-agentcore.${researchAgentStack.region}.amazonaws.com/runtimes/${researchAgentStack.agentRuntimeId}/invocations?accountId=${researchAgentStack.account}`,
+  agentInvocationsUrl: researchAgentStack.agentInvocationsUrl,
   tags: {
     Project: "multi-agent-research",
     ManagedBy: "CDK",
