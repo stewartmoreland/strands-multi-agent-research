@@ -42,7 +42,6 @@ export class ResearchAgentStack extends cdk.Stack {
   public readonly userPoolClient: cognito.UserPoolClient;
   public readonly agentRuntimeId: string;
   public readonly agentRuntimeArn: string;
-  public readonly agentInvocationsUrl: string;
   public readonly agentMemoryId: string;
 
   constructor(scope: Construct, id: string, props?: ResearchAgentStackProps) {
@@ -715,84 +714,6 @@ exports.handler = async (event, context) => {
     this.agentMemoryId = agentMemory.attrMemoryId;
 
     // ==========================================================================
-    // Invocations URL (ARN must be URL-encoded per Data Plane API contract)
-    //
-    // Custom resource builds the URL at deploy time so encodeURIComponent(ARN)
-    // is applied to the resolved ARN value.
-    // ==========================================================================
-    const invocationsUrlFunction = new lambda.Function(
-      this,
-      "InvocationsUrlFunction",
-      {
-        runtime: lambda.Runtime.NODEJS_22_X,
-        handler: "index.handler",
-        timeout: cdk.Duration.seconds(30),
-        code: lambda.Code.fromInline(`
-const https = require('https');
-const url = require('url');
-
-function sendResponse(event, context, status, data) {
-  const responseBody = JSON.stringify({
-    Status: status,
-    Reason: 'See CloudWatch Log Stream: ' + context.logStreamName,
-    PhysicalResourceId: event.LogicalResourceId,
-    StackId: event.StackId,
-    RequestId: event.RequestId,
-    LogicalResourceId: event.LogicalResourceId,
-    Data: data
-  });
-  const parsedUrl = url.parse(event.ResponseURL);
-  const options = {
-    hostname: parsedUrl.hostname,
-    port: 443,
-    path: parsedUrl.path,
-    method: 'PUT',
-    headers: { 'content-type': '', 'content-length': Buffer.byteLength(responseBody) }
-  };
-  return new Promise((resolve, reject) => {
-    const req = https.request(options, () => resolve());
-    req.on('error', reject);
-    req.write(responseBody);
-    req.end();
-  });
-}
-
-exports.handler = async (event, context) => {
-  if (event.RequestType === 'Delete') {
-    await sendResponse(event, context, 'SUCCESS', {});
-    return;
-  }
-  const { AgentRuntimeArn, Region, Account } = event.ResourceProperties;
-  const encodedArn = encodeURIComponent(AgentRuntimeArn);
-  const invocationsUrl = 'https://bedrock-agentcore.' + Region + '.amazonaws.com/runtimes/' + encodedArn + '/invocations?accountId=' + Account;
-  await sendResponse(event, context, 'SUCCESS', { Url: invocationsUrl });
-};
-        `),
-      },
-    );
-
-    invocationsUrlFunction.addPermission("AllowCloudFormation", {
-      principal: new iam.ServicePrincipal("cloudformation.amazonaws.com"),
-      action: "lambda:InvokeFunction",
-    });
-
-    const invocationsUrlResource = new cdk.CustomResource(
-      this,
-      "InvocationsUrl",
-      {
-        serviceToken: invocationsUrlFunction.functionArn,
-        properties: {
-          AgentRuntimeArn: agentRuntime.attrAgentRuntimeArn,
-          Region: this.region,
-          Account: this.account,
-        },
-      },
-    );
-    invocationsUrlResource.node.addDependency(agentRuntime);
-
-    this.agentInvocationsUrl = invocationsUrlResource.getAttString("Url");
-
-    // ==========================================================================
     // AgentCore Evaluations: execution role and log group
     //
     // Evaluators and online evaluation configs are created via Control Plane API
@@ -901,7 +822,8 @@ exports.handler = async (event, context) => {
 
     new cdk.CfnOutput(this, "AgentRuntimeArn", {
       value: agentRuntime.attrAgentRuntimeArn,
-      description: "ARN of the AgentCore Runtime",
+      description:
+        "ARN of the AgentCore Runtime. Invocations URL: https://bedrock-agentcore.{region}.amazonaws.com/runtimes/{encodeURIComponent(arn)}/invocations",
       exportName: "ResearchAgentRuntimeArn",
     });
 
@@ -909,13 +831,6 @@ exports.handler = async (event, context) => {
       value: agentRuntime.attrAgentRuntimeId,
       description: "ID of the AgentCore Runtime",
       exportName: "ResearchAgentRuntimeId",
-    });
-
-    new cdk.CfnOutput(this, "AgentInvocationsUrl", {
-      value: this.agentInvocationsUrl,
-      description:
-        "Direct URL for invoking the AgentCore Runtime (SSE streaming); path uses URL-encoded ARN per Data Plane API",
-      exportName: "ResearchAgentInvocationsUrl",
     });
 
     new cdk.CfnOutput(this, "ToolsFunctionArn", {

@@ -35,8 +35,8 @@ export interface WebAppStackProps extends cdk.StackProps {
   readonly cognitoRegion?: string;
   /** Agent API URL. Required when using Agent API for authentication. */
   readonly agentApiUrl?: string;
-  /** Agent invocations URL. Required when using Agent invocations for authentication. */
-  readonly agentInvocationsUrl?: string;
+  /** Agent runtime ARN. Web app builds invocations URL at runtime (encodeURIComponent(arn) in path). */
+  readonly agentRuntimeArn?: string;
 }
 
 /**
@@ -59,7 +59,7 @@ export class WebAppStack extends cdk.Stack {
       userPoolClientId,
       cognitoRegion,
       agentApiUrl,
-      agentInvocationsUrl,
+      agentRuntimeArn,
     } = props;
 
     const hasCustomDomain = domainName && hostedZoneId && hostedZoneName;
@@ -293,8 +293,8 @@ export class WebAppStack extends cdk.Stack {
           value: cognitoRegion,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
-        VITE_AGENT_INVOCATIONS_URL: {
-          value: agentInvocationsUrl,
+        VITE_AGENT_RUNTIME_ARN: {
+          value: agentRuntimeArn ?? "",
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         VITE_AGENT_API_URL: {

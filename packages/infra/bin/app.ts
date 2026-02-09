@@ -77,7 +77,7 @@ const webAppStack = new WebAppStack(app, "ResearchAgentWebAppStack", {
   userPoolClientId: researchAgentStack.userPoolClient.userPoolClientId,
   cognitoRegion: researchAgentStack.region,
   agentApiUrl: apiStack.apiUrl,
-  agentInvocationsUrl: researchAgentStack.agentInvocationsUrl,
+  agentRuntimeArn: researchAgentStack.agentRuntimeArn,
   tags: {
     Project: "multi-agent-research",
     ManagedBy: "CDK",
