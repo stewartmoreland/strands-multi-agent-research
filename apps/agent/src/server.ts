@@ -1,18 +1,30 @@
 import { context, propagation } from "@opentelemetry/api";
 import type { InvocationRequest } from "@repo/shared";
 import { listFoundationModels, memoryAdapter } from "@repo/util";
-import { logger } from "./logger";
+import { logger } from "./logger.js";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
-import { orchestrator } from "./orchestrator";
+import { orchestrator } from "./orchestrator.js";
 import {
   getActorIdFromAuth,
   normalizeInvocationsBody,
   parseBody,
   sendEvent,
-} from "./serverHelpers";
+} from "./serverHelpers.js";
 
 const PORT = parseInt(process.env.PORT || "8080", 10);
 const HOST = process.env.HOST || "0.0.0.0";
+
+// Log uncaught errors to stderr and exit so failures appear in CloudWatch runtime-logs
+process.on("uncaughtException", (err: Error) => {
+  process.stderr.write(`uncaughtException: ${err.message}\n${err.stack ?? ""}\n`);
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason: unknown) => {
+  const msg = reason instanceof Error ? reason.message : String(reason);
+  const stack = reason instanceof Error ? reason.stack : undefined;
+  process.stderr.write(`unhandledRejection: ${msg}\n${stack ?? ""}\n`);
+  process.exit(1);
+});
 
 /**
  * Handle /invocations endpoint
@@ -321,6 +333,11 @@ async function requestHandler(
 // Create and start server
 logger.info("Creating HTTP server");
 const server = createServer(requestHandler);
+
+server.on("error", (err: Error) => {
+  process.stderr.write(`Server error: ${err.message}\n${err.stack ?? ""}\n`);
+  process.exit(1);
+});
 
 server.listen(PORT, HOST, () => {
   logger.info("Agent server listening", {

@@ -267,18 +267,22 @@ exports.handler = async (event, context) => {
     }
     
     const projectName = event.ResourceProperties.ProjectName;
+    const imageTag = 'build-' + Date.now();
     
-    // Start build
-    const startResponse = await codebuild.send(new StartBuildCommand({ projectName }));
+    const startResponse = await codebuild.send(new StartBuildCommand({
+      projectName,
+      environmentVariablesOverride: [
+        { name: 'IMAGE_TAG', value: imageTag, type: 'PLAINTEXT' }
+      ]
+    }));
     const buildId = startResponse.build.id;
-    console.log('Started build:', buildId);
+    console.log('Started build:', buildId, 'imageTag:', imageTag);
     
-    // Wait for build (max 14 minutes to leave buffer before Lambda timeout)
     const maxWaitMs = (context.getRemainingTimeInMillis() - 60000);
     const result = await waitForBuild(buildId, maxWaitMs);
     
     if (result.success) {
-      await sendResponse(event, context, 'SUCCESS', { BuildId: buildId });
+      await sendResponse(event, context, 'SUCCESS', { BuildId: buildId, ImageTag: imageTag });
     } else {
       await sendResponse(event, context, 'FAILED', { Error: 'Build failed: ' + result.status });
     }
@@ -304,12 +308,11 @@ exports.handler = async (event, context) => {
       }),
     );
 
-    // Custom Resource to trigger build on deployment
+    // Custom Resource to trigger build on deployment (unique tag per deploy so AgentCore pulls fresh image)
     const triggerBuild = new cdk.CustomResource(this, "TriggerImageBuild", {
       serviceToken: buildTriggerFunction.functionArn,
       properties: {
         ProjectName: buildProject.projectName,
-        // Change this to trigger a new build on updates
         BuildTrigger: Date.now().toString(),
       },
     });
@@ -657,14 +660,20 @@ exports.handler = async (event, context) => {
     // - Expose /ping (health) and /invocations (agent) endpoints
     // - Be built for ARM64 architecture
     //
-    // Environment variables match apps/agent process.env usage so the container
-    // receives AGENTCORE_MEMORY_ID, AGENTCORE_GATEWAY_URL, and enablement flags.
-    // ==========================================================================
+    // Entrypoint (source of truth): node --require @opentelemetry/auto-instrumentations-node/register dist/server.js
+    // AgentCore Control Plane does not support overriding entrypoint for container config; keep
+    // apps/agent/Dockerfile CMD in sync when changing this.
+
     const agentRuntime = new bedrockagentcore.CfnRuntime(this, "AgentRuntime", {
       agentRuntimeName: "research_agent",
       agentRuntimeArtifact: {
         containerConfiguration: {
-          containerUri: `${this.ecrRepository.repositoryUri}:latest`,
+          // Unique tag per deploy so AgentCore always pulls the new image (no cache)
+          containerUri: cdk.Fn.join("", [
+            this.ecrRepository.repositoryUri,
+            ":",
+            triggerBuild.getAtt("ImageTag") as unknown as string,
+          ]),
         },
       },
       networkConfiguration: {

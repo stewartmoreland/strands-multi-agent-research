@@ -5,7 +5,7 @@ import {
   normalizeInvocationsBody,
   parseBody,
   sendEvent,
-} from "./serverHelpers";
+} from "./serverHelpers.js";
 
 function createMockRequest(
   overrides: Partial<{

@@ -16,7 +16,7 @@ import {
   getSpecialistConfig,
   type OutputFormat,
   type WritingInput,
-} from "./types";
+} from "./types.js";
 
 const logger = createLogger("research_agent", { defaultAttributes: { specialist: "Writing Specialist" } });
 

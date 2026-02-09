@@ -12,7 +12,7 @@
 import { createLogger } from "@repo/util/logger";
 import { Agent, BedrockModel, tool } from "@strands-agents/sdk";
 import { z } from "zod";
-import { getSpecialistConfig, type AnalysisInput } from "./types";
+import { getSpecialistConfig, type AnalysisInput } from "./types.js";
 
 const logger = createLogger("research_agent", { defaultAttributes: { specialist: "Analysis Specialist" } });
 

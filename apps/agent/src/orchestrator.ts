@@ -5,14 +5,14 @@
 
 import type { UiEvent } from "@repo/shared/events";
 import { memoryAdapter } from "@repo/util";
-import { logger } from "./logger";
+import { logger } from "./logger.js";
 import { Agent, BedrockModel } from "@strands-agents/sdk";
 import {
   createAnalysisTool,
   createResearchTool,
   createWritingTool,
   getDefaultModelId,
-} from "./specialists/index";
+} from "./specialists/index.js";
 
 interface OrchestratorContext {
   sessionId?: string;
