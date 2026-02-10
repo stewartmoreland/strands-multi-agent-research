@@ -415,7 +415,7 @@ function App() {
 
           {/* Chat transcript with inline thinking and tools */}
           <div className="flex-1 overflow-hidden">
-            <ChatTranscript items={allItems} className="h-full" />
+            <ChatTranscript items={allItems} userAvatarUrl={user?.picture} className="h-full" />
           </div>
 
           {/* Chat input area */}

@@ -1,7 +1,8 @@
 import { Bot, User } from 'lucide-react'
 import * as React from 'react'
+import { useIsMobile } from '../hooks/use-mobile'
 import { cn } from '../lib/utils'
-import { Avatar, AvatarFallback } from './avatar'
+import { Avatar, AvatarFallback, AvatarImage } from './avatar'
 import { MarkdownContent } from './markdown-content'
 
 export interface ChatMessageProps {
@@ -9,10 +10,12 @@ export interface ChatMessageProps {
   content: string
   timestamp?: number
   isStreaming?: boolean
+  avatarUrl?: string
 }
 
 const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
-  ({ role, content, timestamp, isStreaming }, ref) => {
+  ({ role, content, timestamp, isStreaming, avatarUrl }, ref) => {
+    const isMobile = useIsMobile()
     const isUser = role === 'user'
 
     return (
@@ -30,12 +33,19 @@ const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
               <Bot className="h-4 w-4 text-secondary-foreground" />
             )}
           </AvatarFallback>
+          <AvatarImage src={avatarUrl} />
         </Avatar>
 
-        <div className={cn('flex flex-col gap-1.5 max-w-[85%]', isUser ? 'items-end' : 'items-start')}>
+        <div
+          className={cn(
+            'flex min-w-0 flex-col gap-1.5 overflow-hidden',
+            isUser ? 'items-end' : 'items-start',
+            isMobile ? 'w-[90%] max-w-[90%]' : 'w-[65%] max-w-[65%]',
+          )}
+        >
           <div
             className={cn(
-              'rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm',
+              'min-w-0 max-w-full overflow-hidden rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm',
               'transition-all duration-200',
               isUser
                 ? 'bg-primary text-primary-foreground rounded-br-md'
@@ -63,8 +73,8 @@ const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
                 )}
               </div>
             ) : (
-              <div className="wrap-break-word inline-block">
-                <MarkdownContent>{content}</MarkdownContent>
+              <div className="min-w-0 max-w-full wrap-break-word">
+                <MarkdownContent className="min-w-0 max-w-full">{content}</MarkdownContent>
                 {isStreaming && (
                   <span className="inline-flex items-center ml-1.5 gap-0.5 align-middle">
                     <span

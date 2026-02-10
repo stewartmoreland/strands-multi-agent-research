@@ -51,6 +51,7 @@ export interface ChatTranscriptProps extends React.HTMLAttributes<HTMLDivElement
 
   emptyStateTitle?: string
   emptyStateDescription?: string
+  userAvatarUrl?: string
 }
 
 const ChatTranscript = React.forwardRef<HTMLDivElement, ChatTranscriptProps>(
@@ -65,6 +66,7 @@ const ChatTranscript = React.forwardRef<HTMLDivElement, ChatTranscriptProps>(
       toolExecutions = [],
       emptyStateTitle = 'No messages yet. Say hello to start.',
       emptyStateDescription,
+      userAvatarUrl,
       ...props
     },
     ref,
@@ -139,6 +141,7 @@ const ChatTranscript = React.forwardRef<HTMLDivElement, ChatTranscriptProps>(
                             content={item.message.content}
                             timestamp={item.message.timestamp}
                             isStreaming={item.isStreaming}
+                            avatarUrl={item.message.role === 'user' ? userAvatarUrl : undefined}
                           />
                         </div>
                       )
